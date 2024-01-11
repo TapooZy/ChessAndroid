@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/chess_squares_background"
+    android:orientation="vertical"
+    tools:context=".HomePageActivity">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="120dp"
+        android:layout_marginTop="90dp"
+        app:srcCompat="@drawable/chess_headline" />
+
+    <ImageView
+        android:id="@+id/ivMusic"
+        android:layout_width="137dp"
+        android:layout_height="154dp"
+        app:srcCompat="@drawable/music_resume" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/ivLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/chess_login_picture" />
+        <ImageView
+            android:id="@+id/ivRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/chess_register" />
+
+
+
+    </LinearLayout>
+
+
+</LinearLayout>
