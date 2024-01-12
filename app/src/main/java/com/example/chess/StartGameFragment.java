@@ -25,7 +25,6 @@ public class StartGameFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_start_game, container, false);
         btnStartGame = view.findViewById(R.id.btnStartGame);
         btnStartGame.setOnClickListener(this::onClick);
-        intent = new Intent(getContext(), Chess.class);
         return view;
     }
 
@@ -40,6 +39,7 @@ public class StartGameFragment extends Fragment {
         builder.setItems(options, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int item) {
+                intent = new Intent(getContext(), Chess.class);
                 if (options[item].equals("Play against a bot")) {
                     Toast.makeText(getContext(), "You chose to play against a bot", Toast.LENGTH_SHORT).show();
                     intent.putExtra("againstWhat", "bot");
@@ -47,6 +47,7 @@ public class StartGameFragment extends Fragment {
                 } else if (options[item].equals("Play against a friend")) {
                     Toast.makeText(getContext(), "You chose to play against a friend", Toast.LENGTH_SHORT).show();
                     intent.putExtra("againstWhat", "friend");
+                    startActivity(intent);
                 } else if (options[item].equals("Cancel")) {
                     dialog.dismiss();
                 }
