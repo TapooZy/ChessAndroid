@@ -32,42 +32,42 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/chess_bishop" />
+                app:srcCompat="@drawable/black_bishop" />
 
             <ImageView
                 android:id="@+id/ivKing"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/chess_king" />
+                app:srcCompat="@drawable/black_king" />
 
             <ImageView
                 android:id="@+id/ivKnight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/chess_knight" />
+                app:srcCompat="@drawable/black_knight" />
 
             <ImageView
                 android:id="@+id/ivPawn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/chess_pawn" />
+                app:srcCompat="@drawable/black_pawn" />
 
             <ImageView
                 android:id="@+id/ivQueen"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/chess_queen" />
+                app:srcCompat="@drawable/black_queen" />
 
             <ImageView
                 android:id="@+id/ivRook"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/chess_rook" />
+                app:srcCompat="@drawable/black_rook" />
         </LinearLayout>
     </LinearLayout>
 
