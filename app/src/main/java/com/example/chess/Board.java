@@ -126,6 +126,19 @@ public class Board {
         }
         return null;
     }
+    public String convertBoardToString() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                Piece piece = board[i][j];
+                stringBuilder.append(piece.getColor()+ piece.getLetter()).append(" ");
+            }
+            stringBuilder.append("\n");
+        }
+
+        return stringBuilder.toString();
+    }
 
     public boolean isInCheck (Piece piece) {
         Queue<Integer> allMoves = getDifferentColorMoves(piece);

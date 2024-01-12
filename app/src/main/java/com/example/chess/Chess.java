@@ -1,6 +1,7 @@
 package com.example.chess;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
@@ -8,15 +9,26 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.widget.Toast;
 
+import java.sql.SQLData;
+
 public class Chess extends AppCompatActivity {
     GridLayout chessBoard;
     Engine engine = new Engine();
     Board board = engine.getBoard();
+    Piece piece;
+    ImageView from_green;
+    ImageView from_white;
+    boolean wasClickedOnAPiece;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chess);
+        from_green = new ImageView(this);
+        from_white = new ImageView(this);
+        from_green.setBackgroundColor(getResources().getColor(R.color.can_move_to_from_green));
+        from_white.setBackgroundColor(getResources().getColor(R.color.can_move_to_from_white));
+
         chessBoard = findViewById(R.id.chessBoard);
         showBoard();
     }
@@ -26,7 +38,6 @@ public class Chess extends AppCompatActivity {
         DisplayMetrics displayMetrics = new DisplayMetrics(); // DisplayMetrics instance to store display information
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics); // Retrieve display metrics
         int screenWidth = displayMetrics.widthPixels; // Extract the width of the screen in pixels
-
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 final int row = i;  // Store the current row
@@ -97,8 +108,11 @@ public class Chess extends AppCompatActivity {
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // Handle the click event
-                        onSquareClicked(row, col);
+                        // Handle the first click event
+                        Queue<Integer> moves = onSquareClicked(row, col, wasClickedOnAPiece);
+
+                        // Handle the second click event (call another method or write additional code)
+//                        onSecondClick(row, col, moves, piece);
                     }
                 });
 
@@ -108,31 +122,69 @@ public class Chess extends AppCompatActivity {
         }
     }
 
-    private void onSquareClicked(int row, int col) {
-        Piece piece = board.getBoard()[row][col];
-        if (piece == null){
-            Toast.makeText(this, "This square is empty", Toast.LENGTH_SHORT).show();
-            return;
+    private Queue<Integer> onSquareClicked(int row, int col, boolean wasClickedOnAPiece) {
+        Log.d("onclick", "entered onclick");
+        if (wasClickedOnAPiece){
+            View square = chessBoard.getChildAt(row * 8 + col);
+            if (square.getBackground().equals(from_green.getBackground()) || square.getBackground().equals(from_white.getBackground())){
+                piece.move(board, row, col);
+                Log.d("board", board.convertBoardToString());
+                this.wasClickedOnAPiece = false;
+                chessBoard.removeAllViews();
+                showBoard();
+            }
+            piece = board.getBoard()[row][col];
+            if (piece != null){
+                return onSquareClicked(row, col, false);
+            }
+            else{
+                this.wasClickedOnAPiece = false;
+                return null;
+            }
         }
-        Queue<Integer> moves = piece.getPossibleMoves(board);
-        if (moves.getSize() == 0){
-            Toast.makeText(this, "no moves", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, moves.toString(), Toast.LENGTH_SHORT).show();
+        else {
+            piece = board.getBoard()[row][col];
+            if (piece == null) {
+                Toast.makeText(this, "This square is empty", Toast.LENGTH_SHORT).show();
+                wasClickedOnAPiece = false;
+                chessBoard.removeAllViews();
+                showBoard();
+                return null;
+            }
+            this.wasClickedOnAPiece = true;
+            Queue<Integer> moves = piece.getPossibleMoves(board);
+            if (moves.getSize() == 0) {
+                Toast.makeText(this, "no moves", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, moves.toString(), Toast.LENGTH_SHORT).show();
+            }
+            chessBoard.removeAllViews();
+            showBoard();
+            int size = moves.getSize();
+            int[] individual_move;
+            for (int i = 0; i < size; i++) {
+                individual_move = moves.remove();
+                View square_to_color = chessBoard.getChildAt(individual_move[0] * 8 + individual_move[1]);
+                if ((individual_move[0] + individual_move[1]) % 2 == 0) {
+                    square_to_color.setBackgroundColor(getResources().getColor(R.color.can_move_to_from_white));
+                } else {
+                    square_to_color.setBackgroundColor(getResources().getColor(R.color.can_move_to_from_green));
+                }
+            }
+            return moves;
+        }
+    }
+
+    private void onSecondClick(int row, int col, Queue<Integer> moves, Piece p){
+        int[] individual_move;
+        int size = moves.getSize();
+        for (int i = 0; i < size; i++) {
+            individual_move = moves.remove();
+            if (individual_move[0] == row && individual_move[1] == col){
+                p.move(board, row, col);
+            }
         }
         chessBoard.removeAllViews();
         showBoard();
-        int size = moves.getSize();
-        int[] individual_move;
-        for (int i = 0; i < size; i++) {
-            individual_move = moves.remove();
-            View square_to_color = chessBoard.getChildAt(individual_move[0] * 8 + individual_move[1]);
-            if ((individual_move[0] + individual_move[1]) % 2 == 0){
-                square_to_color.setBackgroundColor(getResources().getColor(R.color.can_move_to_from_white));
-            } else{
-                square_to_color.setBackgroundColor(getResources().getColor(R.color.can_move_to_from_green));
-            }
-        }
-
     }
 }

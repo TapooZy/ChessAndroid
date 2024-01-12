@@ -99,7 +99,7 @@ public class King extends Piece {
         return false;
     }
     @Override
-    public boolean move(Board board, int row, int col){
+    public void move(Board board, int row, int col){
         int size;
         int[] availableMove;
         Queue<Integer> moves = board.getBoard()[this.row][this.col].getPossibleMoves(board);
@@ -120,9 +120,8 @@ public class King extends Piece {
                         }
                     }
                 }
-                return true;
+                break;
             }
         }
-        return false;
     }
 }

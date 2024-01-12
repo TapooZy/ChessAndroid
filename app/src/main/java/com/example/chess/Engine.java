@@ -37,18 +37,18 @@ public class Engine {
                     System.out.println("This square is empty");
                 }
             }
-            while (true) {
-                System.out.println("Where");
-                Move = in.nextInt();
-                row = Move / 10;
-                col = Move % 10;
-                if (piece.move(board, row, col)){
-                    break;
-                }
-                else{
-                    System.out.println("This is an illegal move");
-                }
-            }
+//            while (true) {
+//                System.out.println("Where");
+//                Move = in.nextInt();
+//                row = Move / 10;
+//                col = Move % 10;
+//                if (piece.move(board, row, col)){
+//                    break;
+//                }
+//                else{
+//                    System.out.println("This is an illegal move");
+//                }
+//            }
             if (color.equals("White")){
                 color = "Black";
                 c = 'b';

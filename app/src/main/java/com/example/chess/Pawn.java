@@ -123,7 +123,7 @@ public class Pawn extends Piece{
         return false;
     }
     @Override
-    public boolean move(Board board, int row, int col){
+    public void move(Board board, int row, int col){
         int size, formerRow, formerCol;
         int[] availableMove;
         Queue<Integer> moves = board.getBoard()[this.row][this.col].getPossibleMoves(board);
@@ -155,9 +155,8 @@ public class Pawn extends Piece{
                 if (this.row == formerRow + 2 || this.row == formerRow - 2){
                     this.setWasFirstMove(true);
                 }
-                return true;
+                break;
             }
         }
-        return false;
     }
 }
