@@ -13,11 +13,6 @@ public class Queue<Integer> {
         this.size = 0;
     }
 
-    public boolean isEmpty()
-    {
-        return size == 0;
-    }
-
     public void insert (int row, int col)
     {
         Node<Integer> temp = new  Node <Integer> (row, col);

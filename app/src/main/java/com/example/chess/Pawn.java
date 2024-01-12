@@ -1,13 +1,15 @@
 package com.example.chess;
 
 import java.util.Scanner;
+import java.util.Scanner;
+
 public class Pawn extends Piece{
 
     public Pawn(char color, int row, int col){
         super(color, 'p', row, col);
     }
 
-    public Queue<Integer> getPossibleMoves(Board board, boolean isAllMoves) {
+    public Queue<Integer> getPossibleMoves(Board board) {
         int row1, col1;
         Queue<Integer> moves = new Queue<>();
         if (color == 'b') {
@@ -67,8 +69,6 @@ public class Pawn extends Piece{
                 if (board.getBoard()[row1][col1] != null) { // eat right
                     if (board.getBoard()[row1][col1].getColor() != this.color) {
                         moves.insert(row1, col1);
-                    } else if (isAllMoves) {
-                        moves.insert(row1, col1);
                     }
                 }
             }
@@ -77,8 +77,6 @@ public class Pawn extends Piece{
             if (row1 > -1 && col1 > -1) {
                 if (board.getBoard()[row1][col1] != null) { // eat left
                     if (board.getBoard()[row1][col1].getColor() != this.color) {
-                        moves.insert(row1, col1);
-                    } else if (isAllMoves) {
                         moves.insert(row1, col1);
                     }
                 }
@@ -124,48 +122,27 @@ public class Pawn extends Piece{
         }
         return false;
     }
-
     @Override
-    public void move(Board board){
-        Scanner in = new Scanner(System.in);
-        int rowCol, desirableRow, desirableCol, size, formerRow, formerCol;
-        boolean flag = false;
-        rowCol = in.nextInt();
-        desirableRow = rowCol/10;
-        desirableCol = rowCol%10;
-        int[] desirableMove = {desirableRow, desirableCol};
+    public boolean move(Board board, int row, int col){
+        int size, formerRow, formerCol;
         int[] availableMove;
-        Queue<Integer> moves = board.getBoard()[this.row][this.col].getPossibleMoves(board, false);
+        Queue<Integer> moves = board.getBoard()[this.row][this.col].getPossibleMoves(board);
         size = moves.getSize();
         for (int i = 0; i < size; i++) {
             availableMove = moves.remove();
-            if (desirableMove[0] == availableMove[0] && desirableMove[1] == availableMove[1]){
-                flag = true;
-                if (desirableCol == col - 1){
-                    formerCol = col - 1;
-                    formerRow = this.row;
-                    board.getBoard()[formerRow][formerCol] = null;
-
+            if (row == availableMove[0] && col == availableMove[1]){
+                board.getBoard()[row][col] = this;
+                formerRow = this.row;
+                formerCol = this.col;
+                if ((formerCol == col - 1 || formerCol == col + 1) && color == 'w'){
+                    board.getBoard()[row+1][col] = null;
                 }
-                else if (desirableCol == col + 1){
-                    formerCol = col + 1;
-                    formerRow = this.row;
-                    board.getBoard()[formerRow][formerCol] = null;
+                else if ((formerCol == col - 1 || formerCol == col + 1) && color == 'b'){
+                    board.getBoard()[row-1][col] = null;
                 }
-                else{
-                    formerCol = this.col;
-                    formerRow = this.row;
-                    board.getBoard()[formerRow][formerCol] = null;
-                }
-                formerCol = col;
-                setRow(desirableRow);
-                setCol(desirableCol);
-                board.getBoard()[formerRow][formerCol] = null;
-                if (!didMove){
-                    didMove = true;
-                }
-                board.getBoard()[desirableRow][desirableCol] = this;
-                board.printBoard();
+                board.getBoard()[this.row][this.col] = null;
+                this.setRow(row);
+                this.setCol(col);
                 for (int k = 0; k < 7; k++) {
                     for (int j = 0; j < 7; j++) {
                         if (board.getBoard()[k][j] != null){
@@ -175,13 +152,12 @@ public class Pawn extends Piece{
                         }
                     }
                 }
-                if (desirableRow == formerRow + 2 || desirableRow == formerRow - 2){
+                if (this.row == formerRow + 2 || this.row == formerRow - 2){
                     this.setWasFirstMove(true);
                 }
-                break;
+                return true;
             }
         }
-        if (!flag)
-            System.out.println("This is not a possible move");
+        return false;
     }
 }

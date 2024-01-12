@@ -1,6 +1,4 @@
 package com.example.chess;
-
-import java.util.*;
 abstract public class Piece {
     protected char color;
     protected char letter;
@@ -55,7 +53,7 @@ abstract public class Piece {
         return col;
     }
 
-    public abstract Queue<Integer> getPossibleMoves(Board board, boolean isAllMoves);
+    public abstract Queue<Integer> getPossibleMoves(Board board);
 
-    public abstract void move(Board board);
+    public abstract boolean move(Board board, int row, int col);
 }

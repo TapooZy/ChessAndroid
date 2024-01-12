@@ -8,12 +8,16 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
+
+import java.util.concurrent.BlockingQueue;
 
 public class ChessboardView extends View {
     private static final int GREEN_COLOR = Color.rgb(119, 149, 86);
     private static final int WHITE_COLOR = Color.rgb(236, 235, 235);
 
-    private Board board = new Board();
+    private Engine engine = new Engine();
+    private Queue<Integer> moves;
 
     private Paint paint;
     private int boardSize = 8; // 8x8 chessboard
@@ -23,13 +27,11 @@ public class ChessboardView extends View {
 
     public ChessboardView(Context context) {
         super(context);
-        board.startGame();
         init();
     }
 
     public ChessboardView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        board.startGame();
         init();
     }
 
@@ -41,6 +43,7 @@ public class ChessboardView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         squareSize = getWidth() / boardSize;
+        Board board = engine.getBoard();
         int startPoint = (getHeight()-getWidth())/2;
         for (int row = 0; row < boardSize; row++) {
             for (int col = 0; col < boardSize; col++) {
@@ -48,39 +51,37 @@ public class ChessboardView extends View {
                 drawSquare(canvas, col * squareSize, startPoint + row * squareSize, squareSize, color);
                 Piece p = board.getBoard()[row][col];
                 if (p instanceof Bishop) {
-                    if (row == 0) {
+                    if (p.getColor() == 'b') {
                         drawPiece(canvas, col * squareSize, startPoint , squareSize, R.drawable.black_bishop);
                     }
                     else drawPiece(canvas, col * squareSize, startPoint + row * squareSize, squareSize, R.drawable.white_bishop);
                 }
                 if (p instanceof Pawn){
-                    if (row == 1){
+                    if (p.getColor() == 'b'){
                         drawPiece(canvas, col * squareSize, startPoint + row * squareSize, squareSize, R.drawable.black_pawn);
                     }
-                    else if (row == 6){
-                        drawPiece(canvas, col * squareSize, startPoint + row * squareSize, squareSize, R.drawable.white_pawn);
-                    }
+                    else drawPiece(canvas, col * squareSize, startPoint + row * squareSize, squareSize, R.drawable.white_pawn);
                 }
                 if (p instanceof Rook){
-                    if (row == 0){
+                    if (p.getColor() == 'b'){
                         drawPiece(canvas, col * squareSize, startPoint , squareSize, R.drawable.black_rook);
                     }
                     else drawPiece(canvas, col * squareSize, startPoint + row * squareSize, squareSize, R.drawable.white_rook);
                 }
                 if (p instanceof King){
-                    if (row == 0){
+                    if (p.getColor() == 'b'){
                         drawPiece(canvas, col * squareSize, startPoint , squareSize, R.drawable.black_king);
                     }
                     else drawPiece(canvas, col * squareSize, startPoint + row * squareSize, squareSize, R.drawable.white_king);
                 }
                 if (p instanceof Knight){
-                    if (row == 0){
+                    if (p.getColor() == 'b'){
                         drawPiece(canvas, col * squareSize, startPoint , squareSize, R.drawable.black_knight);
                     }
                     else drawPiece(canvas, col * squareSize, startPoint + row * squareSize, squareSize, R.drawable.white_knight);
                 }
                 if (p instanceof Queen){
-                    if (row == 0){
+                    if (p.getColor() == 'b'){
                         drawPiece(canvas, col * squareSize, startPoint, squareSize, R.drawable.black_queen);
                     }
                     else drawPiece(canvas, col * squareSize, startPoint + row * squareSize, squareSize, R.drawable.white_queen);
@@ -94,8 +95,18 @@ public class ChessboardView extends View {
                 int right = left + squareSize;
                 int bottom = top + squareSize;
                 canvas.drawRect(left, top, right, bottom, paint);
+//                Piece p = board.getBoard()[selectedRow][selectedCol];
+//                if (p != null){
+//                    if (p instanceof Rook){
+//                        if (p.getColor() == 'b'){
+//                            drawPieceWithBonds(canvas, left, top, right, bottom, R.drawable.black_rook);
+//                        }
+//                        else drawPieceWithBonds(canvas, left, top, right, bottom, R.drawable.white_rook);
+//                    }
+//                }
             }
         }
+        drawMoves(canvas);
     }
 
     private void drawSquare(Canvas canvas, float left, float top, float size, int color) {
@@ -112,6 +123,7 @@ public class ChessboardView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        Board board = engine.getBoard();
         float x = event.getX();
         float y = event.getY();
 
@@ -124,13 +136,26 @@ public class ChessboardView extends View {
                 // Update the selected row and column
                 selectedRow = touchedRow;
                 selectedCol = touchedCol;
-
+                Piece piece = board.getBoard()[selectedRow][selectedCol];
+                moves = piece.getPossibleMoves(board);
                 // Trigger redraw
                 invalidate();
                 break;
         }
 
         return true;
+    }
+
+    public void drawMoves(Canvas canvas){
+        int size = moves.getSize();
+        int startPoint = (getHeight()-getWidth())/2;
+        int[] individualMove;
+        if (canvas != null) {
+            for (int i = 0; i < size; i++) {
+                individualMove = moves.remove();
+                canvas.drawCircle((getWidth() * (individualMove[1] + 1) / 16), squareSize / 2 + squareSize * individualMove[0] + startPoint, 100, paint);
+            }
+        }
     }
 }
 

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,10 +44,12 @@ public class StartGameFragment extends Fragment {
                 if (options[item].equals("Play against a bot")) {
                     Toast.makeText(getContext(), "You chose to play against a bot", Toast.LENGTH_SHORT).show();
                     intent.putExtra("againstWhat", "bot");
+                    Log.d("intent", "bot");
                     startActivity(intent);
                 } else if (options[item].equals("Play against a friend")) {
                     Toast.makeText(getContext(), "You chose to play against a friend", Toast.LENGTH_SHORT).show();
                     intent.putExtra("againstWhat", "friend");
+                    Log.d("intent", "friend");
                     startActivity(intent);
                 } else if (options[item].equals("Cancel")) {
                     dialog.dismiss();

@@ -44,7 +44,7 @@ public class Board {
         }
     }
 
-    public Queue<Integer> getAllMoves(Piece piece){
+    public Queue<Integer> getDifferentColorMoves(Piece piece){
         int[] individualMove;
         Queue<Integer> allMoves = new Queue<>();
         Queue<Integer> pieceMoves;
@@ -59,8 +59,9 @@ public class Board {
             for (int j = 0; j < 8; j++) {
                 if (board[i][j] != null) {
                     if (board[i][j].getColor() == wantedColor) {
-                        pieceMoves = board[i][j].getPossibleMoves(this, true);
-                        for (int k = 0; k < pieceMoves.getSize(); k++)
+                        pieceMoves = board[i][j].getPossibleMoves(this);
+                        int size = pieceMoves.getSize();
+                        for (int k = 0; k < size; k++)
                         {
                             individualMove = pieceMoves.remove();
                             allMoves.insert(individualMove[0], individualMove[1]);
@@ -69,12 +70,22 @@ public class Board {
                 }
             }
         }
+        return allMoves;
+    }
+
+    public Queue<Integer> getSameColorMoves(Piece piece){
+        int[] individualMove;
+        Queue<Integer> allMoves = new Queue<>();
+        Queue<Integer> pieceMoves;
+        char wantedColor = piece.color;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (board[i][j] != null) {
                     if (board[i][j].getColor() == wantedColor) {
-                        pieceMoves = board[i][j].getPossibleMoves(this, true);
-                        for (int k = 0; k < pieceMoves.getSize(); k++) {
+                        pieceMoves = board[i][j].getPossibleMoves(this);
+                        int size = pieceMoves.getSize();
+                        for (int k = 0; k < size; k++)
+                        {
                             individualMove = pieceMoves.remove();
                             allMoves.insert(individualMove[0], individualMove[1]);
                         }
@@ -103,28 +114,39 @@ public class Board {
         }
     }
 
-    public int[] findKing(Board board, char color){
+    public Piece findKing(char color){
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                Piece piece = board.getBoard()[i][j];
-                if (piece.getLetter() == 'K' && piece.getColor() == color){
-                    int[] coords = {i,j};
-                    return coords;
+                if (board[i][j] != null){
+                    if (board[i][j].getLetter() == 'K' && board[i][j].getColor() == color) {
+                        return board[i][j];
+                    }
                 }
             }
         }
         return null;
     }
 
-    public boolean isInCheck (Board board, Piece piece) {
-        Queue<Integer> allMoves = board.getAllMoves(board.getBoard()[piece.getRow()][piece.getCol()]);
+    public boolean isInCheck (Piece piece) {
+        Queue<Integer> allMoves = getDifferentColorMoves(piece);
         int[] individualMove;
-        for (int i = 0; i < allMoves.getSize(); i++) {
+        int size = allMoves.getSize();
+        for (int i = 0; i < size; i++) {
             individualMove = allMoves.remove();
             if (individualMove[0] == piece.getRow() && individualMove[1] == piece.getCol()) {
                 return true;
             }
         }
         return false;
+    }
+
+    public Board clone(){
+        Board newBoard = new Board();
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                newBoard.getBoard()[i][j] = board[i][j];
+            }
+        }
+        return newBoard;
     }
 }
