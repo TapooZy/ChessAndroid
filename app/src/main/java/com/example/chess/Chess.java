@@ -1,5 +1,7 @@
 package com.example.chess;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -126,12 +128,18 @@ public class Chess extends AppCompatActivity {
         Log.d("onclick", "entered onclick");
         if (wasClickedOnAPiece){
             View square = chessBoard.getChildAt(row * 8 + col);
-            if (square.getBackground().equals(from_green.getBackground()) || square.getBackground().equals(from_white.getBackground())){
+            ColorDrawable squareColor = (ColorDrawable) square.getBackground();
+            int squareId = squareColor.getColor();
+            ColorDrawable whiteColor = (ColorDrawable) from_white.getBackground();
+            int whiteId = whiteColor.getColor();
+            ColorDrawable greenColor = (ColorDrawable) from_green.getBackground();
+            int greenId = greenColor.getColor();
+            if (squareId == whiteId || squareId == greenId){
                 piece.move(board, row, col);
-                Log.d("board", board.convertBoardToString());
                 this.wasClickedOnAPiece = false;
                 chessBoard.removeAllViews();
                 showBoard();
+                return  null;
             }
             piece = board.getBoard()[row][col];
             if (piece != null){
