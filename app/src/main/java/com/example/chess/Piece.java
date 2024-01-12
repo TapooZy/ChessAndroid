@@ -4,16 +4,22 @@ abstract public class Piece {
     protected char letter;
     protected int row;
     protected int col;
+    protected String name;
     protected boolean didMove;
     protected boolean wasFirstMove;
 
-    public Piece(char color, char letter, int row, int col) {
+    public Piece(char color, char letter, int row, int col, String name) {
         this.color = color;
         this.letter = letter;
         this.row = row;
         this.col = col;
+        this.name = name;
         this.didMove = false;
         this.wasFirstMove = false;
+    }
+
+    public String getName(){
+        return name;
     }
 
     public char getLetter() {

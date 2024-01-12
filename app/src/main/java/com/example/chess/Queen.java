@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class Queen extends Piece{
 
     public Queen(char color, int row, int col){
-        super(color, 'q', row, col);
+        super(color, 'q', row, col, "Queen");
     }
 
     public Queue<Integer> getPossibleMoves(Board board) {

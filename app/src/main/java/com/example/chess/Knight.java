@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Knight extends Piece{
 
     public Knight(char color,  int row, int col){
-        super(color, 'k', row, col);
+        super(color, 'k', row, col, "Knight");
     }
 
     @Override

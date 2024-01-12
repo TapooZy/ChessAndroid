@@ -65,6 +65,25 @@ public class Queue<Integer> {
         return false;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        Node<Integer> current = first;
 
+        result.append("Queue: [");
 
+        while (current != null) {
+            result.append("(").append(current.getRow()).append(", ").append(current.getCol()).append(")");
+
+            if (current.getNext() != null) {
+                result.append(", ");
+            }
+
+            current = current.getNext();
+        }
+
+        result.append("]");
+
+        return result.toString();
+    }
 }

@@ -2,4 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="dark_square">#779556</color>
+    <color name="light_square">#ecebeb</color>
+    <color name="can_move_to_from_green">#bbca2b</color>
+    <color name="can_move_to_from_white">#f6f66a</color>
 </resources>

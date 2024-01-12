@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Rook extends Piece{
 
     public Rook (char color, int row, int col){
-        super(color, 'r', row, col);
+        super(color, 'r', row, col, "Rook");
     }
 
     public Queue<Integer> getPossibleMoves(Board board) {

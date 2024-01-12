@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Chess">
 
-    <com.example.chess.ChessboardView
-        android:id="@+id/chessboardView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <GridLayout
+        android:id="@+id/chessBoard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:columnCount="8"
+        android:layout_centerInParent="true"
+        android:orientation="horizontal" />
 </RelativeLayout>
