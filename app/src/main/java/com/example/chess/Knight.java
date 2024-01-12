@@ -16,15 +16,15 @@ public class Knight extends Piece{
         for (int i = 0; i < 8; i++) {
             row1 = row + directions[i][0];
             col1 = col + directions[i][1];
-            Piece piece = board.getBoard()[row1][col1];
-            if (piece == null){
-                moves.insert(row1, col1);
+            if (row1 >= 0 && row1 <= 7 && col1 >= 0 && col1 <= 7) {
+                Piece piece = board.getBoard()[row1][col1];
+                if (piece == null) {
+                    moves.insert(row1, col1);
+                } else if (piece.getColor() != color) {
+                    moves.insert(row1, col1);
+                    break;
+                } else break;
             }
-            else if (piece.getColor() != color){
-                moves.insert(row1, col1);
-                continue;
-            }
-            else continue;
         }
         return moves;
     }

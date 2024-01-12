@@ -110,6 +110,10 @@ public class Chess extends AppCompatActivity {
 
     private void onSquareClicked(int row, int col) {
         Piece piece = board.getBoard()[row][col];
+        if (piece == null){
+            Toast.makeText(this, "This square is empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
         Queue<Integer> moves = piece.getPossibleMoves(board);
         if (moves.getSize() == 0){
             Toast.makeText(this, "no moves", Toast.LENGTH_SHORT).show();
