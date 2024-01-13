@@ -12,6 +12,10 @@ public class Pawn extends Piece{
     }
 
     public Queue<Integer> getPossibleMoves(Board board) {
+        return null;
+    }
+
+    public Queue<Integer> getPawnPossibleMoves(Board board, int[] enPassantLocation){
         int row1, col1;
         Queue<Integer> moves = new Queue<>();
         if (color == 'b') {
@@ -46,10 +50,10 @@ public class Pawn extends Piece{
                 }
             }
             if (row == 4){
-                if (canEnPassantLeft(board)) {
+                if (canEnPassantLeft(board, enPassantLocation)) {
                     moves.insert(row + 1, col - 1);
                 }
-                if (canEnPassantRight(board)) {
+                if (canEnPassantRight(board, enPassantLocation)) {
                     moves.insert(row + 1, col + 1);
                 }
             }
@@ -84,10 +88,10 @@ public class Pawn extends Piece{
                 }
             }
             if (row == 3){
-                if (canEnPassantLeft(board)) {
+                if (canEnPassantLeft(board, enPassantLocation)) {
                     moves.insert(row - 1, col - 1);
                 }
-                if (canEnPassantRight(board)) {
+                if (canEnPassantRight(board, enPassantLocation)) {
                     moves.insert(row - 1, col + 1);
                 }
             }
@@ -95,12 +99,16 @@ public class Pawn extends Piece{
         return moves;
     }
 
-    public boolean canEnPassantLeft(Board board){
+    public boolean canEnPassantLeft(Board board, int[] enPassantLocation){
         if (col - 1 > -1){
-            if (board.getBoard()[row][col - 1] != null){
-                if (board.getBoard()[row][col - 1].getLetter() == 'p'){
-                    if (board.getBoard()[row][col - 1].getColor() != this.color){
-                        if (board.getBoard()[row][col - 1].wasFirstMove) {
+            if (enPassantLocation != null) {
+                if (enPassantLocation[0] == row && enPassantLocation[1] == col - 1) {
+                    if (color == 'b') {
+                        if (board.getBoard()[row + 1][col - 1] == null) {
+                            return true;
+                        }
+                    } else {
+                        if (board.getBoard()[row - 1][col - 1] == null) {
                             return true;
                         }
                     }
@@ -110,12 +118,16 @@ public class Pawn extends Piece{
         return false;
     }
 
-    public boolean canEnPassantRight(Board board){
+    public boolean canEnPassantRight(Board board, int[] enPassantLocation){
         if (col + 1 < 8){
-            if (board.getBoard()[row][col + 1] != null){
-                if (board.getBoard()[row][col + 1].getLetter() == 'p'){
-                    if (board.getBoard()[row][col + 1].getColor() != this.color){
-                        if (board.getBoard()[row][col + 1].wasFirstMove) {
+            if (enPassantLocation != null) {
+                if (enPassantLocation[0] == row && enPassantLocation[1] == col + 1) {
+                    if (color == 'b') {
+                        if (board.getBoard()[row + 1][col + 1] == null) {
+                            return true;
+                        }
+                    } else {
+                        if (board.getBoard()[row - 1][col + 1] == null) {
                             return true;
                         }
                     }
@@ -126,28 +138,32 @@ public class Pawn extends Piece{
     }
     @Override
     public void move(Board board, int row, int col){
-        int size, formerRow, formerCol;
+    }
+
+    public void pawnMove(Board board, int row, int col, int[] enPassantLocation){
+        int size;
         int[] availableMove;
-        Queue<Integer> moves = board.getBoard()[this.row][this.col].getPossibleMoves(board);
+        Queue<Integer> moves = this.getPawnPossibleMoves(board, enPassantLocation);
         size = moves.getSize();
         for (int i = 0; i < size; i++) {
             availableMove = moves.remove();
             if (row == availableMove[0] && col == availableMove[1]){
                 board.getBoard()[row][col] = this;
-                formerRow = this.row;
-                formerCol = this.col;
-                if ((formerCol == col - 1 || formerCol == col + 1) && color == 'w' && board.getBoard()[row+1][col] == null){
-                    board.getBoard()[row+1][col] = null;
-                }
-                else if ((formerCol == col - 1 || formerCol == col + 1) && color == 'b' && board.getBoard()[row-1][col] == null){
-                    board.getBoard()[row-1][col] = null;
+                if (enPassantLocation != null){
+                    if (color == 'b'){
+                        if (enPassantLocation[0] == row-1 && enPassantLocation[1] == col){
+                            board.getBoard()[row-1][col] = null;
+                        }
+                    }
+                    else {
+                        if (enPassantLocation[0] == row+1 && enPassantLocation[1] == col) {
+                            board.getBoard()[row + 1][col] = null;
+                        }
+                    }
                 }
                 board.getBoard()[this.row][this.col] = null;
                 this.setRow(row);
                 this.setCol(col);
-                if (this.row == formerRow + 2 || this.row == formerRow - 2){
-                    this.setWasFirstMove(true);
-                }
                 didMove = true;
                 break;
             }

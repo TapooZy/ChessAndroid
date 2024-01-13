@@ -111,10 +111,7 @@ public class Chess extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         // Handle the first click event
-                        Queue<Integer> moves = onSquareClicked(row, col, wasClickedOnAPiece);
-
-                        // Handle the second click event (call another method or write additional code)
-//                        onSecondClick(row, col, moves, piece);
+                        onSquareClicked(row, col, wasClickedOnAPiece);
                     }
                 });
 
@@ -124,7 +121,7 @@ public class Chess extends AppCompatActivity {
         }
     }
 
-    private Queue<Integer> onSquareClicked(int row, int col, boolean wasClickedOnAPiece) {
+    private void onSquareClicked(int row, int col, boolean wasClickedOnAPiece) {
         if (wasClickedOnAPiece){
             View square = chessBoard.getChildAt(row * 8 + col);
             ColorDrawable squareColor = (ColorDrawable) square.getBackground();
@@ -135,38 +132,43 @@ public class Chess extends AppCompatActivity {
             int greenId = greenColor.getColor();
             if (squareId == whiteId || squareId == greenId){
                 engine.setEnPassantLocation(null);
-                int abs_val = (piece.getRow()-row);
-                abs_val *= abs_val;
-                piece.move(board, row, col);
-                if ((piece instanceof Pawn) && abs_val == 4){
+                if (piece instanceof Pawn){
                     int[] cords = {row, col};
+                    ((Pawn) piece).pawnMove(board, row, col, engine.getEnPassantLocation());
                     engine.setEnPassantLocation(cords);
+                }
+                else {
+                    piece.move(board, row, col);
                 }
                 this.wasClickedOnAPiece = false;
                 chessBoard.removeAllViews();
                 showBoard();
-                return  null;
+                return;
             }
             piece = board.getBoard()[row][col];
             if (piece != null){
-                return onSquareClicked(row, col, false);
+                onSquareClicked(row, col, false);
             }
             else{
                 this.wasClickedOnAPiece = false;
-                return null;
             }
         }
         else {
+            Queue<Integer> moves;
             piece = board.getBoard()[row][col];
             if (piece == null) {
                 Toast.makeText(this, "This square is empty", Toast.LENGTH_SHORT).show();
                 wasClickedOnAPiece = false;
                 chessBoard.removeAllViews();
                 showBoard();
-                return null;
             }
             this.wasClickedOnAPiece = true;
-            Queue<Integer> moves = piece.getPossibleMoves(board);
+            if (piece instanceof Pawn){
+                moves = (((Pawn) piece).getPawnPossibleMoves(board, engine.getEnPassantLocation()));
+            }
+            else {
+                moves = piece.getPossibleMoves(board);
+            }
             chessBoard.removeAllViews();
             showBoard();
             int size = moves.getSize();
@@ -180,20 +182,6 @@ public class Chess extends AppCompatActivity {
                     square_to_color.setBackgroundColor(getResources().getColor(R.color.can_move_to_from_green));
                 }
             }
-            return moves;
         }
-    }
-
-    private void onSecondClick(int row, int col, Queue<Integer> moves, Piece p){
-        int[] individual_move;
-        int size = moves.getSize();
-        for (int i = 0; i < size; i++) {
-            individual_move = moves.remove();
-            if (individual_move[0] == row && individual_move[1] == col){
-                p.move(board, row, col);
-            }
-        }
-        chessBoard.removeAllViews();
-        showBoard();
     }
 }

@@ -41,16 +41,6 @@ public class Knight extends Piece{
                 board.getBoard()[this.row][this.col] = null;
                 this.setRow(row);
                 this.setCol(col);
-                for (int k = 0; k < 7; k++) {
-                    for (int j = 0; j < 7; j++) {
-                        if (board.getBoard()[k][j] != null){
-                            if (board.getBoard()[k][j].getWasFirstMove()){
-                                board.getBoard()[k][j].setWasFirstMove(false);
-                            }
-                        }
-                    }
-                }
-                break;
             }
         }
     }
