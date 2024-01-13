@@ -5,12 +5,10 @@ import java.util.*;
 public class Engine {
     private Board board;
     private int[] enPassantLocation;
-
     public Engine(){
         this.board = new Board();
         board.startGame();
     }
-
     public int[] getEnPassantLocation() {
         return enPassantLocation;
     }

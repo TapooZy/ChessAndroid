@@ -18,19 +18,23 @@ public class Chess extends AppCompatActivity {
     Engine engine = new Engine();
     Board board = engine.getBoard();
     Piece piece;
-    ImageView from_green;
-    ImageView from_white;
+    char nextMoveColor = 'w';
+    int whiteId;
+    int greenId;
     boolean wasClickedOnAPiece;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chess);
-        from_green = new ImageView(this);
-        from_white = new ImageView(this);
+        ImageView from_green = new ImageView(this);
+        ImageView from_white = new ImageView(this);
         from_green.setBackgroundColor(getResources().getColor(R.color.can_move_to_from_green));
         from_white.setBackgroundColor(getResources().getColor(R.color.can_move_to_from_white));
-
+        ColorDrawable whiteColor = (ColorDrawable) from_white.getBackground();
+        whiteId = whiteColor.getColor();
+        ColorDrawable greenColor = (ColorDrawable) from_green.getBackground();
+        greenId = greenColor.getColor();
         chessBoard = findViewById(R.id.chessBoard);
         showBoard();
     }
@@ -126,21 +130,26 @@ public class Chess extends AppCompatActivity {
             View square = chessBoard.getChildAt(row * 8 + col);
             ColorDrawable squareColor = (ColorDrawable) square.getBackground();
             int squareId = squareColor.getColor();
-            ColorDrawable whiteColor = (ColorDrawable) from_white.getBackground();
-            int whiteId = whiteColor.getColor();
-            ColorDrawable greenColor = (ColorDrawable) from_green.getBackground();
-            int greenId = greenColor.getColor();
             if (squareId == whiteId || squareId == greenId){
-                engine.setEnPassantLocation(null);
                 if (piece instanceof Pawn){
                     int[] cords = {row, col};
+                    int pieceRow = piece.row;
                     ((Pawn) piece).pawnMove(board, row, col, engine.getEnPassantLocation());
-                    engine.setEnPassantLocation(cords);
+                    int dist = pieceRow - row;
+                    dist *= dist;
+                    if (dist == 4) {
+                        engine.setEnPassantLocation(cords);
+                    }
+                    else{
+                        engine.setEnPassantLocation(null);
+                    }
                 }
                 else {
                     piece.move(board, row, col);
+                    engine.setEnPassantLocation(null);
                 }
                 this.wasClickedOnAPiece = false;
+                setNextMoveColor();
                 chessBoard.removeAllViews();
                 showBoard();
                 return;
@@ -150,6 +159,8 @@ public class Chess extends AppCompatActivity {
                 onSquareClicked(row, col, false);
             }
             else{
+                chessBoard.removeAllViews();
+                showBoard();
                 this.wasClickedOnAPiece = false;
             }
         }
@@ -158,9 +169,15 @@ public class Chess extends AppCompatActivity {
             piece = board.getBoard()[row][col];
             if (piece == null) {
                 Toast.makeText(this, "This square is empty", Toast.LENGTH_SHORT).show();
-                wasClickedOnAPiece = false;
                 chessBoard.removeAllViews();
                 showBoard();
+                return;
+            }
+            if (piece.getColor() != nextMoveColor){
+                Toast.makeText(this, "Wrong piece color, pick again", Toast.LENGTH_SHORT).show();
+                chessBoard.removeAllViews();
+                showBoard();
+                return;
             }
             this.wasClickedOnAPiece = true;
             if (piece instanceof Pawn){
@@ -182,6 +199,15 @@ public class Chess extends AppCompatActivity {
                     square_to_color.setBackgroundColor(getResources().getColor(R.color.can_move_to_from_green));
                 }
             }
+        }
+    }
+
+    public void setNextMoveColor() {
+        if (nextMoveColor == 'w'){
+            nextMoveColor = 'b';
+        }
+        else {
+            nextMoveColor = 'w';
         }
     }
 }

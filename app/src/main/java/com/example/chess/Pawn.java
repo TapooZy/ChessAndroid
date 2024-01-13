@@ -1,5 +1,8 @@
 package com.example.chess;
 
+import android.util.Log;
+import android.widget.Toast;
+
 import java.util.Scanner;
 import java.util.Scanner;
 
@@ -157,6 +160,7 @@ public class Pawn extends Piece{
                     }
                     else {
                         if (enPassantLocation[0] == row+1 && enPassantLocation[1] == col) {
+                            Log.d("move", "enPassant");
                             board.getBoard()[row + 1][col] = null;
                         }
                     }
