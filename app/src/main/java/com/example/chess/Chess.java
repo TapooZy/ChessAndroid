@@ -125,7 +125,6 @@ public class Chess extends AppCompatActivity {
     }
 
     private Queue<Integer> onSquareClicked(int row, int col, boolean wasClickedOnAPiece) {
-        Log.d("onclick", "entered onclick");
         if (wasClickedOnAPiece){
             View square = chessBoard.getChildAt(row * 8 + col);
             ColorDrawable squareColor = (ColorDrawable) square.getBackground();
@@ -135,7 +134,14 @@ public class Chess extends AppCompatActivity {
             ColorDrawable greenColor = (ColorDrawable) from_green.getBackground();
             int greenId = greenColor.getColor();
             if (squareId == whiteId || squareId == greenId){
+                engine.setEnPassantLocation(null);
+                int abs_val = (piece.getRow()-row);
+                abs_val *= abs_val;
                 piece.move(board, row, col);
+                if ((piece instanceof Pawn) && abs_val == 4){
+                    int[] cords = {row, col};
+                    engine.setEnPassantLocation(cords);
+                }
                 this.wasClickedOnAPiece = false;
                 chessBoard.removeAllViews();
                 showBoard();
@@ -161,11 +167,6 @@ public class Chess extends AppCompatActivity {
             }
             this.wasClickedOnAPiece = true;
             Queue<Integer> moves = piece.getPossibleMoves(board);
-            if (moves.getSize() == 0) {
-                Toast.makeText(this, "no moves", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, moves.toString(), Toast.LENGTH_SHORT).show();
-            }
             chessBoard.removeAllViews();
             showBoard();
             int size = moves.getSize();

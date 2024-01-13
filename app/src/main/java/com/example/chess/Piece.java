@@ -5,17 +5,12 @@ abstract public class Piece {
     protected int row;
     protected int col;
     protected String name;
-    protected boolean didMove;
-    protected boolean wasFirstMove;
-
     public Piece(char color, char letter, int row, int col, String name) {
         this.color = color;
         this.letter = letter;
         this.row = row;
         this.col = col;
         this.name = name;
-        this.didMove = false;
-        this.wasFirstMove = false;
     }
 
     public String getName(){
@@ -38,18 +33,6 @@ abstract public class Piece {
         this.col = col;
     }
 
-    public boolean getDidMove()
-    {
-        return didMove;
-    }
-
-    public boolean getWasFirstMove() {
-        return wasFirstMove;
-    }
-
-    public void setWasFirstMove(boolean wasFirstMove) {
-        this.wasFirstMove = wasFirstMove;
-    }
 
     public int getRow() {
         return row;

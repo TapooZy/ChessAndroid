@@ -4,9 +4,11 @@ import java.util.Scanner;
 import java.util.Scanner;
 
 public class Pawn extends Piece{
+    boolean didMove;
 
     public Pawn(char color, int row, int col){
-        super(color, 'p', row, col, "Pawn");
+       super(color, 'p', row, col, "Pawn");
+       didMove = false;
     }
 
     public Queue<Integer> getPossibleMoves(Board board) {
@@ -134,27 +136,19 @@ public class Pawn extends Piece{
                 board.getBoard()[row][col] = this;
                 formerRow = this.row;
                 formerCol = this.col;
-                if ((formerCol == col - 1 || formerCol == col + 1) && color == 'w'){
+                if ((formerCol == col - 1 || formerCol == col + 1) && color == 'w' && board.getBoard()[row+1][col] == null){
                     board.getBoard()[row+1][col] = null;
                 }
-                else if ((formerCol == col - 1 || formerCol == col + 1) && color == 'b'){
+                else if ((formerCol == col - 1 || formerCol == col + 1) && color == 'b' && board.getBoard()[row-1][col] == null){
                     board.getBoard()[row-1][col] = null;
                 }
                 board.getBoard()[this.row][this.col] = null;
                 this.setRow(row);
                 this.setCol(col);
-                for (int k = 0; k < 7; k++) {
-                    for (int j = 0; j < 7; j++) {
-                        if (board.getBoard()[k][j] != null){
-                            if (board.getBoard()[k][j].getWasFirstMove()){
-                                board.getBoard()[k][j].setWasFirstMove(false);
-                            }
-                        }
-                    }
-                }
                 if (this.row == formerRow + 2 || this.row == formerRow - 2){
                     this.setWasFirstMove(true);
                 }
+                didMove = true;
                 break;
             }
         }
