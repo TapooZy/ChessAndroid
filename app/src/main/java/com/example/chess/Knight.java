@@ -22,8 +22,7 @@ public class Knight extends Piece{
                     moves.insert(row1, col1);
                 } else if (piece.getColor() != color) {
                     moves.insert(row1, col1);
-                    break;
-                } else break;
+                }
             }
         }
         return moves;
