@@ -9,8 +9,9 @@ public class Knight extends Piece{
     }
 
     @Override
-    public Queue<Integer> getPossibleMoves(Board board) {
+    public Queue<Integer> getPossibleMoves(Board board, boolean checkCheck) {
         int row1, col1;
+        Board newBoard;
         Queue<Integer> moves = new Queue<>();
         int[][] directions = {{2, 1},{2,-1},{-2,1},{-2,-1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
         for (int i = 0; i < 8; i++) {
@@ -18,10 +19,30 @@ public class Knight extends Piece{
             col1 = col + directions[i][1];
             if (row1 >= 0 && row1 <= 7 && col1 >= 0 && col1 <= 7) {
                 Piece piece = board.getBoard()[row1][col1];
-                if (piece == null) {
-                    moves.insert(row1, col1);
-                } else if (piece.getColor() != color) {
-                    moves.insert(row1, col1);
+                if (piece == null){
+                    if (checkCheck) {
+                        newBoard = board.clone();
+                        testMove(newBoard, row1, col1);
+                        if (newBoard.canMove(this)){
+                            moves.insert(row1, col1);
+                        }
+                    }
+                    else {
+                        moves.insert(row1, col1);
+                    }
+                }
+                else if (piece.getColor() != color){
+                    if (checkCheck) {
+                        newBoard = board.clone();
+                        testMove(newBoard, row1, col1);
+                        if (newBoard.canMove(this)){
+                            moves.insert(row1, col1);
+                        }
+                    }
+                    else {
+                        moves.insert(row1, col1);
+                    }
+                    break;
                 }
             }
         }
@@ -31,7 +52,7 @@ public class Knight extends Piece{
     public void move(Board board, int row, int col){
         int size;
         int[] availableMove;
-        Queue<Integer> moves = board.getBoard()[this.row][this.col].getPossibleMoves(board);
+        Queue<Integer> moves = board.getBoard()[this.row][this.col].getPossibleMoves(board, true);
         size = moves.getSize();
         for (int i = 0; i < size; i++) {
             availableMove = moves.remove();
@@ -42,5 +63,13 @@ public class Knight extends Piece{
                 this.setCol(col);
             }
         }
+    }
+
+    @Override
+    public void testMove(Board board, int row, int col){
+        board.getBoard()[row][col] = new Knight(color, row, col);
+        board.getBoard()[this.row][this.col] = null;
+        board.getBoard()[row][col].setRow(row);
+        board.getBoard()[row][col].setCol(col);
     }
 }

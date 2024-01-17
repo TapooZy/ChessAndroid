@@ -14,7 +14,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginActivity extends AppCompatActivity {
-    Button login, chease;
+    Button login;
     EditText email, password;
     FirebaseAuth auto;
 
@@ -23,19 +23,12 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         email = findViewById(R.id.etEmail);
-        chease = findViewById(R.id.btnChease);
         password = findViewById(R.id.etPassword);
         auto = FirebaseAuth.getInstance();
         login = findViewById(R.id.btnLogin);
         login.setOnClickListener(this::onClick);
 
-        chease.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, GameActivity.class);
-                startActivity(intent);
-            }
-        });
+
     }
 
     public void onClick(View v) {

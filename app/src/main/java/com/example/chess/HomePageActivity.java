@@ -4,11 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 public class HomePageActivity extends AppCompatActivity{
+    Button cheese;
     ImageView login, register, music;
     int timesClicked = 0;
     @Override
@@ -17,6 +18,7 @@ public class HomePageActivity extends AppCompatActivity{
         setContentView(R.layout.activity_home_page);
         login = findViewById(R.id.ivLogin);
         register = findViewById(R.id.ivRegister);
+        cheese = findViewById(R.id.btnCheese);
         music = findViewById(R.id.ivMusic);
         music.setOnClickListener(this::onClick);
         login.setOnClickListener(new View.OnClickListener() {
@@ -31,6 +33,14 @@ public class HomePageActivity extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(HomePageActivity.this, RegisterActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        cheese.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomePageActivity.this, Chess.class);
                 startActivity(intent);
             }
         });

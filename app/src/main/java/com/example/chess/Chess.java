@@ -2,6 +2,7 @@ package com.example.chess;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.BadParcelableException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -155,8 +156,15 @@ public class Chess extends AppCompatActivity {
                 return;
             }
             piece = board.getBoard()[row][col];
-            if (piece != null){
-                onSquareClicked(row, col, false);
+            if (piece != null) {
+                if (piece.getColor() == nextMoveColor) {
+                    onSquareClicked(row, col, false);
+                }
+                else {
+                    chessBoard.removeAllViews();
+                    showBoard();
+                    this.wasClickedOnAPiece = false;
+                }
             }
             else{
                 chessBoard.removeAllViews();
@@ -173,23 +181,30 @@ public class Chess extends AppCompatActivity {
                 showBoard();
                 return;
             }
+//            if (piece.getColor() != nextMoveColor){
+//                Toast.makeText(this, "Wrong piece color, pick again", Toast.LENGTH_SHORT).show();
+//                chessBoard.removeAllViews();
+//                showBoard();
+//                return;
+//            }
+            this.wasClickedOnAPiece = true;
             if (piece.getColor() != nextMoveColor){
                 Toast.makeText(this, "Wrong piece color, pick again", Toast.LENGTH_SHORT).show();
-                chessBoard.removeAllViews();
-                showBoard();
                 return;
             }
-            this.wasClickedOnAPiece = true;
             if (piece instanceof Pawn){
-                moves = (((Pawn) piece).getPawnPossibleMoves(board, engine.getEnPassantLocation()));
+                moves = (((Pawn) piece).getPawnPossibleMoves(board, engine.getEnPassantLocation(), true));
             }
             else {
-                moves = piece.getPossibleMoves(board);
+                moves = piece.getPossibleMoves(board, true);
             }
             chessBoard.removeAllViews();
             showBoard();
             int size = moves.getSize();
             int[] individual_move;
+            if (size == 0){
+                Toast.makeText(this, "this piece has no moves", Toast.LENGTH_SHORT).show();
+            }
             for (int i = 0; i < size; i++) {
                 individual_move = moves.remove();
                 View square_to_color = chessBoard.getChildAt(individual_move[0] * 8 + individual_move[1]);

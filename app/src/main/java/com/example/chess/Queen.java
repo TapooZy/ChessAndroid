@@ -10,13 +10,13 @@ public class Queen extends Piece{
         super(color, 'q', row, col, "Queen");
     }
 
-    public Queue<Integer> getPossibleMoves(Board board) {
+    public Queue<Integer> getPossibleMoves(Board board, boolean checkChecked) {
         Queue<Integer> moves = new Queue<>();
         Board newBoard = board.clone();
         newBoard.getBoard()[row][col] = new Rook(color, row, col);
-        Queue<Integer> RookMoves = newBoard.getBoard()[row][col].getPossibleMoves(newBoard);
+        Queue<Integer> RookMoves = newBoard.getBoard()[row][col].getPossibleMoves(newBoard, true);
         newBoard.getBoard()[row][col] = new Bishop(color, row, col);
-        Queue<Integer> BishopMoves = newBoard.getBoard()[row][col].getPossibleMoves(newBoard);
+        Queue<Integer> BishopMoves = newBoard.getBoard()[row][col].getPossibleMoves(newBoard, true);
         int RookMovesSize = RookMoves.getSize();
         int[] individualMove;
         for (int i = 0; i < RookMovesSize; i++) {
@@ -34,7 +34,7 @@ public class Queen extends Piece{
     public void move(Board board, int row, int col){
         int size;
         int[] availableMove;
-        Queue<Integer> moves = board.getBoard()[this.row][this.col].getPossibleMoves(board);
+        Queue<Integer> moves = board.getBoard()[this.row][this.col].getPossibleMoves(board, true);
         size = moves.getSize();
         for (int i = 0; i < size; i++) {
             availableMove = moves.remove();
@@ -45,5 +45,13 @@ public class Queen extends Piece{
                 this.setCol(col);
             }
         }
+    }
+
+    @Override
+    public void testMove(Board board, int row, int col){
+        board.getBoard()[row][col] = new Queen(color, row, col);
+        board.getBoard()[this.row][this.col] = null;
+        board.getBoard()[row][col].setRow(row);
+        board.getBoard()[row][col].setCol(col);
     }
 }

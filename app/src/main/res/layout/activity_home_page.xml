@@ -21,6 +21,12 @@
         android:layout_height="154dp"
         app:srcCompat="@drawable/music_resume" />
 
+    <Button
+        android:id="@+id/btnCheese"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cheese" />
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -44,6 +50,8 @@
 
 
     </LinearLayout>
+
+
 
 
 </LinearLayout>

@@ -42,7 +42,9 @@ abstract public class Piece {
         return col;
     }
 
-    public abstract Queue<Integer> getPossibleMoves(Board board);
+    public abstract Queue<Integer> getPossibleMoves(Board board, boolean checkCheck);
 
     public abstract void move(Board board, int row, int col);
+
+    public abstract void testMove(Board board, int row, int col);
 }
