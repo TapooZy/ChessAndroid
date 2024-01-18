@@ -1,11 +1,15 @@
 package com.example.chess;
 
-import java.util.Scanner;
-
 public class King extends Piece {
+    public boolean didMove;
 
     public King(char color, int row, int col) {
         super(color, 'K', row, col, "King");
+        didMove = false;
+    }
+
+    public void setDidMove() {
+        this.didMove = true;
     }
 
     public Queue<Integer> getPossibleMoves(Board board, boolean checkCheck) {
@@ -56,68 +60,70 @@ public class King extends Piece {
 
     }
 
-//    public boolean canCastleRight (Board board)
-//    {
-//        Queue<Integer> allMoves = board.getDifferentColorMoves(board.getBoard()[row][col]);
-//        int[] individualMove;
-//        if (board.getBoard()[row][7] != null)
-//        {
-//            if (board.getBoard()[row][7].getLetter() == 'r')
-//            {
-//                if (!board.getBoard()[row][7].getDidMove())
-//                {
-//                    for (int i = 0; i < allMoves.getSize(); i++)
-//                    {
-//                        individualMove = allMoves.remove();
-//                        for (int col = 5; col < 7; col++)
-//                        {
-//                            if (board.getBoard()[row][col] != null)
-//                            {
-//                                return false;
-//                            }
-//                            if (individualMove[0] == row && individualMove[1] == col)
-//                            {
-//                                return false;
-//                            }
-//                        }
-//                    }
-//                    return true;
-//                }
-//            }
-//        }
-//        return false;
-//    }
+    public boolean canCastleRight (Board board)
+    {
+        Queue<Integer> allMoves = board.getColorMoves(this.getColor(), true);
+        int[] individualMove;
+        if (board.getBoard()[row][7] != null)
+        {
+            if (board.getBoard()[row][7].getLetter() == 'r')
+            {
+                Rook rook = (Rook) board.getBoard()[row][7];
+                if (!rook.getDidMove())
+                {
+                    for (int i = 0; i < allMoves.getSize(); i++)
+                    {
+                        individualMove = allMoves.remove();
+                        for (int col = 5; col < 7; col++)
+                        {
+                            if (board.getBoard()[row][col] != null)
+                            {
+                                return false;
+                            }
+                            if (individualMove[0] == row && individualMove[1] == col)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
-//    public boolean canCastleLeft (Board board){
-//        Queue<Integer> allMoves = board.getDifferentColorMoves(board.getBoard()[row][col]);
-//        int[] individualMove;
-//        if (board.getBoard()[row][0] != null)
-//        {
-//            if (board.getBoard()[row][0].getLetter() == 'r')
-//            {
-//                if (!board.getBoard()[row][0].getDidMove())
-//                {
-//                    for (int i = 0; i < allMoves.getSize(); i++)
-//                    {
-//                        individualMove = allMoves.remove();
-//                        for (int col = 3; col > 0; col--)
-//                        {
-//                            if (board.getBoard()[row][col] != null)
-//                            {
-//                                return false;
-//                            }
-//                            if (individualMove[0] == row && individualMove[1] == col)
-//                            {
-//                                return false;
-//                            }
-//                        }
-//                    }
-//                    return true;
-//                }
-//            }
-//        }
-//        return false;
-//    }
+    public boolean canCastleLeft (Board board){
+        Queue<Integer> allMoves = board.getColorMoves(this.getColor(), true);
+        int[] individualMove;
+        if (board.getBoard()[row][0] != null)
+        {
+            if (board.getBoard()[row][0].getLetter() == 'r')
+            {
+                Rook rook = (Rook) board.getBoard()[row][0];
+                if (!rook.getDidMove())
+                {
+                    for (int i = 0; i < allMoves.getSize(); i++)
+                    {
+                        individualMove = allMoves.remove();
+                        for (int col = 3; col > 0; col--)
+                        {
+                            if (board.getBoard()[row][col] != null)
+                            {
+                                return false;
+                            }
+                            if (individualMove[0] == row && individualMove[1] == col)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     @Override
     public void move(Board board, int row, int col){
         int size;
@@ -128,6 +134,7 @@ public class King extends Piece {
             availableMove = moves.remove();
             if (row == availableMove[0] && col == availableMove[1]){
                 board.getBoard()[row][col] = new King(color, row, col);
+                setDidMove();
                 board.getBoard()[this.row][this.col] = null;
             }
         }
@@ -136,6 +143,7 @@ public class King extends Piece {
     @Override
     public void testMove(Board board, int row, int col){
         board.getBoard()[row][col] = new King(color, row, col);
+        setDidMove();
         board.getBoard()[this.row][this.col] = null;
     }
 }

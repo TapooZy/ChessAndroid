@@ -1,13 +1,19 @@
 package com.example.chess;
 
-import android.util.Log;
-
-import java.util.Scanner;
-
 public class Rook extends Piece{
+    public boolean didMove;
 
     public Rook (char color, int row, int col){
         super(color, 'r', row, col, "Rook");
+        didMove = false;
+    }
+
+    public void setDidMove() {
+        this.didMove = true;
+    }
+
+    public boolean getDidMove() {
+        return didMove;
     }
 
     public Queue<Integer> getPossibleMoves(Board board, boolean checkCheck) {
@@ -71,6 +77,7 @@ public class Rook extends Piece{
     @Override
     public void testMove(Board board, int row, int col){
         board.getBoard()[row][col] = new Rook(color, row, col);
+        setDidMove();
         board.getBoard()[this.row][this.col] = null;
     }
 }

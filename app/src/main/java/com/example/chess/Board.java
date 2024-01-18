@@ -1,7 +1,4 @@
 package com.example.chess;
-
-import android.icu.text.TimeZoneFormat;
-
 public class Board {
     private final Piece[][] board;
 
@@ -46,17 +43,19 @@ public class Board {
         }
     }
 
-    public Queue<Integer> getDifferentColorMoves(Piece piece){
+    public Queue<Integer> getColorMoves(char color, boolean different){
         int[] individualMove;
         Queue<Integer> allMoves = new Queue<>();
         Queue<Integer> pieceMoves;
         char wantedColor;
-        if (piece.getColor() == 'b'){
-            wantedColor = 'w';
+        if (different) {
+            if (color == 'b') {
+                wantedColor = 'w';
+            } else {
+                wantedColor = 'b';
+            }
         }
-        else {
-            wantedColor = 'b';
-        }
+        else wantedColor = color;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (board[i][j] != null) {
@@ -86,7 +85,7 @@ public class Board {
         if (king == null){
             return false;
         }
-        Queue<Integer> allMoves = getDifferentColorMoves(piece);
+        Queue<Integer> allMoves = getColorMoves(piece.getColor(), true);
         int size = allMoves.getSize();
         int[] individualMove;
         for (int i = 0; i < size; i++) {
@@ -110,13 +109,17 @@ public class Board {
         }
         return null;
     }
-    public boolean isInCheck (Piece piece) {
-        Queue<Integer> allMoves = getDifferentColorMoves(piece);
+    public boolean isInCheck (char color) {
+        Queue<Integer> allMoves = getColorMoves(color, true);
+        Piece king = findKing(color);
+        if (king == null){
+            return false;
+        }
         int[] individualMove;
         int size = allMoves.getSize();
         for (int i = 0; i < size; i++) {
             individualMove = allMoves.remove();
-            if (individualMove[0] == piece.getRow() && individualMove[1] == piece.getCol()) {
+            if (individualMove[0] == king.getRow() && individualMove[1] == king.getCol()) {
                 return true;
             }
         }

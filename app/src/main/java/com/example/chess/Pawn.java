@@ -13,10 +13,8 @@ public class Pawn extends Piece{
        super(color, 'p', row, col, "Pawn");
        didMove = false;
     }
-
-    public Pawn(char color, int row, int col, boolean didMove){
-        super(color, 'p', row, col, "Pawn");
-        this.didMove = didMove;
+    public void setDidMove() {
+        this.didMove = true;
     }
 
     public Queue<Integer> getPossibleMoves(Board board, boolean checkCheck) {
@@ -248,7 +246,8 @@ public class Pawn extends Piece{
         for (int i = 0; i < size; i++) {
             availableMove = moves.remove();
             if (row == availableMove[0] && col == availableMove[1]){
-                board.getBoard()[row][col] = new Pawn(color, row, col, true);
+                board.getBoard()[row][col] = new Pawn(color, row, col);
+                setDidMove();
                 if (enPassantLocation != null){
                     if (color == 'b'){
                         if (enPassantLocation[0] == row-1 && enPassantLocation[1] == col){
@@ -270,6 +269,7 @@ public class Pawn extends Piece{
     @Override
     public void testMove(Board board, int row, int col){
         board.getBoard()[row][col] = new Pawn(color, row, col);
+        setDidMove();
         board.getBoard()[this.row][this.col] = null;
         board.getBoard()[row][col].setRow(row);
         board.getBoard()[row][col].setCol(col);

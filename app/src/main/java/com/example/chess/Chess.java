@@ -158,6 +158,18 @@ public class Chess extends AppCompatActivity {
                 setNextMoveColor();
                 chessBoard.removeAllViews();
                 showBoard();
+                Queue<Integer> allMoves = board.getColorMoves(nextMoveColor, false);
+                if (allMoves.getSize() == 0 && board.isInCheck(nextMoveColor)) {
+                    if (nextMoveColor == 'b') {
+                        Toast.makeText(this, "White won", Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        Toast.makeText(this, "Black won", Toast.LENGTH_LONG).show();
+                    }
+                }
+                else if (allMoves.getSize() == 0 && !board.isInCheck(nextMoveColor)){
+                    Toast.makeText(this, "Stalemate, no one won", Toast.LENGTH_LONG).show();
+                }
                 return;
             }
             piece = board.getBoard()[row][col];
