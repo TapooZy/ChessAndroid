@@ -8,14 +8,6 @@ public class Rook extends Piece{
         didMove = false;
     }
 
-    public void setDidMove() {
-        this.didMove = true;
-    }
-
-    public boolean getDidMove() {
-        return didMove;
-    }
-
     public Queue<Integer> getPossibleMoves(Board board, boolean checkCheck) {
         int row1, col1;
         Board newBoard;
@@ -38,7 +30,7 @@ public class Rook extends Piece{
                         moves.insert(row1, col1);
                     }
                 }
-                else if (piece.getColor() != color){
+                else if (piece.color != color){
                     if (checkCheck) {
                         newBoard = board.clone();
                         testMove(newBoard, row1, col1);
@@ -69,7 +61,7 @@ public class Rook extends Piece{
             availableMove = moves.remove();
             if (row == availableMove[0] && col == availableMove[1]){
                 Rook rook = new Rook(color, row, col);
-                rook.setDidMove();
+                rook.didMove = true;
                 board.getBoard()[row][col] = rook;
                 board.getBoard()[this.row][this.col] = null;
             }
@@ -79,7 +71,7 @@ public class Rook extends Piece{
     @Override
     public void testMove(Board board, int row, int col){
         Rook rook = new Rook(color, row, col);
-        rook.setDidMove();
+        rook.didMove = true;
         board.getBoard()[row][col] = rook;
         board.getBoard()[this.row][this.col] = null;
     }

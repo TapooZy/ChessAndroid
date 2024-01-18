@@ -31,7 +31,7 @@ public class Bishop extends Piece {
                         moves.insert(row1, col1);
                     }
                 }
-                else if (piece.getColor() != color){
+                else if (piece.color != color){
                     if (checkCheck) {
                         newBoard = board.clone();
                         testMove(newBoard, row1, col1);

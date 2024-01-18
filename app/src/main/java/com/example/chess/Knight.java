@@ -1,9 +1,5 @@
 package com.example.chess;
 
-import org.checkerframework.checker.units.qual.K;
-
-import java.util.Scanner;
-
 public class Knight extends Piece{
 
     public Knight(char color,  int row, int col){
@@ -33,7 +29,7 @@ public class Knight extends Piece{
                         moves.insert(row1, col1);
                     }
                 }
-                else if (piece.getColor() != color){
+                else if (piece.color != color){
                     if (checkCheck) {
                         newBoard = board.clone();
                         testMove(newBoard, row1, col1);

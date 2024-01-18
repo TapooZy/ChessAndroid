@@ -9,11 +9,6 @@ public class King extends Piece {
         super(color, 'K', row, col, "King");
         didMove = false;
     }
-
-    public void setDidMove() {
-        this.didMove = true;
-    }
-
     public Queue<Integer> getPossibleMoves(Board board, boolean checkCheck) {
         int row1, col1;
         Queue<Integer> moves = new Queue<>();
@@ -36,7 +31,7 @@ public class King extends Piece {
                         moves.insert(row1, col1);
                     }
                 }
-                else if (piece.getColor() != color){
+                else if (piece.color != color){
                     if (checkCheck) {
                         newBoard = board.clone();
                         testMove(newBoard, row1, col1);
@@ -65,15 +60,13 @@ public class King extends Piece {
 
     public boolean canCastleRight (Board board)
     {
-        Queue<Integer> allMoves = board.getColorMoves(this.getColor(), true);
-        Log.d("go to", "its here");
+        Queue<Integer> allMoves = board.getColorMoves(this.color, true);
         int[] individualMove;
         if (board.getBoard()[row][7] != null)
         {
-            if (board.getBoard()[row][7].getLetter() == 'r')
+            if (board.getBoard()[row][7] instanceof Rook)
             {
-                Rook rook = (Rook) board.getBoard()[row][7];
-                if (!rook.getDidMove())
+                if (!board.getBoard()[row][7].didMove && !this.didMove)
                 {
                     for (int i = 0; i < allMoves.getSize(); i++)
                     {
@@ -98,14 +91,13 @@ public class King extends Piece {
     }
 
     public boolean canCastleLeft (Board board){
-        Queue<Integer> allMoves = board.getColorMoves(this.getColor(), true);
+        Queue<Integer> allMoves = board.getColorMoves(this.color, true);
         int[] individualMove;
         if (board.getBoard()[row][0] != null)
         {
-            if (board.getBoard()[row][0].getLetter() == 'r')
+            if (board.getBoard()[row][0] instanceof Rook)
             {
-                Rook rook = (Rook) board.getBoard()[row][0];
-                if (!rook.getDidMove())
+                if (!board.getBoard()[row][0].didMove && !this.didMove)
                 {
                     for (int i = 0; i < allMoves.getSize(); i++)
                     {
@@ -133,10 +125,32 @@ public class King extends Piece {
         for (int i = 0; i < size; i++) {
             availableMove = moves.remove();
             if (row == availableMove[0] && col == availableMove[1]){
-                King king = new King(color, row, col);
-                king.setDidMove();
-                board.getBoard()[row][col] = king;
-                board.getBoard()[this.row][this.col] = null;
+                if (col == this.col + 2){
+                    King king = new King(color, row, col);
+                    king.didMove = true;
+                    board.getBoard()[row][col] = king;
+                    board.getBoard()[this.row][this.col] = null;
+                    Rook rook = new Rook(color, row, col-1);
+                    rook.didMove = true;
+                    board.getBoard()[this.row][7] = null;
+                    board.getBoard()[row][col-1] = rook;
+                }
+                else if (col == this.col - 2){
+                    King king = new King(color, row, col);
+                    king.didMove = true;
+                    board.getBoard()[row][col] = king;
+                    board.getBoard()[this.row][this.col] = null;
+                    Rook rook = new Rook(color, row, col+1);
+                    rook.didMove = true;
+                    board.getBoard()[this.row][0] = null;
+                    board.getBoard()[row][col+1] = rook;
+                }
+                else {
+                    King king = new King(color, row, col);
+                    king.didMove = true;
+                    board.getBoard()[row][col] = king;
+                    board.getBoard()[this.row][this.col] = null;
+                }
             }
         }
     }
@@ -144,7 +158,7 @@ public class King extends Piece {
     @Override
     public void testMove(Board board, int row, int col){
         King king = new King(color, row, col);
-        king.setDidMove();
+        king.didMove = true;
         board.getBoard()[row][col] = king;
         board.getBoard()[this.row][this.col] = null;
     }

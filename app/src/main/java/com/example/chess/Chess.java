@@ -1,8 +1,6 @@
 package com.example.chess;
 
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.BadParcelableException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,8 +9,6 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.widget.Toast;
-
-import java.sql.SQLData;
 
 public class Chess extends AppCompatActivity {
     GridLayout chessBoard;
@@ -70,42 +66,42 @@ public class Chess extends AppCompatActivity {
 
                 // Set the appropriate image resource based on the type and color of the piece
                 if (p instanceof Bishop) {
-                    if (p.getColor() == 'b') {
+                    if (p.color == 'b') {
                         imageView.setImageResource(R.drawable.black_bishop);
                     } else {
                         imageView.setImageResource(R.drawable.white_bishop);
                     }
                 }
                 if (p instanceof Pawn) {
-                    if (p.getColor() == 'b') {
+                    if (p.color == 'b') {
                         imageView.setImageResource(R.drawable.black_pawn);
                     } else {
                         imageView.setImageResource(R.drawable.white_pawn);
                     }
                 }
                 if (p instanceof Rook) {
-                    if (p.getColor() == 'b') {
+                    if (p.color == 'b') {
                         imageView.setImageResource(R.drawable.black_rook);
                     } else {
                         imageView.setImageResource(R.drawable.white_rook);
                     }
                 }
                 if (p instanceof King) {
-                    if (p.getColor() == 'b') {
+                    if (p.color == 'b') {
                         imageView.setImageResource(R.drawable.black_king);
                     } else {
                         imageView.setImageResource(R.drawable.white_king);
                     }
                 }
                 if (p instanceof Knight) {
-                    if (p.getColor() == 'b') {
+                    if (p.color == 'b') {
                         imageView.setImageResource(R.drawable.black_knight);
                     } else {
                         imageView.setImageResource(R.drawable.white_knight);
                     }
                 }
                 if (p instanceof Queen) {
-                    if (p.getColor() == 'b') {
+                    if (p.color == 'b') {
                         imageView.setImageResource(R.drawable.black_queen);
                     } else {
                         imageView.setImageResource(R.drawable.white_queen);
@@ -158,7 +154,8 @@ public class Chess extends AppCompatActivity {
                 setNextMoveColor();
                 chessBoard.removeAllViews();
                 showBoard();
-                Queue<Integer> allMoves = board.getColorMoves(nextMoveColor, false);
+                Queue<Integer> allMoves = board.getEndMoves(nextMoveColor);
+                Log.d("all moves", "" + allMoves.getSize());
                 if (allMoves.getSize() == 0 && board.isInCheck(nextMoveColor)) {
                     if (nextMoveColor == 'b') {
                         Toast.makeText(this, "White won", Toast.LENGTH_LONG).show();
@@ -174,7 +171,7 @@ public class Chess extends AppCompatActivity {
             }
             piece = board.getBoard()[row][col];
             if (piece != null) {
-                if (piece.getColor() == nextMoveColor) {
+                if (piece.color == nextMoveColor) {
                     onSquareClicked(row, col, false);
                 } else {
                     chessBoard.removeAllViews();
@@ -196,7 +193,7 @@ public class Chess extends AppCompatActivity {
                 return;
             }
             this.wasClickedOnAPiece = true;
-            if (piece.getColor() != nextMoveColor) {
+            if (piece.color != nextMoveColor) {
                 Toast.makeText(this, "Wrong piece color, pick again", Toast.LENGTH_SHORT).show();
                 return;
             }

@@ -1,10 +1,6 @@
 package com.example.chess;
 
 import android.util.Log;
-import android.widget.Toast;
-
-import java.util.Scanner;
-import java.util.Scanner;
 
 public class Pawn extends Piece{
     boolean didMove;
@@ -12,9 +8,6 @@ public class Pawn extends Piece{
     public Pawn(char color, int row, int col){
        super(color, 'p', row, col, "Pawn");
        didMove = false;
-    }
-    public void setDidMove() {
-        this.didMove = true;
     }
 
     public Queue<Integer> getPossibleMoves(Board board, boolean checkCheck) {
@@ -58,7 +51,7 @@ public class Pawn extends Piece{
             col1 = col + 1;
             if (row1 < 8 && col1 < 8) {
                 if (board.getBoard()[row1][col1] != null) { // eat right
-                    if (board.getBoard()[row1][col1].getColor() != this.color) {
+                    if (board.getBoard()[row1][col1].color != this.color) {
                         if (checkCheck) {
                             newBoard = board.clone();
                             testMove(newBoard, row1, col1);
@@ -75,7 +68,7 @@ public class Pawn extends Piece{
             col1 = col - 1;
             if (row1 < 8 && col1 > -1) {
                 if (board.getBoard()[row1][col1] != null) { // eat left
-                    if (board.getBoard()[row1][col1].getColor() != this.color) {
+                    if (board.getBoard()[row1][col1].color != this.color) {
                         if (checkCheck) {
                             newBoard = board.clone();
                             testMove(newBoard, row1, col1);
@@ -108,7 +101,6 @@ public class Pawn extends Piece{
                 } else {
                     moves.insert(row1, col);
                 }
-                Log.d("did move", didMove + "");
                 if (!didMove) {
                     row1 = row - 2;
                     if (board.getBoard()[row1][col] == null) { // 2 steps
@@ -128,7 +120,7 @@ public class Pawn extends Piece{
             col1 = col + 1;
             if (row1 > -1 && col1 < 8) {
                 if (board.getBoard()[row1][col1] != null) { // eat right
-                    if (board.getBoard()[row1][col1].getColor() != this.color) {
+                    if (board.getBoard()[row1][col1].color != this.color) {
                         if (checkCheck) {
                             newBoard = board.clone();
                             testMove(newBoard, row1, col1);
@@ -145,7 +137,7 @@ public class Pawn extends Piece{
             col1 = col - 1;
             if (row1 > -1 && col1 > -1) {
                 if (board.getBoard()[row1][col1] != null) { // eat left
-                    if (board.getBoard()[row1][col1].getColor() != this.color) {
+                    if (board.getBoard()[row1][col1].color != this.color) {
                         if (checkCheck) {
                             newBoard = board.clone();
                             testMove(newBoard, row1, col1);
@@ -248,7 +240,7 @@ public class Pawn extends Piece{
             availableMove = moves.remove();
             if (row == availableMove[0] && col == availableMove[1]){
                 Pawn pawn = new Pawn(color, row, col);
-                pawn.setDidMove();
+                pawn.didMove = true;
                 board.getBoard()[row][col] = pawn;
                 if (enPassantLocation != null){
                     if (color == 'b'){
@@ -271,7 +263,7 @@ public class Pawn extends Piece{
     @Override
     public void testMove(Board board, int row, int col){
         Pawn pawn = new Pawn(color, row, col);
-        pawn.setDidMove();
+        pawn.didMove = true;
         board.getBoard()[row][col] = pawn;
         board.getBoard()[this.row][this.col] = null;
     }

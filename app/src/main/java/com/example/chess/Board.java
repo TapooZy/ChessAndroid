@@ -59,7 +59,7 @@ public class Board {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (board[i][j] != null) {
-                    if (board[i][j].getColor() == wantedColor) {
+                    if (board[i][j].color == wantedColor) {
                         if (board[i][j] instanceof Pawn){
                             pieceMoves = ((Pawn) board[i][j]).getPawnPossibleMoves(this, null, false);
                         }
@@ -80,12 +80,40 @@ public class Board {
         return allMoves;
     }
 
+    public Queue<Integer> getEndMoves(char color){
+        int[] individualMove;
+        Queue<Integer> allMoves = new Queue<>();
+        Queue<Integer> pieceMoves;
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (board[i][j] != null) {
+                    if (board[i][j].color == color) {
+                        if (board[i][j] instanceof Pawn){
+                            pieceMoves = ((Pawn) board[i][j]).getPawnPossibleMoves(this, null, true);
+                        }
+                        else {
+                            pieceMoves = board[i][j].getPossibleMoves(this, true);
+                        }
+                        if (pieceMoves != null) {
+                            int size = pieceMoves.getSize();
+                            for (int k = 0; k < size; k++) {
+                                individualMove = pieceMoves.remove();
+                                allMoves.insert(individualMove[0], individualMove[1]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return allMoves;
+    }
+
     public boolean canMove(Piece piece){
-        Piece king = findKing(piece.getColor());
+        Piece king = findKing(piece.color);
         if (king == null){
             return false;
         }
-        Queue<Integer> allMoves = getColorMoves(piece.getColor(), true);
+        Queue<Integer> allMoves = getColorMoves(piece.color, true);
         int size = allMoves.getSize();
         int[] individualMove;
         for (int i = 0; i < size; i++) {
@@ -101,7 +129,7 @@ public class Board {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (board[i][j] != null){
-                    if (board[i][j].getLetter() == 'K' && board[i][j].getColor() == color) {
+                    if (board[i][j] instanceof King && board[i][j].color == color) {
                         return board[i][j];
                     }
                 }
@@ -119,7 +147,7 @@ public class Board {
         int size = allMoves.getSize();
         for (int i = 0; i < size; i++) {
             individualMove = allMoves.remove();
-            if (individualMove[0] == king.getRow() && individualMove[1] == king.getCol()) {
+            if (individualMove[0] == king.row && individualMove[1] == king.col) {
                 return true;
             }
         }
