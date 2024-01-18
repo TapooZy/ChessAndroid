@@ -108,6 +108,7 @@ public class Pawn extends Piece{
                 } else {
                     moves.insert(row1, col);
                 }
+                Log.d("did move", didMove + "");
                 if (!didMove) {
                     row1 = row - 2;
                     if (board.getBoard()[row1][col] == null) { // 2 steps
@@ -246,8 +247,9 @@ public class Pawn extends Piece{
         for (int i = 0; i < size; i++) {
             availableMove = moves.remove();
             if (row == availableMove[0] && col == availableMove[1]){
-                board.getBoard()[row][col] = new Pawn(color, row, col);
-                setDidMove();
+                Pawn pawn = new Pawn(color, row, col);
+                pawn.setDidMove();
+                board.getBoard()[row][col] = pawn;
                 if (enPassantLocation != null){
                     if (color == 'b'){
                         if (enPassantLocation[0] == row-1 && enPassantLocation[1] == col){
@@ -268,10 +270,9 @@ public class Pawn extends Piece{
 
     @Override
     public void testMove(Board board, int row, int col){
-        board.getBoard()[row][col] = new Pawn(color, row, col);
-        setDidMove();
+        Pawn pawn = new Pawn(color, row, col);
+        pawn.setDidMove();
+        board.getBoard()[row][col] = pawn;
         board.getBoard()[this.row][this.col] = null;
-        board.getBoard()[row][col].setRow(row);
-        board.getBoard()[row][col].setCol(col);
     }
 }

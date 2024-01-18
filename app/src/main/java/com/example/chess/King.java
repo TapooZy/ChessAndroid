@@ -1,5 +1,7 @@
 package com.example.chess;
 
+import android.util.Log;
+
 public class King extends Piece {
     public boolean didMove;
 
@@ -49,13 +51,14 @@ public class King extends Piece {
                 }
             }
         }
-
-//        if (canCastleLeft(board)){
-//            moves.insert(row, col-2);
-//        }
-//        if (canCastleRight(board)){
-//            moves.insert(row, col+2);
-//        }
+        if (checkCheck) {
+            if (canCastleLeft(board)){
+            moves.insert(row, col-2);
+            }
+            if (canCastleRight(board)) {
+                moves.insert(row, col + 2);
+            }
+        }
         return moves;
 
     }
@@ -63,6 +66,7 @@ public class King extends Piece {
     public boolean canCastleRight (Board board)
     {
         Queue<Integer> allMoves = board.getColorMoves(this.getColor(), true);
+        Log.d("go to", "its here");
         int[] individualMove;
         if (board.getBoard()[row][7] != null)
         {
@@ -108,11 +112,7 @@ public class King extends Piece {
                         individualMove = allMoves.remove();
                         for (int col = 3; col > 0; col--)
                         {
-                            if (board.getBoard()[row][col] != null)
-                            {
-                                return false;
-                            }
-                            if (individualMove[0] == row && individualMove[1] == col)
+                            if (board.getBoard()[row][col] != null || (individualMove[0] == row && individualMove[1] == col))
                             {
                                 return false;
                             }
@@ -133,8 +133,9 @@ public class King extends Piece {
         for (int i = 0; i < size; i++) {
             availableMove = moves.remove();
             if (row == availableMove[0] && col == availableMove[1]){
-                board.getBoard()[row][col] = new King(color, row, col);
-                setDidMove();
+                King king = new King(color, row, col);
+                king.setDidMove();
+                board.getBoard()[row][col] = king;
                 board.getBoard()[this.row][this.col] = null;
             }
         }
@@ -142,8 +143,9 @@ public class King extends Piece {
 
     @Override
     public void testMove(Board board, int row, int col){
-        board.getBoard()[row][col] = new King(color, row, col);
-        setDidMove();
+        King king = new King(color, row, col);
+        king.setDidMove();
+        board.getBoard()[row][col] = king;
         board.getBoard()[this.row][this.col] = null;
     }
 }

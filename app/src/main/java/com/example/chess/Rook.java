@@ -68,7 +68,9 @@ public class Rook extends Piece{
         for (int i = 0; i < size; i++) {
             availableMove = moves.remove();
             if (row == availableMove[0] && col == availableMove[1]){
-                board.getBoard()[row][col] = new Rook(color, row, col);
+                Rook rook = new Rook(color, row, col);
+                rook.setDidMove();
+                board.getBoard()[row][col] = rook;
                 board.getBoard()[this.row][this.col] = null;
             }
         }
@@ -76,8 +78,9 @@ public class Rook extends Piece{
 
     @Override
     public void testMove(Board board, int row, int col){
-        board.getBoard()[row][col] = new Rook(color, row, col);
-        setDidMove();
+        Rook rook = new Rook(color, row, col);
+        rook.setDidMove();
+        board.getBoard()[row][col] = rook;
         board.getBoard()[this.row][this.col] = null;
     }
 }
