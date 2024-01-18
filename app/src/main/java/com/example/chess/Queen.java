@@ -34,15 +34,17 @@ public class Queen extends Piece{
     public void move(Board board, int row, int col){
         int size;
         int[] availableMove;
-        Queue<Integer> moves = board.getBoard()[this.row][this.col].getPossibleMoves(board, true);
-        size = moves.getSize();
+        Queue<Integer> moves = getPossibleMoves(board, true);
+        if (moves != null) {
+            size = moves.getSize();
+        }
+        else
+            size = 0;
         for (int i = 0; i < size; i++) {
             availableMove = moves.remove();
             if (row == availableMove[0] && col == availableMove[1]){
-                board.getBoard()[row][col] = this;
+                board.getBoard()[row][col] = new Queen(color, row, col);
                 board.getBoard()[this.row][this.col] = null;
-                this.setRow(row);
-                this.setCol(col);
             }
         }
     }
@@ -51,7 +53,5 @@ public class Queen extends Piece{
     public void testMove(Board board, int row, int col){
         board.getBoard()[row][col] = new Queen(color, row, col);
         board.getBoard()[this.row][this.col] = null;
-        board.getBoard()[row][col].setRow(row);
-        board.getBoard()[row][col].setCol(col);
     }
 }

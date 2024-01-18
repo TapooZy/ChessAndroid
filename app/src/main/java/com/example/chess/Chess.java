@@ -22,6 +22,7 @@ public class Chess extends AppCompatActivity {
     char nextMoveColor = 'w';
     int whiteId;
     int greenId;
+    Piece whiteKing = board.findKing('w'), blackKing = board.findKing('b');
     boolean wasClickedOnAPiece;
 
     @Override
@@ -127,12 +128,12 @@ public class Chess extends AppCompatActivity {
     }
 
     private void onSquareClicked(int row, int col, boolean wasClickedOnAPiece) {
-        if (wasClickedOnAPiece){
+        if (wasClickedOnAPiece) {
             View square = chessBoard.getChildAt(row * 8 + col);
             ColorDrawable squareColor = (ColorDrawable) square.getBackground();
             int squareId = squareColor.getColor();
-            if (squareId == whiteId || squareId == greenId){
-                if (piece instanceof Pawn){
+            if (squareId == whiteId || squareId == greenId) {
+                if (piece instanceof Pawn) {
                     int[] cords = {row, col};
                     int pieceRow = piece.row;
                     ((Pawn) piece).pawnMove(board, row, col, engine.getEnPassantLocation());
@@ -140,14 +141,18 @@ public class Chess extends AppCompatActivity {
                     dist *= dist;
                     if (dist == 4) {
                         engine.setEnPassantLocation(cords);
-                    }
-                    else{
+                    } else {
                         engine.setEnPassantLocation(null);
                     }
-                }
-                else {
+                } else {
                     piece.move(board, row, col);
                     engine.setEnPassantLocation(null);
+                }
+                if (nextMoveColor == 'w'){
+                    whiteKing = board.findKing('w');
+                }
+                else {
+                    blackKing = board.findKing('b');
                 }
                 this.wasClickedOnAPiece = false;
                 setNextMoveColor();
@@ -159,20 +164,17 @@ public class Chess extends AppCompatActivity {
             if (piece != null) {
                 if (piece.getColor() == nextMoveColor) {
                     onSquareClicked(row, col, false);
-                }
-                else {
+                } else {
                     chessBoard.removeAllViews();
                     showBoard();
                     this.wasClickedOnAPiece = false;
                 }
-            }
-            else{
+            } else {
                 chessBoard.removeAllViews();
                 showBoard();
                 this.wasClickedOnAPiece = false;
             }
-        }
-        else {
+        } else {
             Queue<Integer> moves;
             piece = board.getBoard()[row][col];
             if (piece == null) {
@@ -181,28 +183,21 @@ public class Chess extends AppCompatActivity {
                 showBoard();
                 return;
             }
-//            if (piece.getColor() != nextMoveColor){
-//                Toast.makeText(this, "Wrong piece color, pick again", Toast.LENGTH_SHORT).show();
-//                chessBoard.removeAllViews();
-//                showBoard();
-//                return;
-//            }
             this.wasClickedOnAPiece = true;
-            if (piece.getColor() != nextMoveColor){
+            if (piece.getColor() != nextMoveColor) {
                 Toast.makeText(this, "Wrong piece color, pick again", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (piece instanceof Pawn){
+            if (piece instanceof Pawn) {
                 moves = (((Pawn) piece).getPawnPossibleMoves(board, engine.getEnPassantLocation(), true));
-            }
-            else {
+            } else {
                 moves = piece.getPossibleMoves(board, true);
             }
             chessBoard.removeAllViews();
             showBoard();
             int size = moves.getSize();
             int[] individual_move;
-            if (size == 0){
+            if (size == 0) {
                 Toast.makeText(this, "this piece has no moves", Toast.LENGTH_SHORT).show();
             }
             for (int i = 0; i < size; i++) {
@@ -218,10 +213,9 @@ public class Chess extends AppCompatActivity {
     }
 
     public void setNextMoveColor() {
-        if (nextMoveColor == 'w'){
+        if (nextMoveColor == 'w') {
             nextMoveColor = 'b';
-        }
-        else {
+        } else {
             nextMoveColor = 'w';
         }
     }

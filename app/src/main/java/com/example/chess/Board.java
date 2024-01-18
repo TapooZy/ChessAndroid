@@ -1,5 +1,7 @@
 package com.example.chess;
 
+import android.icu.text.TimeZoneFormat;
+
 public class Board {
     private final Piece[][] board;
 
@@ -80,7 +82,10 @@ public class Board {
     }
 
     public boolean canMove(Piece piece){
-        Piece king = findKing(piece.color);
+        Piece king = findKing(piece.getColor());
+        if (king == null){
+            return false;
+        }
         Queue<Integer> allMoves = getDifferentColorMoves(piece);
         int size = allMoves.getSize();
         int[] individualMove;
