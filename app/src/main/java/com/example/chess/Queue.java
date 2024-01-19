@@ -43,28 +43,9 @@ public class Queue<Integer> {
         return arr;
     }
 
-    public int[] head()
-    {
-        int[] arr = {first.getRow(), first.getCol()};
-        return arr;
-    }
-
     public int getSize() {
         return size;
     }
-
-    public boolean isInQueue(int row, int col){
-        int[] individualMove;
-        for (int i = 0; i < size; i++) {
-            individualMove = this.remove();
-            if (individualMove[0] == row && individualMove[1] == col){
-                return true;
-            }
-            this.insert(individualMove[0], individualMove[1]);
-        }
-        return false;
-    }
-
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();

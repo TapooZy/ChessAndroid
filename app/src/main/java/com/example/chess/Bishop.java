@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Bishop extends Piece {
 
     public Bishop(char color, int row, int col) {
-        super(color, 'b', row, col, "Bishop");
+        super(color, 'b', row, col);
     }
 
     @Override

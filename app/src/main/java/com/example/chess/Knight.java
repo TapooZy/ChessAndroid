@@ -3,7 +3,7 @@ package com.example.chess;
 public class Knight extends Piece{
 
     public Knight(char color,  int row, int col){
-        super(color, 'k', row, col, "Knight");
+        super(color, 'k', row, col);
     }
 
     @Override
@@ -40,7 +40,6 @@ public class Knight extends Piece{
                     else {
                         moves.insert(row1, col1);
                     }
-                    break;
                 }
             }
         }

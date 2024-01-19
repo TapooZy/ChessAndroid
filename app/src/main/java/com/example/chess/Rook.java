@@ -1,11 +1,11 @@
 package com.example.chess;
 
+import android.util.Log;
+
 public class Rook extends Piece{
-    public boolean didMove;
 
     public Rook (char color, int row, int col){
-        super(color, 'r', row, col, "Rook");
-        didMove = false;
+        super(color, 'r', row, col);
     }
 
     public Queue<Integer> getPossibleMoves(Board board, boolean checkCheck) {

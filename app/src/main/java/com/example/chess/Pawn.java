@@ -1,13 +1,7 @@
 package com.example.chess;
-
-import android.util.Log;
-
 public class Pawn extends Piece{
-    boolean didMove;
-
     public Pawn(char color, int row, int col){
-       super(color, 'p', row, col, "Pawn");
-       didMove = false;
+       super(color, 'p', row, col);
     }
 
     public Queue<Integer> getPossibleMoves(Board board, boolean checkCheck) {
@@ -240,8 +234,8 @@ public class Pawn extends Piece{
             availableMove = moves.remove();
             if (row == availableMove[0] && col == availableMove[1]){
                 Pawn pawn = new Pawn(color, row, col);
-                pawn.didMove = true;
                 board.getBoard()[row][col] = pawn;
+                pawn.didMove = true;
                 if (enPassantLocation != null){
                     if (color == 'b'){
                         if (enPassantLocation[0] == row-1 && enPassantLocation[1] == col){

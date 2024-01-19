@@ -5,7 +5,7 @@ abstract public class Piece {
     protected int row;
     protected int col;
     protected boolean didMove;
-    public Piece(char color, char letter, int row, int col, String name) {
+    public Piece(char color, char letter, int row, int col) {
         this.color = color;
         this.letter = letter;
         this.row = row;

@@ -1,9 +1,11 @@
 package com.example.chess;
-
+import android.app.Dialog;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,13 +13,14 @@ import android.util.DisplayMetrics;
 import android.widget.Toast;
 
 public class Chess extends AppCompatActivity {
+    Dialog promotionDialog;
+    ImageView queen, knight, rook, bishop;
     GridLayout chessBoard;
     Engine engine = new Engine();
     Board board = engine.getBoard();
     Piece piece;
+    int screenWidth, screenHeight, whiteId, greenId, promotionCol;
     char nextMoveColor = 'w';
-    int whiteId;
-    int greenId;
     Piece whiteKing = board.findKing('w'), blackKing = board.findKing('b');
     boolean wasClickedOnAPiece;
 
@@ -41,7 +44,7 @@ public class Chess extends AppCompatActivity {
         // Get the width of the screen in pixels
         DisplayMetrics displayMetrics = new DisplayMetrics(); // DisplayMetrics instance to store display information
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics); // Retrieve display metrics
-        int screenWidth = displayMetrics.widthPixels; // Extract the width of the screen in pixels
+        screenWidth = displayMetrics.widthPixels; // Extract the width of the screen in pixels
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 final int row = i;  // Store the current row
@@ -133,6 +136,9 @@ public class Chess extends AppCompatActivity {
                     int[] cords = {row, col};
                     int pieceRow = piece.row;
                     ((Pawn) piece).pawnMove(board, row, col, engine.getEnPassantLocation());
+                    if (row == 7 && piece.color == 'b'){
+                        blackPawnPromotion(col);
+                    }
                     int dist = pieceRow - row;
                     dist *= dist;
                     if (dist == 4) {
@@ -155,7 +161,6 @@ public class Chess extends AppCompatActivity {
                 chessBoard.removeAllViews();
                 showBoard();
                 Queue<Integer> allMoves = board.getEndMoves(nextMoveColor);
-                Log.d("all moves", "" + allMoves.getSize());
                 if (allMoves.getSize() == 0 && board.isInCheck(nextMoveColor)) {
                     if (nextMoveColor == 'b') {
                         Toast.makeText(this, "White won", Toast.LENGTH_LONG).show();
@@ -227,5 +232,59 @@ public class Chess extends AppCompatActivity {
         } else {
             nextMoveColor = 'w';
         }
+    }
+
+    public void blackPawnPromotion(int col){
+        Dialog d = new Dialog(this);
+        d.setContentView(R.layout.custom_dialog_black);
+        d.setCancelable(false);
+        promotionDialog = d;
+        promotionCol = col;
+        queen = d.findViewById(R.id.ibQueen);
+        knight = d.findViewById(R.id.ibKnight);
+        rook = d.findViewById(R.id.ibRook);
+        bishop = d.findViewById(R.id.ibBishop);
+
+        queen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                board.getBoard()[7][promotionCol] = new Queen('b', 7, promotionCol);
+                chessBoard.removeAllViews();
+                showBoard();
+                promotionDialog.cancel();
+            }
+        });
+
+        knight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                board.getBoard()[7][promotionCol] = new Knight('b', 7, promotionCol);
+                chessBoard.removeAllViews();
+                showBoard();
+                promotionDialog.cancel();
+            }
+        });
+
+        rook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                board.getBoard()[7][promotionCol] = new Rook('b', 7, promotionCol);
+                board.getBoard()[7][promotionCol].didMove = true;
+                chessBoard.removeAllViews();
+                showBoard();
+                promotionDialog.cancel();
+            }
+        });
+
+        bishop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                board.getBoard()[7][promotionCol] = new Bishop('b', 7, promotionCol);
+                chessBoard.removeAllViews();
+                showBoard();
+                promotionDialog.cancel();
+            }
+        });
+        d.show();
     }
 }

@@ -3,11 +3,9 @@ package com.example.chess;
 import android.util.Log;
 
 public class King extends Piece {
-    public boolean didMove;
 
     public King(char color, int row, int col) {
-        super(color, 'K', row, col, "King");
-        didMove = false;
+        super(color, 'K', row, col);
     }
     public Queue<Integer> getPossibleMoves(Board board, boolean checkCheck) {
         int row1, col1;
@@ -42,7 +40,6 @@ public class King extends Piece {
                     else {
                         moves.insert(row1, col1);
                     }
-                    break;
                 }
             }
         }
@@ -73,11 +70,7 @@ public class King extends Piece {
                         individualMove = allMoves.remove();
                         for (int col = 5; col < 7; col++)
                         {
-                            if (board.getBoard()[row][col] != null)
-                            {
-                                return false;
-                            }
-                            if (individualMove[0] == row && individualMove[1] == col)
+                            if (board.getBoard()[row][col] != null || (individualMove[0] == row && individualMove[1] == col))
                             {
                                 return false;
                             }
@@ -92,6 +85,7 @@ public class King extends Piece {
 
     public boolean canCastleLeft (Board board){
         Queue<Integer> allMoves = board.getColorMoves(this.color, true);
+        Log.d("didMove", "" + color + " " + this.didMove);
         int[] individualMove;
         if (board.getBoard()[row][0] != null)
         {
@@ -131,9 +125,9 @@ public class King extends Piece {
                     board.getBoard()[row][col] = king;
                     board.getBoard()[this.row][this.col] = null;
                     Rook rook = new Rook(color, row, col-1);
-                    rook.didMove = true;
                     board.getBoard()[this.row][7] = null;
                     board.getBoard()[row][col-1] = rook;
+                    rook.didMove = true;
                 }
                 else if (col == this.col - 2){
                     King king = new King(color, row, col);
@@ -141,9 +135,9 @@ public class King extends Piece {
                     board.getBoard()[row][col] = king;
                     board.getBoard()[this.row][this.col] = null;
                     Rook rook = new Rook(color, row, col+1);
-                    rook.didMove = true;
                     board.getBoard()[this.row][0] = null;
                     board.getBoard()[row][col+1] = rook;
+                    rook.didMove = true;
                 }
                 else {
                     King king = new King(color, row, col);
@@ -153,6 +147,7 @@ public class King extends Piece {
                 }
             }
         }
+        Log.d("didMove", "" + board.getBoard()[row][col].didMove);
     }
 
     @Override
