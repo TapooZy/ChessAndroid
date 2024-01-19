@@ -20,7 +20,7 @@ public class King extends Piece {
                 if (piece == null){
                     if (checkCheck) {
                         newBoard = board.clone();
-                        testMove(newBoard, row1, col1);
+                        move(newBoard, row1, col1);
                         if (newBoard.canMove(this)){
                             moves.insert(row1, col1);
                         }
@@ -32,7 +32,7 @@ public class King extends Piece {
                 else if (piece.color != color){
                     if (checkCheck) {
                         newBoard = board.clone();
-                        testMove(newBoard, row1, col1);
+                        move(newBoard, row1, col1);
                         if (newBoard.canMove(this)){
                             moves.insert(row1, col1);
                         }
@@ -112,49 +112,31 @@ public class King extends Piece {
     }
     @Override
     public void move(Board board, int row, int col){
-        int size;
-        int[] availableMove;
-        Queue<Integer> moves = getPossibleMoves(board, true);
-        size = moves.getSize();
-        for (int i = 0; i < size; i++) {
-            availableMove = moves.remove();
-            if (row == availableMove[0] && col == availableMove[1]){
-                if (col == this.col + 2){
-                    King king = new King(color, row, col);
-                    king.didMove = true;
-                    board.getBoard()[row][col] = king;
-                    board.getBoard()[this.row][this.col] = null;
-                    Rook rook = new Rook(color, row, col-1);
-                    board.getBoard()[this.row][7] = null;
-                    board.getBoard()[row][col-1] = rook;
-                    rook.didMove = true;
-                }
-                else if (col == this.col - 2){
-                    King king = new King(color, row, col);
-                    king.didMove = true;
-                    board.getBoard()[row][col] = king;
-                    board.getBoard()[this.row][this.col] = null;
-                    Rook rook = new Rook(color, row, col+1);
-                    board.getBoard()[this.row][0] = null;
-                    board.getBoard()[row][col+1] = rook;
-                    rook.didMove = true;
-                }
-                else {
-                    King king = new King(color, row, col);
-                    king.didMove = true;
-                    board.getBoard()[row][col] = king;
-                    board.getBoard()[this.row][this.col] = null;
-                }
-            }
+        if (col == this.col + 2){
+            King king = new King(color, row, col);
+            king.didMove = true;
+            board.getBoard()[row][col] = king;
+            board.getBoard()[this.row][this.col] = null;
+            Rook rook = new Rook(color, row, col-1);
+            board.getBoard()[this.row][7] = null;
+            board.getBoard()[row][col-1] = rook;
+            rook.didMove = true;
         }
-        Log.d("didMove", "" + board.getBoard()[row][col].didMove);
-    }
-
-    @Override
-    public void testMove(Board board, int row, int col){
-        King king = new King(color, row, col);
-        king.didMove = true;
-        board.getBoard()[row][col] = king;
-        board.getBoard()[this.row][this.col] = null;
+        else if (col == this.col - 2){
+            King king = new King(color, row, col);
+            king.didMove = true;
+            board.getBoard()[row][col] = king;
+            board.getBoard()[this.row][this.col] = null;
+            Rook rook = new Rook(color, row, col+1);
+            board.getBoard()[this.row][0] = null;
+            board.getBoard()[row][col+1] = rook;
+            rook.didMove = true;
+        }
+        else {
+            King king = new King(color, row, col);
+            king.didMove = true;
+            board.getBoard()[row][col] = king;
+            board.getBoard()[this.row][this.col] = null;
+        }
     }
 }

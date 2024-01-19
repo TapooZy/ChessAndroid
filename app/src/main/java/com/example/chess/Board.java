@@ -108,6 +108,45 @@ public class Board {
         return allMoves;
     }
 
+    public Piece findPiece(char pieceClassName, char color, int row, int col){
+        if (row != -1){
+            for (int i = 0; i < 8; i++) {
+                if (board[row][i] != null) {
+                    if (board[row][i].letter == pieceClassName) {
+                        if (board[row][i].color == color) {
+                            return board[row][i];
+                        }
+                    }
+                }
+            }
+        }
+        else if (col != -1){
+            for (int i = 0; i < 8; i++) {
+                if (board[i][col] != null) {
+                    if (board[i][col].letter == pieceClassName) {
+                        if (board[i][col].color == color) {
+                            return board[i][col];
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    if (board[i][j] != null) {
+                        if (board[i][j].letter == pieceClassName) {
+                            if (board[i][j].color == color) {
+                                return board[i][j];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     public boolean canMove(Piece piece){
         Piece king = findKing(piece.color);
         if (king == null){

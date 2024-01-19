@@ -15,6 +15,4 @@ abstract public class Piece {
     public abstract Queue<Integer> getPossibleMoves(Board board, boolean checkCheck);
 
     public abstract void move(Board board, int row, int col);
-
-    public abstract void testMove(Board board, int row, int col);
 }

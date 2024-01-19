@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.widget.Toast;
 
+import org.checkerframework.checker.units.qual.K;
+
 public class Chess extends AppCompatActivity {
     Dialog promotionDialog;
     ImageView queen, knight, rook, bishop;
@@ -37,18 +39,18 @@ public class Chess extends AppCompatActivity {
         ColorDrawable greenColor = (ColorDrawable) from_green.getBackground();
         greenId = greenColor.getColor();
         chessBoard = findViewById(R.id.chessBoard);
-        showBoard();
+        showBoard(false);
     }
 
-    private void showBoard() {
+    private void showBoard(boolean isLoadGame) {
         // Get the width of the screen in pixels
         DisplayMetrics displayMetrics = new DisplayMetrics(); // DisplayMetrics instance to store display information
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics); // Retrieve display metrics
         screenWidth = displayMetrics.widthPixels; // Extract the width of the screen in pixels
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                final int row = i;  // Store the current row
-                final int col = j;  // Store the current column
+        for (int i = 7; i > -1; i--) {
+            for (int j = 7; j > -1; j--) {
+                int row = i;  // Store the current row
+                int col = j;  // Store the current column
 
                 // Create an ImageView for each square on the chessboard
                 ImageView imageView = new ImageView(this);
@@ -111,14 +113,16 @@ public class Chess extends AppCompatActivity {
                     }
                 }
 
-                // Set a click listener for each ImageView
-                imageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Handle the first click event
-                        onSquareClicked(row, col, wasClickedOnAPiece);
-                    }
-                });
+                if (!isLoadGame) {
+                    // Set a click listener for each ImageView
+                    imageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Handle the first click event
+                            onSquareClicked(row, col, wasClickedOnAPiece);
+                        }
+                    });
+                }
 
                 // Add the ImageView to the chessboard GridLayout
                 chessBoard.addView(imageView);
@@ -159,7 +163,7 @@ public class Chess extends AppCompatActivity {
                 this.wasClickedOnAPiece = false;
                 setNextMoveColor();
                 chessBoard.removeAllViews();
-                showBoard();
+                showBoard(false);
                 Queue<Integer> allMoves = board.getEndMoves(nextMoveColor);
                 if (allMoves.getSize() == 0 && board.isInCheck(nextMoveColor)) {
                     if (nextMoveColor == 'b') {
@@ -180,12 +184,12 @@ public class Chess extends AppCompatActivity {
                     onSquareClicked(row, col, false);
                 } else {
                     chessBoard.removeAllViews();
-                    showBoard();
+                    showBoard(false);
                     this.wasClickedOnAPiece = false;
                 }
             } else {
                 chessBoard.removeAllViews();
-                showBoard();
+                showBoard(false);
                 this.wasClickedOnAPiece = false;
             }
         } else {
@@ -194,7 +198,7 @@ public class Chess extends AppCompatActivity {
             if (piece == null) {
                 Toast.makeText(this, "This square is empty", Toast.LENGTH_SHORT).show();
                 chessBoard.removeAllViews();
-                showBoard();
+                showBoard(false);
                 return;
             }
             this.wasClickedOnAPiece = true;
@@ -208,7 +212,7 @@ public class Chess extends AppCompatActivity {
                 moves = piece.getPossibleMoves(board, true);
             }
             chessBoard.removeAllViews();
-            showBoard();
+            showBoard(false);
             int size = moves.getSize();
             int[] individual_move;
             if (size == 0) {
@@ -250,7 +254,7 @@ public class Chess extends AppCompatActivity {
             public void onClick(View v) {
                 board.getBoard()[7][promotionCol] = new Queen('b', 7, promotionCol);
                 chessBoard.removeAllViews();
-                showBoard();
+                showBoard(false);
                 promotionDialog.cancel();
             }
         });
@@ -260,7 +264,7 @@ public class Chess extends AppCompatActivity {
             public void onClick(View v) {
                 board.getBoard()[7][promotionCol] = new Knight('b', 7, promotionCol);
                 chessBoard.removeAllViews();
-                showBoard();
+                showBoard(false);
                 promotionDialog.cancel();
             }
         });
@@ -271,7 +275,7 @@ public class Chess extends AppCompatActivity {
                 board.getBoard()[7][promotionCol] = new Rook('b', 7, promotionCol);
                 board.getBoard()[7][promotionCol].didMove = true;
                 chessBoard.removeAllViews();
-                showBoard();
+                showBoard(false);
                 promotionDialog.cancel();
             }
         });
@@ -281,10 +285,187 @@ public class Chess extends AppCompatActivity {
             public void onClick(View v) {
                 board.getBoard()[7][promotionCol] = new Bishop('b', 7, promotionCol);
                 chessBoard.removeAllViews();
-                showBoard();
+                showBoard(false);
                 promotionDialog.cancel();
             }
         });
         d.show();
+    }
+
+    public void loadGame(String moves) {
+        int row, col, times = 0;
+        Queue<Integer> pieceMoves;
+        while (moves.length() != 0) {
+            if (times % 2 == 0) {
+                moves = moves.substring(2);
+            }
+            if (moves.charAt(0) == 'B') {
+                if ((int) moves.charAt(1) == 120){
+                    Bishop bishop = (Bishop) board.findPiece('b', nextMoveColor, -1, -1);
+                    col = (int) moves.charAt(2) - 97;
+                    row = (int) moves.charAt(3) - 49;
+                    int[] move = {row, col};
+                    pieceMoves = bishop.getPossibleMoves(board, true);
+                    if (pieceMoves.isInsideQueue(move)){
+                        bishop.move(board, row, col);
+                        times++;
+                    }
+                    if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
+                        moves = moves.substring(5);
+                    }
+                    else {
+                        moves = moves.substring(4);
+                    }
+                }
+//                else if ((int) moves.charAt(1) > 48 && (int) moves.charAt(1) < 57){
+//                    Bishop bishop = (Bishop) board.findPiece('b', nextMoveColor, )
+//                }
+            }
+//            else if (moves.charAt(0) == 'N') {
+//                Knight knight;
+//                if (moves.charAt(1) != 'x') {
+//                    int row = (int) moves.charAt(2) - 48;
+//                    int col = (int) moves.charAt(1) - 97;
+//                    int[] move = {row, col};
+//                    Queue<Integer> pieceMoves = knight.getPossibleMoves(board, true);
+//                    if (pieceMoves.inInsideQueue(move)) {
+//                        knight.move(board, row, col);
+//                        setNextMoveColor();
+//                    } else {
+//                        board.getBoard()[knight.row][knight.col] = null;
+//                        knight = (Knight) board.findPiece('k', nextMoveColor);
+//                        pieceMoves = knight.getPossibleMoves(board, true);
+//                        if (pieceMoves.inInsideQueue(move)) {
+//                            knight.move(board, row, col);
+//                            setNextMoveColor();
+//                        }
+//                    }
+//                }
+//                int row = (int) moves.charAt(3) - 48;
+//                int col = (int) moves.charAt(2) - 97;
+//                int[] move = {row, col};
+//                Queue<Integer> pieceMoves = knight.getPossibleMoves(board, true);
+//                if (pieceMoves.inInsideQueue(move)) {
+//                    knight.move(board, row, col);
+//                    setNextMoveColor();
+//                }
+//            } else if (moves.charAt(0) == 'Q') {
+//                Queen queen = (Queen) board.findPiece('q', nextMoveColor);
+//                if (moves.charAt(1) != 'x') {
+//                    int row = (int) moves.charAt(2) - 48;
+//                    int col = (int) moves.charAt(1) - 97;
+//                    int[] move = {row, col};
+//                    Queue<Integer> pieceMoves = queen.getPossibleMoves(board, true);
+//                    if (pieceMoves.inInsideQueue(move)) {
+//                        queen.move(board, row, col);
+//                        setNextMoveColor();
+//                    } else {
+//                        board.getBoard()[queen.row][queen.col] = null;
+//                        queen = (Queen) board.findPiece('q', nextMoveColor);
+//                        pieceMoves = queen.getPossibleMoves(board, true);
+//                        if (pieceMoves.inInsideQueue(move)) {
+//                            queen.move(board, row, col);
+//                            setNextMoveColor();
+//                        }
+//                    }
+//                }
+//                int row = (int) moves.charAt(3) - 48;
+//                int col = (int) moves.charAt(2) - 97;
+//                int[] move = {row, col};
+//                Queue<Integer> pieceMoves = queen.getPossibleMoves(board, true);
+//                if (pieceMoves.inInsideQueue(move)) {
+//                    queen.move(board, row, col);
+//                    setNextMoveColor();
+//                }
+//            } else if (moves.charAt(0) == 'R') {
+//                Rook rook = (Rook) board.findPiece('r', nextMoveColor);
+//                if (moves.charAt(1) != 'x') {
+//                    int row = (int) moves.charAt(2) - 48;
+//                    int col = (int) moves.charAt(1) - 97;
+//                    int[] move = {row, col};
+//                    Queue<Integer> pieceMoves = rook.getPossibleMoves(board, true);
+//                    if (pieceMoves.inInsideQueue(move)) {
+//                        rook.move(board, row, col);
+//                        setNextMoveColor();
+//                    } else {
+//                        board.getBoard()[rook.row][rook.col] = null;
+//                        rook = (Rook) board.findPiece('r', nextMoveColor);
+//                        pieceMoves = rook.getPossibleMoves(board, true);
+//                        if (pieceMoves.inInsideQueue(move)) {
+//                            rook.move(board, row, col);
+//                            setNextMoveColor();
+//                        }
+//                    }
+//                }
+//                else {
+//                    int row = (int) moves.charAt(3) - 48;
+//                    int col = (int) moves.charAt(2) - 97;
+//                    int[] move = {row, col};
+//                    Queue<Integer> pieceMoves = rook.getPossibleMoves(board, true);
+//                    if (pieceMoves.inInsideQueue(move)) {
+//                        rook.move(board, row, col);
+//                        setNextMoveColor();
+//                    }
+//                }
+//            } else if (moves.charAt(0) == 'K' || moves.charAt(0) == 'O') {
+//                King king = (King) board.findPiece('K', nextMoveColor);
+//                if (moves.charAt(1) != 'x') {
+//                    if (moves.charAt(0) == 'O') {
+//                        if (moves.length() > 4) {
+//                            if (moves.charAt(4) == 'O') {
+//                                int row = king.row;
+//                                int col = king.col - 2;
+//                                int[] move = {row, col};
+//                                Queue<Integer> pieceMoves = king.getPossibleMoves(board, true);
+//                                if (pieceMoves.inInsideQueue(move)) {
+//                                    king.move(board, row, col);
+//                                    setNextMoveColor();
+//                                }
+//                            }
+//                            else {
+//                                int row = king.row;
+//                                int col = king.col + 2;
+//                                int[] move = {row, col};
+//                                Queue<Integer> pieceMoves = king.getPossibleMoves(board, true);
+//                                if (pieceMoves.inInsideQueue(move)) {
+//                                    king.move(board, row, col);
+//                                    setNextMoveColor();
+//                                }
+//                            }
+//                        }
+//                        else {
+//                            int row = king.row;
+//                            int col = king.col + 2;
+//                            int[] move = {row, col};
+//                            Queue<Integer> pieceMoves = king.getPossibleMoves(board, true);
+//                            if (pieceMoves.inInsideQueue(move)) {
+//                                king.move(board, row, col);
+//                                setNextMoveColor();
+//                            }
+//                        }
+//                    }
+//                    else {
+//                        int row = (int) moves.charAt(2) - 48;
+//                        int col = (int) moves.charAt(1) - 97;
+//                        int[] move = {row, col};
+//                        Queue<Integer> pieceMoves = king.getPossibleMoves(board, true);
+//                        if (pieceMoves.inInsideQueue(move)) {
+//                            king.move(board, row, col);
+//                            setNextMoveColor();
+//                        }
+//                    }
+//                }
+//                else {
+//                    int row = (int) moves.charAt(3) - 48;
+//                    int col = (int) moves.charAt(2) - 97;
+//                    int[] move = {row, col};
+//                    Queue<Integer> pieceMoves = king.getPossibleMoves(board, true);
+//                    if (pieceMoves.inInsideQueue(move)) {
+//                        king.move(board, row, col);
+//                        setNextMoveColor();
+//                    }
+//                }
+//            }
+        }
     }
 }

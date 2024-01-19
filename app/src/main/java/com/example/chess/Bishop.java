@@ -1,7 +1,5 @@
 package com.example.chess;
 
-import java.util.Scanner;
-
 public class Bishop extends Piece {
 
     public Bishop(char color, int row, int col) {
@@ -22,7 +20,7 @@ public class Bishop extends Piece {
                 if (piece == null){
                     if (checkCheck) {
                         newBoard = board.clone();
-                        testMove(newBoard, row1, col1);
+                        move(newBoard, row1, col1);
                         if (newBoard.canMove(this)){
                             moves.insert(row1, col1);
                         }
@@ -34,7 +32,7 @@ public class Bishop extends Piece {
                 else if (piece.color != color){
                     if (checkCheck) {
                         newBoard = board.clone();
-                        testMove(newBoard, row1, col1);
+                        move(newBoard, row1, col1);
                         if (newBoard.canMove(this)){
                             moves.insert(row1, col1);
                         }
@@ -54,25 +52,6 @@ public class Bishop extends Piece {
 
     @Override
     public void move(Board board, int row, int col){
-        int size;
-        int[] availableMove;
-        Queue<Integer> moves = getPossibleMoves(board, true);
-        if (moves != null) {
-            size = moves.getSize();
-        }
-        else
-            size = 0;
-        for (int i = 0; i < size; i++) {
-            availableMove = moves.remove();
-            if (row == availableMove[0] && col == availableMove[1]){
-                board.getBoard()[row][col] = new Bishop(color, row, col);
-                board.getBoard()[this.row][this.col] = null;
-            }
-        }
-    }
-
-    @Override
-    public void testMove(Board board, int row, int col){
         board.getBoard()[row][col] = new Bishop(color, row, col);
         board.getBoard()[this.row][this.col] = null;
     }
