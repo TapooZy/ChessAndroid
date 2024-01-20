@@ -3,17 +3,12 @@ import android.app.Dialog;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.widget.Toast;
-
-import org.checkerframework.checker.units.qual.K;
-
 public class Chess extends AppCompatActivity {
     Dialog promotionDialog;
     ImageView queen, knight, rook, bishop;
@@ -21,7 +16,7 @@ public class Chess extends AppCompatActivity {
     Engine engine = new Engine();
     Board board = engine.getBoard();
     Piece piece;
-    int screenWidth, screenHeight, whiteId, greenId, promotionCol;
+    int screenWidth, whiteId, greenId, promotionCol;
     char nextMoveColor = 'w';
     Piece whiteKing = board.findKing('w'), blackKing = board.findKing('b');
     boolean wasClickedOnAPiece;
@@ -308,10 +303,15 @@ public class Chess extends AppCompatActivity {
                     row = (int) moves.charAt(3) - 49;
                     int[] move = {row, col};
                     pieceMoves = bishop.getPossibleMoves(board, true);
-                    if (pieceMoves.isInsideQueue(move)){
-                        bishop.move(board, row, col);
-                        times++;
+                    Board newBoard = board.clone();
+                    while (!pieceMoves.isInsideQueue(move)){
+                        newBoard = newBoard.clone();
+                        newBoard.getBoard()[bishop.row][bishop.col] = null;
+                        bishop = (Bishop) newBoard.findPiece('b', nextMoveColor, -1, -1);
+                        pieceMoves = bishop.getPossibleMoves(board, true);
                     }
+                    bishop.move(board, row, col);
+                    times++;
                     if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
                         moves = moves.substring(5);
                     }
@@ -320,157 +320,510 @@ public class Chess extends AppCompatActivity {
                     }
                 }
                 else if ((int) moves.charAt(1) > 48 && (int) moves.charAt(1) < 57){
-                    Bishop bishop = (Bishop) board.findPiece('b', nextMoveColor, 56 - (int) moves.charAt(1), -1);
+                    Bishop bishop = (Bishop) board.findPiece('b', nextMoveColor, (int) moves.charAt(1) - 49, -1);
                     if (moves.charAt(2) == 'x'){
+                        col = moves.charAt(3) - 97;
                         row = moves.charAt(4) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = bishop.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)){
+                            bishop.move(board, row, col);
+                            times++;
+                        }
+                        if (moves.charAt(5) == '+' || moves.charAt(5) == '#'){
+                            moves = moves.substring(6);
+                        }
+                        else {
+                            moves = moves.substring(5);
+                        }
+                    }
+                    else {
+                        col = moves.charAt(2) - 97;
+                        row = moves.charAt(3) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = bishop.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)){
+                            bishop.move(board, row, col);
+                            times++;
+                        }
+                        if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
+                            moves = moves.substring(5);
+                        }
+                        else {
+                            moves = moves.substring(4);
+                        }
+                    }
+                }
+                else if ((int) moves.charAt(1) > 96 && (int) moves.charAt(1) < 105){
+                    Bishop bishop = (Bishop) board.findPiece('b', nextMoveColor, -1, (int) moves.charAt(1) - 97);
+                    if (moves.charAt(2) == 'x'){
+                        col = moves.charAt(3) - 97;
+                        row = moves.charAt(4) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = bishop.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)){
+                            bishop.move(board, row, col);
+                            times++;
+                        }
+                        if (moves.charAt(5) == '+' || moves.charAt(5) == '#'){
+                            moves = moves.substring(6);
+                        }
+                        else {
+                            moves = moves.substring(5);
+                        }
+                    }
+                    else {
+                        col = moves.charAt(2) - 97;
+                        row = moves.charAt(3) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = bishop.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)){
+                            bishop.move(board, row, col);
+                            times++;
+                        }
+                        if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
+                            moves = moves.substring(5);
+                        }
+                        else {
+                            moves = moves.substring(4);
+                        }
+                    }
+                }
+                else {
+                    Bishop bishop = (Bishop) board.findPiece('b', nextMoveColor, -1, -1);
+                    col = moves.charAt(1) - 97;
+                    row = moves.charAt(2) - 49;
+                    int[] move = {row, col};
+                    pieceMoves = bishop.getPossibleMoves(board, true);
+                    if (pieceMoves.isInsideQueue(move)) {
+                        bishop.move(board, row, col);
+                        times++;
+                    }
+                    if (moves.charAt(4) == '+' || moves.charAt(4) == '#') {
+                        moves = moves.substring(5);
+                    } else {
+                        moves = moves.substring(4);
                     }
                 }
             }
-//            else if (moves.charAt(0) == 'N') {
-//                Knight knight;
-//                if (moves.charAt(1) != 'x') {
-//                    int row = (int) moves.charAt(2) - 48;
-//                    int col = (int) moves.charAt(1) - 97;
-//                    int[] move = {row, col};
-//                    Queue<Integer> pieceMoves = knight.getPossibleMoves(board, true);
-//                    if (pieceMoves.inInsideQueue(move)) {
-//                        knight.move(board, row, col);
-//                        setNextMoveColor();
-//                    } else {
-//                        board.getBoard()[knight.row][knight.col] = null;
-//                        knight = (Knight) board.findPiece('k', nextMoveColor);
-//                        pieceMoves = knight.getPossibleMoves(board, true);
-//                        if (pieceMoves.inInsideQueue(move)) {
-//                            knight.move(board, row, col);
-//                            setNextMoveColor();
-//                        }
-//                    }
-//                }
-//                int row = (int) moves.charAt(3) - 48;
-//                int col = (int) moves.charAt(2) - 97;
-//                int[] move = {row, col};
-//                Queue<Integer> pieceMoves = knight.getPossibleMoves(board, true);
-//                if (pieceMoves.inInsideQueue(move)) {
-//                    knight.move(board, row, col);
-//                    setNextMoveColor();
-//                }
-//            } else if (moves.charAt(0) == 'Q') {
-//                Queen queen = (Queen) board.findPiece('q', nextMoveColor);
-//                if (moves.charAt(1) != 'x') {
-//                    int row = (int) moves.charAt(2) - 48;
-//                    int col = (int) moves.charAt(1) - 97;
-//                    int[] move = {row, col};
-//                    Queue<Integer> pieceMoves = queen.getPossibleMoves(board, true);
-//                    if (pieceMoves.inInsideQueue(move)) {
-//                        queen.move(board, row, col);
-//                        setNextMoveColor();
-//                    } else {
-//                        board.getBoard()[queen.row][queen.col] = null;
-//                        queen = (Queen) board.findPiece('q', nextMoveColor);
-//                        pieceMoves = queen.getPossibleMoves(board, true);
-//                        if (pieceMoves.inInsideQueue(move)) {
-//                            queen.move(board, row, col);
-//                            setNextMoveColor();
-//                        }
-//                    }
-//                }
-//                int row = (int) moves.charAt(3) - 48;
-//                int col = (int) moves.charAt(2) - 97;
-//                int[] move = {row, col};
-//                Queue<Integer> pieceMoves = queen.getPossibleMoves(board, true);
-//                if (pieceMoves.inInsideQueue(move)) {
-//                    queen.move(board, row, col);
-//                    setNextMoveColor();
-//                }
-//            } else if (moves.charAt(0) == 'R') {
-//                Rook rook = (Rook) board.findPiece('r', nextMoveColor);
-//                if (moves.charAt(1) != 'x') {
-//                    int row = (int) moves.charAt(2) - 48;
-//                    int col = (int) moves.charAt(1) - 97;
-//                    int[] move = {row, col};
-//                    Queue<Integer> pieceMoves = rook.getPossibleMoves(board, true);
-//                    if (pieceMoves.inInsideQueue(move)) {
-//                        rook.move(board, row, col);
-//                        setNextMoveColor();
-//                    } else {
-//                        board.getBoard()[rook.row][rook.col] = null;
-//                        rook = (Rook) board.findPiece('r', nextMoveColor);
-//                        pieceMoves = rook.getPossibleMoves(board, true);
-//                        if (pieceMoves.inInsideQueue(move)) {
-//                            rook.move(board, row, col);
-//                            setNextMoveColor();
-//                        }
-//                    }
-//                }
-//                else {
-//                    int row = (int) moves.charAt(3) - 48;
-//                    int col = (int) moves.charAt(2) - 97;
-//                    int[] move = {row, col};
-//                    Queue<Integer> pieceMoves = rook.getPossibleMoves(board, true);
-//                    if (pieceMoves.inInsideQueue(move)) {
-//                        rook.move(board, row, col);
-//                        setNextMoveColor();
-//                    }
-//                }
-//            } else if (moves.charAt(0) == 'K' || moves.charAt(0) == 'O') {
-//                King king = (King) board.findPiece('K', nextMoveColor);
-//                if (moves.charAt(1) != 'x') {
-//                    if (moves.charAt(0) == 'O') {
-//                        if (moves.length() > 4) {
-//                            if (moves.charAt(4) == 'O') {
-//                                int row = king.row;
-//                                int col = king.col - 2;
-//                                int[] move = {row, col};
-//                                Queue<Integer> pieceMoves = king.getPossibleMoves(board, true);
-//                                if (pieceMoves.inInsideQueue(move)) {
-//                                    king.move(board, row, col);
-//                                    setNextMoveColor();
-//                                }
-//                            }
-//                            else {
-//                                int row = king.row;
-//                                int col = king.col + 2;
-//                                int[] move = {row, col};
-//                                Queue<Integer> pieceMoves = king.getPossibleMoves(board, true);
-//                                if (pieceMoves.inInsideQueue(move)) {
-//                                    king.move(board, row, col);
-//                                    setNextMoveColor();
-//                                }
-//                            }
-//                        }
-//                        else {
-//                            int row = king.row;
-//                            int col = king.col + 2;
-//                            int[] move = {row, col};
-//                            Queue<Integer> pieceMoves = king.getPossibleMoves(board, true);
-//                            if (pieceMoves.inInsideQueue(move)) {
-//                                king.move(board, row, col);
-//                                setNextMoveColor();
-//                            }
-//                        }
-//                    }
-//                    else {
-//                        int row = (int) moves.charAt(2) - 48;
-//                        int col = (int) moves.charAt(1) - 97;
-//                        int[] move = {row, col};
-//                        Queue<Integer> pieceMoves = king.getPossibleMoves(board, true);
-//                        if (pieceMoves.inInsideQueue(move)) {
-//                            king.move(board, row, col);
-//                            setNextMoveColor();
-//                        }
-//                    }
-//                }
-//                else {
-//                    int row = (int) moves.charAt(3) - 48;
-//                    int col = (int) moves.charAt(2) - 97;
-//                    int[] move = {row, col};
-//                    Queue<Integer> pieceMoves = king.getPossibleMoves(board, true);
-//                    if (pieceMoves.inInsideQueue(move)) {
-//                        king.move(board, row, col);
-//                        setNextMoveColor();
-//                    }
-//                }
-//            }
+            else if (moves.charAt(0) == 'N'){
+                if (moves.charAt(1) == 'x'){
+                    Knight knight = (Knight) board.findPiece('k', nextMoveColor, -1, -1);
+                    col = (int) moves.charAt(2) - 97;
+                    row = (int) moves.charAt(3) - 49;
+                    int[] move = {row, col};
+                    pieceMoves = knight.getPossibleMoves(board, true);
+                    Board newBoard = board.clone();
+                    while (!pieceMoves.isInsideQueue(move)){
+                        newBoard = newBoard.clone();
+                        newBoard.getBoard()[knight.row][knight.col] = null;
+                        knight = (Knight) newBoard.findPiece('k', nextMoveColor, -1, -1);
+                        pieceMoves = knight.getPossibleMoves(board, true);
+                    }
+                    knight.move(board, row, col);
+                    times++;
+                    if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
+                        moves = moves.substring(5);
+                    }
+                    else {
+                        moves = moves.substring(4);
+                    }
+                }
+                else if ((int) moves.charAt(1) > 48 && (int) moves.charAt(1) < 57){
+                    Knight knight = (Knight) board.findPiece('k', nextMoveColor, (int) moves.charAt(1) - 49, -1);
+                    if (moves.charAt(2) == 'x'){
+                        col = moves.charAt(3) - 97;
+                        row = moves.charAt(4) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = knight.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)){
+                            knight.move(board, row, col);
+                            times++;
+                        }
+                        if (moves.charAt(5) == '+' || moves.charAt(5) == '#'){
+                            moves = moves.substring(6);
+                        }
+                        else {
+                            moves = moves.substring(5);
+                        }
+                    }
+                    else {
+                        col = moves.charAt(2) - 97;
+                        row = moves.charAt(3) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = knight.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)){
+                            knight.move(board, row, col);
+                            times++;
+                        }
+                        if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
+                            moves = moves.substring(5);
+                        }
+                        else {
+                            moves = moves.substring(4);
+                        }
+                    }
+                }
+                else if ((int) moves.charAt(1) > 96 && (int) moves.charAt(1) < 105){
+                    Knight knight = (Knight) board.findPiece('k', nextMoveColor, -1, (int) moves.charAt(1) - 97);
+                    if (moves.charAt(2) == 'x'){
+                        col = moves.charAt(3) - 97;
+                        row = moves.charAt(4) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = knight.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)){
+                            knight.move(board, row, col);
+                            times++;
+                        }
+                        if (moves.charAt(5) == '+' || moves.charAt(5) == '#'){
+                            moves = moves.substring(6);
+                        }
+                        else {
+                            moves = moves.substring(5);
+                        }
+                    }
+                    else {
+                        col = moves.charAt(2) - 97;
+                        row = moves.charAt(3) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = knight.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)){
+                            knight.move(board, row, col);
+                            times++;
+                        }
+                        if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
+                            moves = moves.substring(5);
+                        }
+                        else {
+                            moves = moves.substring(4);
+                        }
+                    }
+                }
+                else {
+                    Knight knight = (Knight) board.findPiece('k', nextMoveColor, -1, -1);
+                    col = moves.charAt(1) - 97;
+                    row = moves.charAt(2) - 49;
+                    int[] move = {row, col};
+                    pieceMoves = knight.getPossibleMoves(board, true);
+                    if (pieceMoves.isInsideQueue(move)) {
+                        knight.move(board, row, col);
+                        times++;
+                    }
+                    if (moves.charAt(4) == '+' || moves.charAt(4) == '#') {
+                        moves = moves.substring(5);
+                    } else {
+                        moves = moves.substring(4);
+                    }
+                }
+            }
+            else if (moves.charAt(0) == 'Q') {
+                if (moves.charAt(1) == 'x') {
+                    Queen queen = (Queen) board.findPiece('q', nextMoveColor, -1, -1);
+                    col = (int) moves.charAt(2) - 97;
+                    row = (int) moves.charAt(3) - 49;
+                    int[] move = {row, col};
+                    pieceMoves = queen.getPossibleMoves(board, true);
+                    Board newBoard = board.clone();
+                    while (!pieceMoves.isInsideQueue(move)){
+                        newBoard = newBoard.clone();
+                        newBoard.getBoard()[queen.row][queen.col] = null;
+                        queen = (Queen) newBoard.findPiece('q', nextMoveColor, -1, -1);
+                        pieceMoves = queen.getPossibleMoves(board, true);
+                    }
+                    queen.move(board, row, col);
+                    times++;
+                    if (moves.charAt(4) == '+' || moves.charAt(4) == '#') {
+                        moves = moves.substring(5);
+                    } else {
+                        moves = moves.substring(4);
+                    }
+                } else if ((int) moves.charAt(1) > 48 && (int) moves.charAt(1) < 57) {
+                    Queen queen = (Queen) board.findPiece('q', nextMoveColor, (int) moves.charAt(1) - 49, -1);
+                    if (moves.charAt(2) == 'x') {
+                        col = moves.charAt(3) - 97;
+                        row = moves.charAt(4) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = queen.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)) {
+                            queen.move(board, row, col);
+                            times++;
+                        }
+                        if (moves.charAt(5) == '+' || moves.charAt(5) == '#') {
+                            moves = moves.substring(6);
+                        } else {
+                            moves = moves.substring(5);
+                        }
+                    } else {
+                        col = moves.charAt(2) - 97;
+                        row = moves.charAt(3) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = queen.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)) {
+                            queen.move(board, row, col);
+                            times++;
+                        }
+                        if (moves.charAt(4) == '+' || moves.charAt(4) == '#') {
+                            moves = moves.substring(5);
+                        } else {
+                            moves = moves.substring(4);
+                        }
+                    }
+                } else if ((int) moves.charAt(1) > 96 && (int) moves.charAt(1) < 105) {
+                    Queen queen = (Queen) board.findPiece('q', nextMoveColor, -1, (int) moves.charAt(1) - 97);
+                    if (moves.charAt(2) == 'x') {
+                        col = moves.charAt(3) - 97;
+                        row = moves.charAt(4) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = queen.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)) {
+                            queen.move(board, row, col);
+                            times++;
+                        }
+                        if (moves.charAt(5) == '+' || moves.charAt(5) == '#') {
+                            moves = moves.substring(6);
+                        } else {
+                            moves = moves.substring(5);
+                        }
+                    } else {
+                        col = moves.charAt(2) - 97;
+                        row = moves.charAt(3) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = queen.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)) {
+                            queen.move(board, row, col);
+                            times++;
+                        }
+                        if (moves.charAt(4) == '+' || moves.charAt(4) == '#') {
+                            moves = moves.substring(5);
+                        } else {
+                            moves = moves.substring(4);
+                        }
+                    }
+                } else {
+                    Queen queen = (Queen) board.findPiece('q', nextMoveColor, -1, -1);
+                    col = moves.charAt(1) - 97;
+                    row = moves.charAt(2) - 49;
+                    int[] move = {row, col};
+                    pieceMoves = queen.getPossibleMoves(board, true);
+                    if (pieceMoves.isInsideQueue(move)) {
+                        queen.move(board, row, col);
+                        times++;
+                    }
+                    if (moves.charAt(4) == '+' || moves.charAt(4) == '#') {
+                        moves = moves.substring(5);
+                    } else {
+                        moves = moves.substring(4);
+                    }
+                }
+            }
+            else if (moves.charAt(0) == 'R'){
+                if (moves.charAt(1) == 'x'){
+                    Rook rook = (Rook) board.findPiece('r', nextMoveColor, -1, -1);
+                    col = (int) moves.charAt(2) - 97;
+                    row = (int) moves.charAt(3) - 49;
+                    int[] move = {row, col};
+                    pieceMoves = rook.getPossibleMoves(board, true);
+                    Board newBoard = board.clone();
+                    while (!pieceMoves.isInsideQueue(move)){
+                        newBoard = newBoard.clone();
+                        newBoard.getBoard()[rook.row][rook.col] = null;
+                        rook = (Rook) newBoard.findPiece('r', nextMoveColor, -1, -1);
+                        pieceMoves = rook.getPossibleMoves(board, true);
+                    }
+                    rook.move(board, row, col);
+                    times++;
+                    if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
+                        moves = moves.substring(5);
+                    }
+                    else {
+                        moves = moves.substring(4);
+                    }
+                }
+                else if ((int) moves.charAt(1) > 48 && (int) moves.charAt(1) < 57){
+                    Rook rook = (Rook) board.findPiece('r', nextMoveColor, (int) moves.charAt(1) - 49, -1);
+                    if (moves.charAt(2) == 'x'){
+                        col = moves.charAt(3) - 97;
+                        row = moves.charAt(4) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = rook.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)){
+                            rook.move(board, row, col);
+                            times++;
+                        }
+                        if (moves.charAt(5) == '+' || moves.charAt(5) == '#'){
+                            moves = moves.substring(6);
+                        }
+                        else {
+                            moves = moves.substring(5);
+                        }
+                    }
+                    else {
+                        col = moves.charAt(2) - 97;
+                        row = moves.charAt(3) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = rook.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)){
+                            rook.move(board, row, col);
+                            times++;
+                        }
+                        if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
+                            moves = moves.substring(5);
+                        }
+                        else {
+                            moves = moves.substring(4);
+                        }
+                    }
+                }
+                else if ((int) moves.charAt(1) > 96 && (int) moves.charAt(1) < 105){
+                    Rook rook = (Rook) board.findPiece('r', nextMoveColor, -1, (int) moves.charAt(1) - 97);
+                    if (moves.charAt(2) == 'x'){
+                        col = moves.charAt(3) - 97;
+                        row = moves.charAt(4) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = rook.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)){
+                            rook.move(board, row, col);
+                            times++;
+                        }
+                        if (moves.charAt(5) == '+' || moves.charAt(5) == '#'){
+                            moves = moves.substring(6);
+                        }
+                        else {
+                            moves = moves.substring(5);
+                        }
+                    }
+                    else {
+                        col = moves.charAt(2) - 97;
+                        row = moves.charAt(3) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = rook.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)){
+                            rook.move(board, row, col);
+                            times++;
+                        }
+                        if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
+                            moves = moves.substring(5);
+                        }
+                        else {
+                            moves = moves.substring(4);
+                        }
+                    }
+                }
+                else {
+                        Rook rook = (Rook) board.findPiece('q', nextMoveColor, -1, -1);
+                    col = moves.charAt(1) - 97;
+                    row = moves.charAt(2) - 49;
+                    int[] move = {row, col};
+                    pieceMoves = rook.getPossibleMoves(board, true);
+                    if (pieceMoves.isInsideQueue(move)) {
+                        rook.move(board, row, col);
+                        times++;
+                    }
+                    if (moves.charAt(4) == '+' || moves.charAt(4) == '#') {
+                        moves = moves.substring(5);
+                    } else {
+                        moves = moves.substring(4);
+                    }
+                }
+            }
+            else if (moves.charAt(0) == 'K' || moves.charAt(0) == 'O') {
+                King king = (King) board.findPiece('K', nextMoveColor, -1, -1);
+                if (moves.charAt(0) == 'K') {
+                    if (moves.charAt(1) == 'x') {
+                        col = (int) moves.charAt(2) - 97;
+                        row = (int) moves.charAt(3) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = king.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)) {
+                            king.move(board, row, col);
+                            times++;
+                        }
+                    }
+                    else {
+                        col = moves.charAt(2) - 97;
+                        row = moves.charAt(3) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = king.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)) {
+                            king.move(board, row, col);
+                            times++;
+                        }
+                    }
+                }
+                else {
+                    if (moves.length() > 4){
+                        if (moves.charAt(2) == 'O' && moves.charAt(4) == 'O'){
+                            col = king.col - 2;
+                            row = king.row;
+                            int[] move = {row, col};
+                            pieceMoves = king.getPossibleMoves(board, true);
+                            if (pieceMoves.isInsideQueue(move)) {
+                                king.move(board, row, col);
+                                times++;
+                            }
+                        }
+                        else {
+                            col = king.col + 2;
+                            row = king.row;
+                            int[] move = {row, col};
+                            pieceMoves = king.getPossibleMoves(board, true);
+                            if (pieceMoves.isInsideQueue(move)) {
+                                king.move(board, row, col);
+                                times++;
+                            }
+                        }
+                    }
+                    else {
+                        col = king.col + 2;
+                        row = king.row;
+                        int[] move = {row, col};
+                        pieceMoves = king.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)) {
+                            king.move(board, row, col);
+                            times++;
+                        }
+                    }
+                }
+                if (moves.charAt(4) == '+' || moves.charAt(4) == '#') {
+                    moves = moves.substring(5);
+                } else {
+                    moves = moves.substring(4);
+                }
+            }
+            else {
+                if (moves.charAt(1) == 'x'){
+                    Pawn pawn = (Pawn) board.findPiece('p', nextMoveColor, -1, -1);
+                    col = (int) moves.charAt(2) - 97;
+                    row = (int) moves.charAt(3) - 49;
+                    int[] move = {row, col};
+                    pieceMoves = pawn.getPossibleMoves(board, true);
+                    Board newBoard = board.clone();
+                    while (!pieceMoves.isInsideQueue(move)){
+                        newBoard = newBoard.clone();
+                        newBoard.getBoard()[pawn.row][pawn.col] = null;
+                        pawn = (Pawn) newBoard.findPiece('p', nextMoveColor, -1, -1);
+                        pieceMoves = pawn.getPossibleMoves(board, true);
+                    }
+                    pawn.move(board, row, col);
+                    times++;
+                    if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
+                        moves = moves.substring(5);
+                    }
+                    else if (moves.length() > 9){
+                        if (moves.charAt(7) == 'p'){
+                            if (moves.charAt(9) == '#' || moves.charAt(9) == '+'){
+                                moves = moves.substring(10);
+                            }
+                            else {
+                                moves = moves.substring(9);
+                            }
+                        }
+                    }
+                    else {
+                        moves = moves.substring(4);
+                    }
+                }
+            }
         }
     }
 }
