@@ -40,6 +40,7 @@ public class Chess extends AppCompatActivity {
         greenId = greenColor.getColor();
         chessBoard = findViewById(R.id.chessBoard);
         showBoard(false);
+        wasClickedOnAPiece = false;
     }
 
     private void showBoard(boolean isLoadGame) {
@@ -47,8 +48,8 @@ public class Chess extends AppCompatActivity {
         DisplayMetrics displayMetrics = new DisplayMetrics(); // DisplayMetrics instance to store display information
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics); // Retrieve display metrics
         screenWidth = displayMetrics.widthPixels; // Extract the width of the screen in pixels
-        for (int i = 7; i > -1; i--) {
-            for (int j = 7; j > -1; j--) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
                 int row = i;  // Store the current row
                 int col = j;  // Store the current column
 
@@ -118,7 +119,6 @@ public class Chess extends AppCompatActivity {
                     imageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            // Handle the first click event
                             onSquareClicked(row, col, wasClickedOnAPiece);
                         }
                     });
@@ -131,6 +131,7 @@ public class Chess extends AppCompatActivity {
     }
 
     private void onSquareClicked(int row, int col, boolean wasClickedOnAPiece) {
+        Log.d("board", "row: " + row + " col: " + col);
         if (wasClickedOnAPiece) {
             View square = chessBoard.getChildAt(row * 8 + col);
             ColorDrawable squareColor = (ColorDrawable) square.getBackground();
@@ -201,6 +202,7 @@ public class Chess extends AppCompatActivity {
                 showBoard(false);
                 return;
             }
+            Log.d("piece", "row: " + piece.row + " col: " + piece.col + " color: " + piece.color + " letter: " + piece.letter);
             this.wasClickedOnAPiece = true;
             if (piece.color != nextMoveColor) {
                 Toast.makeText(this, "Wrong piece color, pick again", Toast.LENGTH_SHORT).show();
@@ -300,7 +302,7 @@ public class Chess extends AppCompatActivity {
                 moves = moves.substring(2);
             }
             if (moves.charAt(0) == 'B') {
-                if ((int) moves.charAt(1) == 120){
+                if (moves.charAt(1) == 'x'){
                     Bishop bishop = (Bishop) board.findPiece('b', nextMoveColor, -1, -1);
                     col = (int) moves.charAt(2) - 97;
                     row = (int) moves.charAt(3) - 49;
@@ -317,9 +319,12 @@ public class Chess extends AppCompatActivity {
                         moves = moves.substring(4);
                     }
                 }
-//                else if ((int) moves.charAt(1) > 48 && (int) moves.charAt(1) < 57){
-//                    Bishop bishop = (Bishop) board.findPiece('b', nextMoveColor, )
-//                }
+                else if ((int) moves.charAt(1) > 48 && (int) moves.charAt(1) < 57){
+                    Bishop bishop = (Bishop) board.findPiece('b', nextMoveColor, 56 - (int) moves.charAt(1), -1);
+                    if (moves.charAt(2) == 'x'){
+                        row = moves.charAt(4) - 49;
+                    }
+                }
             }
 //            else if (moves.charAt(0) == 'N') {
 //                Knight knight;
