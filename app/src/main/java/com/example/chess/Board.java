@@ -41,6 +41,12 @@ public class Board {
         for (int i = 0; i < 8; i++) {
             board[1][i] = new Pawn('w', 1, i);
         }
+
+        for (int i = 2; i < 6; i++) {
+            for (int j = 0; j < 8; j++) {
+                board[i][j] = null;
+            }
+        }
     }
 
     public Queue<Integer> getColorMoves(char color, boolean different){

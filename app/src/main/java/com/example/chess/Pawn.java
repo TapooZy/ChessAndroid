@@ -1,7 +1,4 @@
 package com.example.chess;
-
-import android.util.Log;
-
 public class Pawn extends Piece{
     public Pawn(char color, int row, int col){
        super(color, 'p', row, col);

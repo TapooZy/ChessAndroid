@@ -46,7 +46,8 @@ public class Queue<Integer> {
     public boolean isInsideQueue(int[] arr){
         int queueSize = size;
         for (int i = 0; i < queueSize; i++) {
-            if (arr == remove()){
+            int[] move = remove();
+            if (arr[0] == move[0] && arr[1] == move[1]){
                 return true;
             }
         }

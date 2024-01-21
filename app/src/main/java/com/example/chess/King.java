@@ -85,7 +85,6 @@ public class King extends Piece {
 
     public boolean canCastleLeft (Board board){
         Queue<Integer> allMoves = board.getColorMoves(this.color, true);
-        Log.d("didMove", "" + color + " " + this.didMove);
         int[] individualMove;
         if (board.getBoard()[row][0] != null)
         {
