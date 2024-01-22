@@ -19,8 +19,8 @@ public class Chess extends AppCompatActivity {
     Engine engine = new Engine();
     Board board = engine.getBoard();
     Piece piece;
-    int screenWidth, whiteId, greenId, promotionCol;
-    char nextMoveColor ;
+    int screenWidth, whiteId, greenId, promotionCol, timesRemoved = 0;
+    char nextMoveColor;
     Piece whiteKing = board.findKing('w'), blackKing = board.findKing('b');
     boolean wasClickedOnAPiece;
     String moves;
@@ -43,16 +43,14 @@ public class Chess extends AppCompatActivity {
         info = findViewById(R.id.tvInfo);
         if (nextMoveColor == 'b') {
             info.setText("Next move: black");
-        }
-        else {
+        } else {
             info.setText("Next move: white");
         }
         chessBoard = findViewById(R.id.chessBoard);
-//        moves = "1.e4e52.Nc3Nc63.f4exf44.d4Qh4+5.Ke2d66.Nf3Bg47.Bxf4O-O-O8.Ke3Qh59.Be2Qa510.a3Bxf311.Kxf3Qh5+12.Ke3Qh413.b4g514.Bg3Qh615.b5Nce716.Rf1Nf617.Kf2Ng618.Kg1Qg719.Qd2h620.a4Rg821.b6axb622.Rxf6Qxf623.Bg4+Kb824.Nd5Qg725.a5f526.axb6cxb627.Nxb6Ne728.exf5Qf729.f6Nc630.c4Na731.Qa2Nb532.Nd5Qxd533.cxd5Nxd434.Qa7+Kc735.Rc1+Nc636.Rxc6#";
-        if (moves != null){
+        moves = "1.e4e52.Nf3Nc63.Bb5Nf64.d3d65.c3g66.Nbd2Bg77.Nf1O-O8.Ba4Nd79.Ne3Nc510.Bc2Ne611.h4Ne712.h5d513.hxg6fxg614.exd5Nxd515.Nxd5Qxd516.Bb3Qc617.Qe2Bd718.Be3Kh819.O-O-ORae820.Qf1a521.d4exd422.Nxd4Bxd423.Rxd4Nxd424.Rxh7+Kxh725.Qh1+Kg726.Bh6+Kf627.Qh4+Ke528.Qxd4+";
+        if (moves != null) {
             isLoadGame = true;
-        }
-        else {
+        } else {
             isLoadGame = false;
         }
         showBoard(isLoadGame);
@@ -130,18 +128,17 @@ public class Chess extends AppCompatActivity {
                     }
                 }
 
-                    // Set a click listener for each ImageView
-                    imageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (!isLoadGame) {
-                                onSquareClicked(row, col, wasClickedOnAPiece);
-                            }
-                            else {
-                                moves = loadGame(moves);
-                            }
+                // Set a click listener for each ImageView
+                imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!isLoadGame) {
+                            onSquareClicked(row, col, wasClickedOnAPiece);
+                        } else {
+                            moves = loadGame(moves);
                         }
-                    });
+                    }
+                });
 
                 // Add the ImageView to the chessboard GridLayout
                 chessBoard.addView(imageView);
@@ -160,7 +157,7 @@ public class Chess extends AppCompatActivity {
                     int[] cords = {row, col};
                     int pieceRow = piece.row;
                     ((Pawn) piece).pawnMove(board, row, col, engine.getEnPassantLocation());
-                    if (row == 0 && piece.color == 'b'){
+                    if (row == 0 && piece.color == 'b') {
                         blackPawnPromotion(col);
                     }
 //                    else if (row == 7 && piece.color == 'w'){
@@ -177,18 +174,16 @@ public class Chess extends AppCompatActivity {
                     piece.move(board, row, col);
                     engine.setEnPassantLocation(null);
                 }
-                if (nextMoveColor == 'w'){
+                if (nextMoveColor == 'w') {
                     whiteKing = board.findKing('w');
-                }
-                else {
+                } else {
                     blackKing = board.findKing('b');
                 }
                 this.wasClickedOnAPiece = false;
                 setNextMoveColor();
                 if (nextMoveColor == 'b') {
                     info.setText("Next move: black");
-                }
-                else {
+                } else {
                     info.setText("Next move: white");
                 }
                 chessBoard.removeAllViews();
@@ -197,16 +192,14 @@ public class Chess extends AppCompatActivity {
                 if (allMoves.getSize() == 0 && board.isInCheck(nextMoveColor)) {
                     if (nextMoveColor == 'b') {
                         info.setText("Checkmate, white won");
-                    }
-                    else {
+                    } else {
                         info.setText("Checkmate, black won");
                     }
                     board.startGame();
                     chessBoard.removeAllViews();
                     showBoard(false);
                     nextMoveColor = 'w';
-                }
-                else if (allMoves.getSize() == 0 && !board.isInCheck(nextMoveColor)){
+                } else if (allMoves.getSize() == 0 && !board.isInCheck(nextMoveColor)) {
                     info.setText("Stalemate, no one won");
                     board.startGame();
                     chessBoard.removeAllViews();
@@ -275,7 +268,7 @@ public class Chess extends AppCompatActivity {
         }
     }
 
-    public void blackPawnPromotion(int col){
+    public void blackPawnPromotion(int col) {
         Dialog d = new Dialog(this);
         d.setContentView(R.layout.custom_dialog_black);
         d.setCancelable(false);
@@ -335,353 +328,30 @@ public class Chess extends AppCompatActivity {
         Queue<Integer> pieceMoves;
         if (moves.length() != 0) {
             if (nextMoveColor == 'w') {
-                moves = moves.substring(2);
+                timesRemoved++;
+                moves = moves.substring(String.valueOf(timesRemoved).length() + 1);
                 Log.d("moves after  cut", moves);
             }
-            else {
-                Log.d("moves", moves);
-            }
             if (moves.charAt(0) == 'B') {
-                if (moves.charAt(1) == 'x'){
-                    Bishop bishop = (Bishop) board.findPiece('b', nextMoveColor, -1, -1);
-                    col = (int) moves.charAt(2) - 97;
-                    row = (int) moves.charAt(3) - 49;
-                    int[] move = {row, col};
-                    pieceMoves = bishop.getPossibleMoves(board, true);
-                    Board newBoard = board.clone();
-                    while (!pieceMoves.isInsideQueue(move)){
-                        newBoard.getBoard()[bishop.row][bishop.col] = null;
-                        bishop = (Bishop) newBoard.findPiece('b', nextMoveColor, -1, -1);
-                        pieceMoves = bishop.getPossibleMoves(board, true);
-                    }
-                    bishop.move(board, row, col);
-                    chessBoard.removeAllViews();
-                    showBoard(isLoadGame);
-                    setNextMoveColor();
-                    if (nextMoveColor == 'b') {
-                        info.setText("Next move: black");
-                    }
-                    else {
-                        info.setText("Next move: white");
-                    }
-                    if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
-                        moves = moves.substring(5);
-                    }
-                    else {
-                        moves = moves.substring(4);
-                    }
-                }
-                else if ((int) moves.charAt(1) > 48 && (int) moves.charAt(1) < 57){
-                    Bishop bishop = (Bishop) board.findPiece('b', nextMoveColor, (int) moves.charAt(1) - 49, -1);
-                    if (moves.charAt(2) == 'x'){
-                        col = moves.charAt(3) - 97;
-                        row = moves.charAt(4) - 49;
-                        int[] move = {row, col};
-                        pieceMoves = bishop.getPossibleMoves(board, true);
-                        if (pieceMoves.isInsideQueue(move)){
-                            bishop.move(board, row, col);
-                            chessBoard.removeAllViews();
-                            showBoard(isLoadGame);
-                            setNextMoveColor();
-                            if (nextMoveColor == 'b') {
-                                info.setText("Next move: black");
-                            }
-                            else {
-                                info.setText("Next move: white");
-                            }
-                        }
-                        if (moves.charAt(5) == '+' || moves.charAt(5) == '#'){
-                            moves = moves.substring(6);
-                        }
-                        else {
-                            moves = moves.substring(5);
-                        }
-                    }
-                    else {
-                        col = moves.charAt(2) - 97;
-                        row = moves.charAt(3) - 49;
-                        int[] move = {row, col};
-                        pieceMoves = bishop.getPossibleMoves(board, true);
-                        if (pieceMoves.isInsideQueue(move)){
-                            bishop.move(board, row, col);
-                            chessBoard.removeAllViews();
-                            showBoard(isLoadGame);
-                            setNextMoveColor();
-                            if (nextMoveColor == 'b') {
-                                info.setText("Next move: black");
-                            }
-                            else {
-                                info.setText("Next move: white");
-                            }
-                        }
-                        if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
-                            moves = moves.substring(5);
-                        }
-                        else {
-                            moves = moves.substring(4);
-                        }
-                    }
-                }
-                else if ((int) moves.charAt(1) > 96 && (int) moves.charAt(1) < 105 && (int) moves.charAt(2) > 96 && (int) moves.charAt(2) < 105){
-                    Bishop bishop = (Bishop) board.findPiece('b', nextMoveColor, -1, (int) moves.charAt(1) - 97);
-                    if (moves.charAt(2) == 'x'){
-                        col = moves.charAt(3) - 97;
-                        row = moves.charAt(4) - 49;
-                        int[] move = {row, col};
-                        pieceMoves = bishop.getPossibleMoves(board, true);
-                        if (pieceMoves.isInsideQueue(move)){
-                            bishop.move(board, row, col);
-                            chessBoard.removeAllViews();
-                            showBoard(isLoadGame);
-                            setNextMoveColor();
-                            if (nextMoveColor == 'b') {
-                                info.setText("Next move: black");
-                            }
-                            else {
-                                info.setText("Next move: white");
-                            }
-                        }
-                        if (moves.charAt(5) == '+' || moves.charAt(5) == '#'){
-                            moves = moves.substring(6);
-                        }
-                        else {
-                            moves = moves.substring(5);
-                        }
-                    }
-                    else {
-                        col = moves.charAt(2) - 97;
-                        row = moves.charAt(3) - 49;
-                        int[] move = {row, col};
-                        pieceMoves = bishop.getPossibleMoves(board, true);
-                        if (pieceMoves.isInsideQueue(move)){
-                            bishop.move(board, row, col);
-                            chessBoard.removeAllViews();
-                            showBoard(isLoadGame);
-                            setNextMoveColor();
-                            if (nextMoveColor == 'b') {
-                                info.setText("Next move: black");
-                            }
-                            else {
-                                info.setText("Next move: white");
-                            }
-                        }
-                        if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
-                            moves = moves.substring(5);
-                        }
-                        else {
-                            moves = moves.substring(4);
-                        }
-                    }
-                }
-                else {
-                    Bishop bishop = (Bishop) board.findPiece('b', nextMoveColor, -1, -1);
-                    col = moves.charAt(1) - 97;
-                    row = moves.charAt(2) - 49;
-                    int[] move = {row, col};
-                    pieceMoves = bishop.getPossibleMoves(board, true);
-                    Board newBoard = board.clone();
-                    while (!pieceMoves.isInsideQueue(move)){
-                        newBoard.getBoard()[bishop.row][bishop.col] = null;
-                        bishop = (Bishop) newBoard.findPiece('b', nextMoveColor, -1, -1);
-                        pieceMoves = bishop.getPossibleMoves(board, true);
-                    }
-                    bishop.move(board, row, col);
-                    chessBoard.removeAllViews();
-                    showBoard(isLoadGame);
-                    setNextMoveColor();
-                    if (nextMoveColor == 'b') {
-                        info.setText("Next move: black");
-                    }
-                    else {
-                        info.setText("Next move: white");
-                    }
-                    if (moves.charAt(3) == '+' || moves.charAt(3) == '#') {
-                        moves = moves.substring(4);
-                    } else {
-                        moves = moves.substring(3);
-                    }
-                }
-                return moves;
-            }
-            else if (moves.charAt(0) == 'N'){
-                if (moves.charAt(1) == 'x'){
-                    Knight knight = (Knight) board.findPiece('k', nextMoveColor, -1, -1);
-                    col = (int) moves.charAt(2) - 97;
-                    row = (int) moves.charAt(3) - 49;
-                    int[] move = {row, col};
-                    pieceMoves = knight.getPossibleMoves(board, true);
-                    Board newBoard = board.clone();
-                    while (!pieceMoves.isInsideQueue(move)){
-                        newBoard.getBoard()[knight.row][knight.col] = null;
-                        knight = (Knight) newBoard.findPiece('k', nextMoveColor, -1, -1);
-                        pieceMoves = knight.getPossibleMoves(board, true);
-                    }
-                    knight.move(board, row, col);
-                    chessBoard.removeAllViews();
-                    showBoard(isLoadGame);
-                    setNextMoveColor();
-                    if (nextMoveColor == 'b') {
-                        info.setText("Next move: black");
-                    }
-                    else {
-                        info.setText("Next move: white");
-                    }
-                    if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
-                        moves = moves.substring(5);
-                    }
-                    else {
-                        moves = moves.substring(4);
-                    }
-                }
-                else if ((int) moves.charAt(1) > 48 && (int) moves.charAt(1) < 57){
-                    Knight knight = (Knight) board.findPiece('k', nextMoveColor, (int) moves.charAt(1) - 49, -1);
-                    if (moves.charAt(2) == 'x'){
-                        col = moves.charAt(3) - 97;
-                        row = moves.charAt(4) - 49;
-                        int[] move = {row, col};
-                        pieceMoves = knight.getPossibleMoves(board, true);
-                        if (pieceMoves.isInsideQueue(move)){
-                            knight.move(board, row, col);
-                            chessBoard.removeAllViews();
-                            showBoard(isLoadGame);
-                            setNextMoveColor();
-                            if (nextMoveColor == 'b') {
-                                info.setText("Next move: black");
-                            }
-                            else {
-                                info.setText("Next move: white");
-                            }
-                        }
-                        if (moves.charAt(5) == '+' || moves.charAt(5) == '#'){
-                            moves = moves.substring(6);
-                        }
-                        else {
-                            moves = moves.substring(5);
-                        }
-                    }
-                    else {
-                        col = moves.charAt(2) - 97;
-                        row = moves.charAt(3) - 49;
-                        int[] move = {row, col};
-                        pieceMoves = knight.getPossibleMoves(board, true);
-                        if (pieceMoves.isInsideQueue(move)){
-                            knight.move(board, row, col);
-                            chessBoard.removeAllViews();
-                            showBoard(isLoadGame);
-                            setNextMoveColor();
-                            if (nextMoveColor == 'b') {
-                                info.setText("Next move: black");
-                            }
-                            else {
-                                info.setText("Next move: white");
-                            }
-                        }
-                        if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
-                            moves = moves.substring(5);
-                        }
-                        else {
-                            moves = moves.substring(4);
-                        }
-                    }
-                }
-                else if ((int) moves.charAt(1) > 96 && (int) moves.charAt(1) < 105 && (int) moves.charAt(2) > 96 && (int) moves.charAt(2) < 105){
-                    Knight knight = (Knight) board.findPiece('k', nextMoveColor, -1, (int) moves.charAt(1) - 97);
-                    if (moves.charAt(2) == 'x'){
-                        col = moves.charAt(3) - 97;
-                        row = moves.charAt(4) - 49;
-                        int[] move = {row, col};
-                        pieceMoves = knight.getPossibleMoves(board, true);
-                        if (pieceMoves.isInsideQueue(move)){
-                            knight.move(board, row, col);
-                            chessBoard.removeAllViews();
-                            showBoard(isLoadGame);
-                            setNextMoveColor();
-                            if (nextMoveColor == 'b') {
-                                info.setText("Next move: black");
-                            }
-                            else {
-                                info.setText("Next move: white");
-                            }
-                        }
-                        if (moves.charAt(5) == '+' || moves.charAt(5) == '#'){
-                            moves = moves.substring(6);
-                        }
-                        else {
-                            moves = moves.substring(5);
-                        }
-                    }
-                    else {
-                        col = moves.charAt(2) - 97;
-                        row = moves.charAt(3) - 49;
-                        int[] move = {row, col};
-                        pieceMoves = knight.getPossibleMoves(board, true);
-                        if (pieceMoves.isInsideQueue(move)){
-                            knight.move(board, row, col);
-                            chessBoard.removeAllViews();
-                            showBoard(isLoadGame);
-                            setNextMoveColor();
-                            if (nextMoveColor == 'b') {
-                                info.setText("Next move: black");
-                            }
-                            else {
-                                info.setText("Next move: white");
-                            }
-                        }
-                        if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
-                            moves = moves.substring(5);
-                        }
-                        else {
-                            moves = moves.substring(4);
-                        }
-                    }
-                }
-                else {
-                    Knight knight = (Knight) board.findPiece('k', nextMoveColor, -1, -1);
-                    col = moves.charAt(1) - 97;
-                    row = moves.charAt(2) - 49;
-                    int[] move = {row, col};
-                    pieceMoves = knight.getPossibleMoves(board, true);
-                    if (pieceMoves.isInsideQueue(move)) {
-                        knight.move(board, row, col);
-                        chessBoard.removeAllViews();
-                        showBoard(isLoadGame);
-                        setNextMoveColor();
-                        if (nextMoveColor == 'b') {
-                            info.setText("Next move: black");
-                        }
-                        else {
-                            info.setText("Next move: white");
-                        }
-                    }
-                    if (moves.charAt(3) == '+' || moves.charAt(3) == '#') {
-                        moves = moves.substring(4);
-                    } else {
-                        moves = moves.substring(3);
-                    }
-                }
-                return moves;
-            }
-            else if (moves.charAt(0) == 'Q') {
                 if (moves.charAt(1) == 'x') {
-                    Queen queen = (Queen) board.findPiece('q', nextMoveColor, -1, -1);
+                    Bishop bishop = (Bishop) board.findPiece('b', nextMoveColor, -1, -1);
                     col = (int) moves.charAt(2) - 97;
                     row = (int) moves.charAt(3) - 49;
                     int[] move = {row, col};
-                    pieceMoves = queen.getPossibleMoves(board, true);
+                    pieceMoves = bishop.getPossibleMoves(board, true);
                     Board newBoard = board.clone();
-                    while (!pieceMoves.isInsideQueue(move)){
-                        newBoard.getBoard()[queen.row][queen.col] = null;
-                        queen = (Queen) newBoard.findPiece('q', nextMoveColor, -1, -1);
-                        pieceMoves = queen.getPossibleMoves(board, true);
+                    while (!pieceMoves.isInsideQueue(move)) {
+                        newBoard.getBoard()[bishop.row][bishop.col] = null;
+                        bishop = (Bishop) newBoard.findPiece('b', nextMoveColor, -1, -1);
+                        pieceMoves = bishop.getPossibleMoves(board, true);
                     }
-                    queen.move(board, row, col);
+                    bishop.move(board, row, col);
                     chessBoard.removeAllViews();
                     showBoard(isLoadGame);
                     setNextMoveColor();
                     if (nextMoveColor == 'b') {
                         info.setText("Next move: black");
-                    }
-                    else {
+                    } else {
                         info.setText("Next move: white");
                     }
                     if (moves.charAt(4) == '+' || moves.charAt(4) == '#') {
@@ -690,21 +360,20 @@ public class Chess extends AppCompatActivity {
                         moves = moves.substring(4);
                     }
                 } else if ((int) moves.charAt(1) > 48 && (int) moves.charAt(1) < 57) {
-                    Queen queen = (Queen) board.findPiece('q', nextMoveColor, (int) moves.charAt(1) - 49, -1);
+                    Bishop bishop = (Bishop) board.findPiece('b', nextMoveColor, (int) moves.charAt(1) - 49, -1);
                     if (moves.charAt(2) == 'x') {
                         col = moves.charAt(3) - 97;
                         row = moves.charAt(4) - 49;
                         int[] move = {row, col};
-                        pieceMoves = queen.getPossibleMoves(board, true);
+                        pieceMoves = bishop.getPossibleMoves(board, true);
                         if (pieceMoves.isInsideQueue(move)) {
-                            queen.move(board, row, col);
+                            bishop.move(board, row, col);
                             chessBoard.removeAllViews();
                             showBoard(isLoadGame);
                             setNextMoveColor();
                             if (nextMoveColor == 'b') {
                                 info.setText("Next move: black");
-                            }
-                            else {
+                            } else {
                                 info.setText("Next move: white");
                             }
                         }
@@ -717,16 +386,15 @@ public class Chess extends AppCompatActivity {
                         col = moves.charAt(2) - 97;
                         row = moves.charAt(3) - 49;
                         int[] move = {row, col};
-                        pieceMoves = queen.getPossibleMoves(board, true);
+                        pieceMoves = bishop.getPossibleMoves(board, true);
                         if (pieceMoves.isInsideQueue(move)) {
-                            queen.move(board, row, col);
+                            bishop.move(board, row, col);
                             chessBoard.removeAllViews();
                             showBoard(isLoadGame);
                             setNextMoveColor();
                             if (nextMoveColor == 'b') {
                                 info.setText("Next move: black");
-                            }
-                            else {
+                            } else {
                                 info.setText("Next move: white");
                             }
                         }
@@ -736,22 +404,21 @@ public class Chess extends AppCompatActivity {
                             moves = moves.substring(4);
                         }
                     }
-                } else if ((int) moves.charAt(1) > 96 && (int) moves.charAt(1) < 105 && (int) moves.charAt(2) > 96 && (int) moves.charAt(2) < 105){
-                    Queen queen = (Queen) board.findPiece('q', nextMoveColor, -1, (int) moves.charAt(1) - 97);
+                } else if ((int) moves.charAt(1) > 96 && (int) moves.charAt(1) < 105 && (int) moves.charAt(2) > 96 && (int) moves.charAt(2) < 105) {
+                    Bishop bishop = (Bishop) board.findPiece('b', nextMoveColor, -1, (int) moves.charAt(1) - 97);
                     if (moves.charAt(2) == 'x') {
                         col = moves.charAt(3) - 97;
                         row = moves.charAt(4) - 49;
                         int[] move = {row, col};
-                        pieceMoves = queen.getPossibleMoves(board, true);
+                        pieceMoves = bishop.getPossibleMoves(board, true);
                         if (pieceMoves.isInsideQueue(move)) {
-                            queen.move(board, row, col);
+                            bishop.move(board, row, col);
                             chessBoard.removeAllViews();
                             showBoard(isLoadGame);
                             setNextMoveColor();
                             if (nextMoveColor == 'b') {
                                 info.setText("Next move: black");
-                            }
-                            else {
+                            } else {
                                 info.setText("Next move: white");
                             }
                         }
@@ -764,16 +431,15 @@ public class Chess extends AppCompatActivity {
                         col = moves.charAt(2) - 97;
                         row = moves.charAt(3) - 49;
                         int[] move = {row, col};
-                        pieceMoves = queen.getPossibleMoves(board, true);
+                        pieceMoves = bishop.getPossibleMoves(board, true);
                         if (pieceMoves.isInsideQueue(move)) {
-                            queen.move(board, row, col);
+                            bishop.move(board, row, col);
                             chessBoard.removeAllViews();
                             showBoard(isLoadGame);
                             setNextMoveColor();
                             if (nextMoveColor == 'b') {
                                 info.setText("Next move: black");
-                            }
-                            else {
+                            } else {
                                 info.setText("Next move: white");
                             }
                         }
@@ -784,9 +450,213 @@ public class Chess extends AppCompatActivity {
                         }
                     }
                 } else {
-                    Queen queen = (Queen) board.findPiece('q', nextMoveColor, -1, -1);
+                    Bishop bishop = (Bishop) board.findPiece('b', nextMoveColor, -1, -1);
                     col = moves.charAt(1) - 97;
                     row = moves.charAt(2) - 49;
+                    int[] move = {row, col};
+                    pieceMoves = bishop.getPossibleMoves(board, true);
+                    Board newBoard = board.clone();
+                    while (!pieceMoves.isInsideQueue(move)) {
+                        newBoard.getBoard()[bishop.row][bishop.col] = null;
+                        bishop = (Bishop) newBoard.findPiece('b', nextMoveColor, -1, -1);
+                        pieceMoves = bishop.getPossibleMoves(board, true);
+                    }
+                    bishop.move(board, row, col);
+                    chessBoard.removeAllViews();
+                    showBoard(isLoadGame);
+                    setNextMoveColor();
+                    if (nextMoveColor == 'b') {
+                        info.setText("Next move: black");
+                    } else {
+                        info.setText("Next move: white");
+                    }
+                    if (moves.charAt(3) == '+' || moves.charAt(3) == '#') {
+                        moves = moves.substring(4);
+                    } else {
+                        moves = moves.substring(3);
+                    }
+                }
+                Log.d("moves", moves);
+                return moves;
+            } else if (moves.charAt(0) == 'N') {
+                if (moves.charAt(1) == 'x') {
+                    Knight knight = (Knight) board.findPiece('k', nextMoveColor, -1, -1);
+                    col = (int) moves.charAt(2) - 97;
+                    row = (int) moves.charAt(3) - 49;
+                    int[] move = {row, col};
+                    pieceMoves = knight.getPossibleMoves(board, true);
+                    Board newBoard = board.clone();
+                    while (!pieceMoves.isInsideQueue(move)) {
+                        newBoard.getBoard()[knight.row][knight.col] = null;
+                        knight = (Knight) newBoard.findPiece('k', nextMoveColor, -1, -1);
+                        pieceMoves = knight.getPossibleMoves(board, true);
+                    }
+                    knight.move(board, row, col);
+                    chessBoard.removeAllViews();
+                    showBoard(isLoadGame);
+                    setNextMoveColor();
+                    if (nextMoveColor == 'b') {
+                        info.setText("Next move: black");
+                    } else {
+                        info.setText("Next move: white");
+                    }
+                    if (moves.charAt(4) == '+' || moves.charAt(4) == '#') {
+                        moves = moves.substring(5);
+                    } else {
+                        moves = moves.substring(4);
+                    }
+                } else if ((int) moves.charAt(1) > 48 && (int) moves.charAt(1) < 57) {
+                    Knight knight = (Knight) board.findPiece('k', nextMoveColor, (int) moves.charAt(1) - 49, -1);
+                    if (moves.charAt(2) == 'x') {
+                        col = moves.charAt(3) - 97;
+                        row = moves.charAt(4) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = knight.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)) {
+                            knight.move(board, row, col);
+                            chessBoard.removeAllViews();
+                            showBoard(isLoadGame);
+                            setNextMoveColor();
+                            if (nextMoveColor == 'b') {
+                                info.setText("Next move: black");
+                            } else {
+                                info.setText("Next move: white");
+                            }
+                        }
+                        if (moves.charAt(5) == '+' || moves.charAt(5) == '#') {
+                            moves = moves.substring(6);
+                        } else {
+                            moves = moves.substring(5);
+                        }
+                    } else {
+                        col = moves.charAt(2) - 97;
+                        row = moves.charAt(3) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = knight.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)) {
+                            knight.move(board, row, col);
+                            chessBoard.removeAllViews();
+                            showBoard(isLoadGame);
+                            setNextMoveColor();
+                            if (nextMoveColor == 'b') {
+                                info.setText("Next move: black");
+                            } else {
+                                info.setText("Next move: white");
+                            }
+                        }
+                        if (moves.charAt(4) == '+' || moves.charAt(4) == '#') {
+                            moves = moves.substring(5);
+                        } else {
+                            moves = moves.substring(4);
+                        }
+                    }
+                } else if ((int) moves.charAt(1) > 96 && (int) moves.charAt(1) < 105 && (int) moves.charAt(2) > 96 && (int) moves.charAt(2) < 105) {
+                    Knight knight = (Knight) board.findPiece('k', nextMoveColor, -1, (int) moves.charAt(1) - 97);
+                    if (moves.charAt(2) == 'x') {
+                        col = moves.charAt(3) - 97;
+                        row = moves.charAt(4) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = knight.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)) {
+                            knight.move(board, row, col);
+                            chessBoard.removeAllViews();
+                            showBoard(isLoadGame);
+                            setNextMoveColor();
+                            if (nextMoveColor == 'b') {
+                                info.setText("Next move: black");
+                            } else {
+                                info.setText("Next move: white");
+                            }
+                        }
+                        if (moves.charAt(5) == '+' || moves.charAt(5) == '#') {
+                            moves = moves.substring(6);
+                        } else {
+                            moves = moves.substring(5);
+                        }
+                    } else {
+                        col = moves.charAt(2) - 97;
+                        row = moves.charAt(3) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = knight.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)) {
+                            knight.move(board, row, col);
+                            chessBoard.removeAllViews();
+                            showBoard(isLoadGame);
+                            setNextMoveColor();
+                            if (nextMoveColor == 'b') {
+                                info.setText("Next move: black");
+                            } else {
+                                info.setText("Next move: white");
+                            }
+                        }
+                        if (moves.charAt(4) == '+' || moves.charAt(4) == '#') {
+                            moves = moves.substring(5);
+                        } else {
+                            moves = moves.substring(4);
+                        }
+                    }
+                } else {
+                    Knight knight = (Knight) board.findPiece('k', nextMoveColor, -1, -1);
+                    col = moves.charAt(1) - 97;
+                    row = moves.charAt(2) - 49;
+                    int[] move = {row, col};
+                    pieceMoves = knight.getPossibleMoves(board, true);
+                    Board newBoard = board.clone();
+                    while (!pieceMoves.isInsideQueue(move)) {
+                        newBoard.getBoard()[knight.row][knight.col] = null;
+                        knight = (Knight) newBoard.findPiece('k', nextMoveColor, -1, -1);
+                        pieceMoves = knight.getPossibleMoves(board, true);
+                    }
+                    knight.move(board, row, col);
+                    chessBoard.removeAllViews();
+                    showBoard(isLoadGame);
+                    setNextMoveColor();
+                    if (nextMoveColor == 'b') {
+                        info.setText("Next move: black");
+                    } else {
+                        info.setText("Next move: white");
+                    }
+                    if (moves.charAt(3) == '+' || moves.charAt(3) == '#') {
+                        moves = moves.substring(4);
+                    } else {
+                        moves = moves.substring(3);
+                    }
+                    Log.d("moves", moves);
+                    return moves;
+                }
+            }
+            else if (moves.charAt(0) == 'Q') {
+            if (moves.charAt(1) == 'x') {
+                Queen queen = (Queen) board.findPiece('q', nextMoveColor, -1, -1);
+                col = (int) moves.charAt(2) - 97;
+                row = (int) moves.charAt(3) - 49;
+                int[] move = {row, col};
+                pieceMoves = queen.getPossibleMoves(board, true);
+                Board newBoard = board.clone();
+                while (!pieceMoves.isInsideQueue(move)) {
+                    newBoard.getBoard()[queen.row][queen.col] = null;
+                    queen = (Queen) newBoard.findPiece('q', nextMoveColor, -1, -1);
+                    pieceMoves = queen.getPossibleMoves(board, true);
+                }
+                queen.move(board, row, col);
+                chessBoard.removeAllViews();
+                showBoard(isLoadGame);
+                setNextMoveColor();
+                if (nextMoveColor == 'b') {
+                    info.setText("Next move: black");
+                } else {
+                    info.setText("Next move: white");
+                }
+                if (moves.charAt(4) == '+' || moves.charAt(4) == '#') {
+                    moves = moves.substring(5);
+                } else {
+                    moves = moves.substring(4);
+                }
+            } else if ((int) moves.charAt(1) > 48 && (int) moves.charAt(1) < 57) {
+                Queen queen = (Queen) board.findPiece('q', nextMoveColor, (int) moves.charAt(1) - 49, -1);
+                if (moves.charAt(2) == 'x') {
+                    col = moves.charAt(3) - 97;
+                    row = moves.charAt(4) - 49;
                     int[] move = {row, col};
                     pieceMoves = queen.getPossibleMoves(board, true);
                     if (pieceMoves.isInsideQueue(move)) {
@@ -796,8 +666,28 @@ public class Chess extends AppCompatActivity {
                         setNextMoveColor();
                         if (nextMoveColor == 'b') {
                             info.setText("Next move: black");
+                        } else {
+                            info.setText("Next move: white");
                         }
-                        else {
+                    }
+                    if (moves.charAt(5) == '+' || moves.charAt(5) == '#') {
+                        moves = moves.substring(6);
+                    } else {
+                        moves = moves.substring(5);
+                    }
+                } else {
+                    col = moves.charAt(2) - 97;
+                    row = moves.charAt(3) - 49;
+                    int[] move = {row, col};
+                    pieceMoves = queen.getPossibleMoves(board, true);
+                    if (pieceMoves.isInsideQueue(move)) {
+                        queen.move(board, row, col);
+                        chessBoard.removeAllViews();
+                        showBoard(isLoadGame);
+                        setNextMoveColor();
+                        if (nextMoveColor == 'b') {
+                            info.setText("Next move: black");
+                        } else {
                             info.setText("Next move: white");
                         }
                     }
@@ -807,17 +697,87 @@ public class Chess extends AppCompatActivity {
                         moves = moves.substring(4);
                     }
                 }
-                return moves;
+            } else if ((int) moves.charAt(1) > 96 && (int) moves.charAt(1) < 105 && (int) moves.charAt(2) > 96 && (int) moves.charAt(2) < 105) {
+                Queen queen = (Queen) board.findPiece('q', nextMoveColor, -1, (int) moves.charAt(1) - 97);
+                if (moves.charAt(2) == 'x') {
+                    col = moves.charAt(3) - 97;
+                    row = moves.charAt(4) - 49;
+                    int[] move = {row, col};
+                    pieceMoves = queen.getPossibleMoves(board, true);
+                    if (pieceMoves.isInsideQueue(move)) {
+                        queen.move(board, row, col);
+                        chessBoard.removeAllViews();
+                        showBoard(isLoadGame);
+                        setNextMoveColor();
+                        if (nextMoveColor == 'b') {
+                            info.setText("Next move: black");
+                        } else {
+                            info.setText("Next move: white");
+                        }
+                    }
+                    if (moves.charAt(5) == '+' || moves.charAt(5) == '#') {
+                        moves = moves.substring(6);
+                    } else {
+                        moves = moves.substring(5);
+                    }
+                } else {
+                    col = moves.charAt(2) - 97;
+                    row = moves.charAt(3) - 49;
+                    int[] move = {row, col};
+                    pieceMoves = queen.getPossibleMoves(board, true);
+                    if (pieceMoves.isInsideQueue(move)) {
+                        queen.move(board, row, col);
+                        chessBoard.removeAllViews();
+                        showBoard(isLoadGame);
+                        setNextMoveColor();
+                        if (nextMoveColor == 'b') {
+                            info.setText("Next move: black");
+                        } else {
+                            info.setText("Next move: white");
+                        }
+                    }
+                    if (moves.charAt(4) == '+' || moves.charAt(4) == '#') {
+                        moves = moves.substring(5);
+                    } else {
+                        moves = moves.substring(4);
+                    }
+                }
             }
-            else if (moves.charAt(0) == 'R'){
-                if (moves.charAt(1) == 'x'){
+            else {
+                Queen queen = (Queen) board.findPiece('q', nextMoveColor, -1, -1);
+                col = moves.charAt(1) - 97;
+                row = moves.charAt(2) - 49;
+                int[] move = {row, col};
+                pieceMoves = queen.getPossibleMoves(board, true);
+                if (pieceMoves.isInsideQueue(move)) {
+                    queen.move(board, row, col);
+                    chessBoard.removeAllViews();
+                    showBoard(isLoadGame);
+                    setNextMoveColor();
+                    if (nextMoveColor == 'b') {
+                        info.setText("Next move: black");
+                    } else {
+                        info.setText("Next move: white");
+                    }
+                }
+                if (moves.charAt(3) == '+' || moves.charAt(3) == '#') {
+                    moves = moves.substring(4);
+                } else {
+                    moves = moves.substring(3);
+                }
+            }
+            Log.d("moves", moves);
+            return moves;
+            }
+                else if (moves.charAt(0) == 'R') {
+                if (moves.charAt(1) == 'x') {
                     Rook rook = (Rook) board.findPiece('r', nextMoveColor, -1, -1);
                     col = (int) moves.charAt(2) - 97;
                     row = (int) moves.charAt(3) - 49;
                     int[] move = {row, col};
                     pieceMoves = rook.getPossibleMoves(board, true);
                     Board newBoard = board.clone();
-                    while (!pieceMoves.isInsideQueue(move)){
+                    while (!pieceMoves.isInsideQueue(move)) {
                         newBoard.getBoard()[rook.row][rook.col] = null;
                         rook = (Rook) newBoard.findPiece('r', nextMoveColor, -1, -1);
                         pieceMoves = rook.getPossibleMoves(board, true);
@@ -828,146 +788,134 @@ public class Chess extends AppCompatActivity {
                     setNextMoveColor();
                     if (nextMoveColor == 'b') {
                         info.setText("Next move: black");
-                    }
-                    else {
+                    } else {
                         info.setText("Next move: white");
-                    }
-                    if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
-                        moves = moves.substring(5);
-                    }
-                    else {
-                        moves = moves.substring(4);
-                    }
-                }
-                else if ((int) moves.charAt(1) > 48 && (int) moves.charAt(1) < 57){
-                    Rook rook = (Rook) board.findPiece('r', nextMoveColor, (int) moves.charAt(1) - 49, -1);
-                    if (moves.charAt(2) == 'x'){
-                        col = moves.charAt(3) - 97;
-                        row = moves.charAt(4) - 49;
-                        int[] move = {row, col};
-                        pieceMoves = rook.getPossibleMoves(board, true);
-                        if (pieceMoves.isInsideQueue(move)){
-                            rook.move(board, row, col);
-                            chessBoard.removeAllViews();
-                            showBoard(isLoadGame);
-                            setNextMoveColor();
-                            if (nextMoveColor == 'b') {
-                                info.setText("Next move: black");
-                            }
-                            else {
-                                info.setText("Next move: white");
-                            }
-                        }
-                        if (moves.charAt(5) == '+' || moves.charAt(5) == '#'){
-                            moves = moves.substring(6);
-                        }
-                        else {
-                            moves = moves.substring(5);
-                        }
-                    }
-                    else {
-                        col = moves.charAt(2) - 97;
-                        row = moves.charAt(3) - 49;
-                        int[] move = {row, col};
-                        pieceMoves = rook.getPossibleMoves(board, true);
-                        if (pieceMoves.isInsideQueue(move)){
-                            rook.move(board, row, col);
-                            chessBoard.removeAllViews();
-                            showBoard(isLoadGame);
-                            setNextMoveColor();
-                            if (nextMoveColor == 'b') {
-                                info.setText("Next move: black");
-                            }
-                            else {
-                                info.setText("Next move: white");
-                            }
-                        }
-                        if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
-                            moves = moves.substring(5);
-                        }
-                        else {
-                            moves = moves.substring(4);
-                        }
-                    }
-                }
-                else if ((int) moves.charAt(1) > 96 && (int) moves.charAt(1) < 105 && (int) moves.charAt(2) > 96 && (int) moves.charAt(2) < 105){
-                    Rook rook = (Rook) board.findPiece('r', nextMoveColor, -1, (int) moves.charAt(1) - 97);
-                    if (moves.charAt(2) == 'x'){
-                        col = moves.charAt(3) - 97;
-                        row = moves.charAt(4) - 49;
-                        int[] move = {row, col};
-                        pieceMoves = rook.getPossibleMoves(board, true);
-                        if (pieceMoves.isInsideQueue(move)){
-                            rook.move(board, row, col);
-                            chessBoard.removeAllViews();
-                            showBoard(isLoadGame);
-                            setNextMoveColor();
-                            if (nextMoveColor == 'b') {
-                                info.setText("Next move: black");
-                            }
-                            else {
-                                info.setText("Next move: white");
-                            }
-                        }
-                        if (moves.charAt(5) == '+' || moves.charAt(5) == '#'){
-                            moves = moves.substring(6);
-                        }
-                        else {
-                            moves = moves.substring(5);
-                        }
-                    }
-                    else {
-                        col = moves.charAt(2) - 97;
-                        row = moves.charAt(3) - 49;
-                        int[] move = {row, col};
-                        pieceMoves = rook.getPossibleMoves(board, true);
-                        if (pieceMoves.isInsideQueue(move)){
-                            rook.move(board, row, col);
-                            chessBoard.removeAllViews();
-                            showBoard(isLoadGame);
-                            setNextMoveColor();
-                            if (nextMoveColor == 'b') {
-                                info.setText("Next move: black");
-                            }
-                            else {
-                                info.setText("Next move: white");
-                            }
-                        }
-                        if (moves.charAt(4) == '+' || moves.charAt(4) == '#'){
-                            moves = moves.substring(5);
-                        }
-                        else {
-                            moves = moves.substring(4);
-                        }
-                    }
-                }
-                else {
-                    Rook rook = (Rook) board.findPiece('r', nextMoveColor, -1, -1);
-                    col = moves.charAt(1) - 97;
-                    row = moves.charAt(2) - 49;
-                    int[] move = {row, col};
-                    pieceMoves = rook.getPossibleMoves(board, true);
-                    if (pieceMoves.isInsideQueue(move)) {
-                        rook.move(board, row, col);
-                        chessBoard.removeAllViews();
-                        showBoard(isLoadGame);
-                        setNextMoveColor();
-                        if (nextMoveColor == 'b') {
-                            info.setText("Next move: black");
-                        }
-                        else {
-                            info.setText("Next move: white");
-                        }
                     }
                     if (moves.charAt(4) == '+' || moves.charAt(4) == '#') {
                         moves = moves.substring(5);
                     } else {
                         moves = moves.substring(4);
                     }
+                } else if ((int) moves.charAt(1) > 48 && (int) moves.charAt(1) < 57) {
+                    Rook rook = (Rook) board.findPiece('r', nextMoveColor, (int) moves.charAt(1) - 49, -1);
+                    if (moves.charAt(2) == 'x') {
+                        col = moves.charAt(3) - 97;
+                        row = moves.charAt(4) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = rook.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)) {
+                            rook.move(board, row, col);
+                            chessBoard.removeAllViews();
+                            showBoard(isLoadGame);
+                            setNextMoveColor();
+                            if (nextMoveColor == 'b') {
+                                info.setText("Next move: black");
+                            } else {
+                                info.setText("Next move: white");
+                            }
+                        }
+                        if (moves.charAt(5) == '+' || moves.charAt(5) == '#') {
+                            moves = moves.substring(6);
+                        } else {
+                            moves = moves.substring(5);
+                        }
+                    } else {
+                        col = moves.charAt(2) - 97;
+                        row = moves.charAt(3) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = rook.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)) {
+                            rook.move(board, row, col);
+                            chessBoard.removeAllViews();
+                            showBoard(isLoadGame);
+                            setNextMoveColor();
+                            if (nextMoveColor == 'b') {
+                                info.setText("Next move: black");
+                            } else {
+                                info.setText("Next move: white");
+                            }
+                        }
+                        if (moves.charAt(4) == '+' || moves.charAt(4) == '#') {
+                            moves = moves.substring(5);
+                        } else {
+                            moves = moves.substring(4);
+                        }
+                    }
+                } else if ((int) moves.charAt(1) > 96 && (int) moves.charAt(1) < 105 && (int) moves.charAt(2) > 96 && (int) moves.charAt(2) < 105) {
+                    Rook rook = (Rook) board.findPiece('r', nextMoveColor, -1, (int) moves.charAt(1) - 97);
+                    if (moves.charAt(2) == 'x') {
+                        col = moves.charAt(3) - 97;
+                        row = moves.charAt(4) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = rook.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)) {
+                            rook.move(board, row, col);
+                            chessBoard.removeAllViews();
+                            showBoard(isLoadGame);
+                            setNextMoveColor();
+                            if (nextMoveColor == 'b') {
+                                info.setText("Next move: black");
+                            } else {
+                                info.setText("Next move: white");
+                            }
+                        }
+                        if (moves.charAt(5) == '+' || moves.charAt(5) == '#') {
+                            moves = moves.substring(6);
+                        } else {
+                            moves = moves.substring(5);
+                        }
+                    } else {
+                        col = moves.charAt(2) - 97;
+                        row = moves.charAt(3) - 49;
+                        int[] move = {row, col};
+                        pieceMoves = rook.getPossibleMoves(board, true);
+                        if (pieceMoves.isInsideQueue(move)) {
+                            rook.move(board, row, col);
+                            chessBoard.removeAllViews();
+                            showBoard(isLoadGame);
+                            setNextMoveColor();
+                            if (nextMoveColor == 'b') {
+                                info.setText("Next move: black");
+                            } else {
+                                info.setText("Next move: white");
+                            }
+                        }
+                        if (moves.charAt(4) == '+' || moves.charAt(4) == '#') {
+                            moves = moves.substring(5);
+                        } else {
+                            moves = moves.substring(4);
+                        }
+                    }
+                } else {
+                    Rook rook = (Rook) board.findPiece('r', nextMoveColor, -1, -1);
+                    col = moves.charAt(1) - 97;
+                    row = moves.charAt(2) - 49;
+                    int[] move = {row, col};
+                    pieceMoves = rook.getPossibleMoves(board, true);
+                    Board newBoard = board.clone();
+                    while (!pieceMoves.isInsideQueue(move)) {
+                        newBoard.getBoard()[rook.row][rook.col] = null;
+                        rook = (Rook) newBoard.findPiece('r', nextMoveColor, -1, -1);
+                        pieceMoves = rook.getPossibleMoves(board, true);
+                    }
+                    rook.move(board, row, col);
+                    chessBoard.removeAllViews();
+                    showBoard(isLoadGame);
+                    setNextMoveColor();
+                    if (nextMoveColor == 'b') {
+                        info.setText("Next move: black");
+                    } else {
+                        info.setText("Next move: white");
+                    }
+                    if (moves.charAt(3) == '+' || moves.charAt(3) == '#') {
+                        moves = moves.substring(4);
+                    } else {
+                        moves = moves.substring(3);
+                    }
                 }
+                Log.d("moves", moves);
                 return moves;
-            }
-            else if (moves.charAt(0) == 'K' || moves.charAt(0) == 'O') {
+            } else if (moves.charAt(0) == 'K' || moves.charAt(0) == 'O') {
                 King king = (King) board.findPiece('K', nextMoveColor, -1, -1);
                 if (moves.charAt(0) == 'K') {
                     if (moves.charAt(1) == 'x') {
@@ -982,14 +930,12 @@ public class Chess extends AppCompatActivity {
                             setNextMoveColor();
                             if (nextMoveColor == 'b') {
                                 info.setText("Next move: black");
-                            }
-                            else {
+                            } else {
                                 info.setText("Next move: white");
                             }
                         }
                         moves = moves.substring(4);
-                    }
-                    else {
+                    } else {
                         col = moves.charAt(1) - 97;
                         row = moves.charAt(2) - 49;
                         int[] move = {row, col};
@@ -1001,17 +947,15 @@ public class Chess extends AppCompatActivity {
                             setNextMoveColor();
                             if (nextMoveColor == 'b') {
                                 info.setText("Next move: black");
-                            }
-                            else {
+                            } else {
                                 info.setText("Next move: white");
                             }
                         }
                         moves = moves.substring(3);
                     }
-                }
-                else {
-                    if (moves.length() > 4){
-                        if (moves.charAt(2) == 'O' && moves.charAt(4) == 'O'){
+                } else {
+                    if (moves.length() > 4) {
+                        if (moves.charAt(2) == 'O' && moves.charAt(4) == 'O') {
                             col = king.col - 2;
                             row = king.row;
                             int[] move = {row, col};
@@ -1023,13 +967,12 @@ public class Chess extends AppCompatActivity {
                                 setNextMoveColor();
                                 if (nextMoveColor == 'b') {
                                     info.setText("Next move: black");
-                                }
-                                else {
+                                } else {
                                     info.setText("Next move: white");
                                 }
+                                moves = moves.substring(5);
                             }
-                        }
-                        else {
+                        } else {
                             col = king.col + 2;
                             row = king.row;
                             int[] move = {row, col};
@@ -1041,14 +984,13 @@ public class Chess extends AppCompatActivity {
                                 setNextMoveColor();
                                 if (nextMoveColor == 'b') {
                                     info.setText("Next move: black");
-                                }
-                                else {
+                                } else {
                                     info.setText("Next move: white");
                                 }
                             }
+                            moves = moves.substring(3);
                         }
-                    }
-                    else {
+                    } else {
                         col = king.col + 2;
                         row = king.row;
                         int[] move = {row, col};
@@ -1060,21 +1002,16 @@ public class Chess extends AppCompatActivity {
                             setNextMoveColor();
                             if (nextMoveColor == 'b') {
                                 info.setText("Next move: black");
-                            }
-                            else {
+                            } else {
                                 info.setText("Next move: white");
                             }
+                            moves = moves.substring(3);
                         }
                     }
                 }
-                if (moves.charAt(4) == '+' || moves.charAt(4) == '#') {
-                    moves = moves.substring(5);
-                } else {
-                    moves = moves.substring(4);
-                }
+                Log.d("moves", moves);
                 return moves;
-            }
-            else {
+            } else {
                 Pawn pawn = (Pawn) board.findPiece('p', nextMoveColor, -1, -1);
                 if (moves.charAt(1) == 'x') {
                     col = (int) moves.charAt(2) - 97;
@@ -1093,8 +1030,7 @@ public class Chess extends AppCompatActivity {
                     setNextMoveColor();
                     if (nextMoveColor == 'b') {
                         info.setText("Next move: black");
-                    }
-                    else {
+                    } else {
                         info.setText("Next move: white");
                     }
                     if (moves.charAt(4) == '+' || moves.charAt(4) == '#') {
@@ -1106,9 +1042,8 @@ public class Chess extends AppCompatActivity {
                             } else {
                                 moves = moves.substring(9);
                             }
-                        }
-                         else {
-                        moves = moves.substring(4);
+                        } else {
+                            moves = moves.substring(4);
                         }
                     } else {
                         moves = moves.substring(4);
@@ -1130,8 +1065,7 @@ public class Chess extends AppCompatActivity {
                     setNextMoveColor();
                     if (nextMoveColor == 'b') {
                         info.setText("Next move: black");
-                    }
-                    else {
+                    } else {
                         info.setText("Next move: white");
                     }
                     if (moves.charAt(2) == '+' || moves.charAt(2) == '#') {
@@ -1140,9 +1074,10 @@ public class Chess extends AppCompatActivity {
                         moves = moves.substring(2);
                     }
                 }
+                Log.d("moves", moves);
                 return moves;
             }
         }
-        return "";
+        return moves;
     }
 }
