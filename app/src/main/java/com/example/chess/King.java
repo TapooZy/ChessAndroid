@@ -7,10 +7,11 @@ public class King extends Piece {
     public King(char color, int row, int col) {
         super(color, 'K', row, col);
     }
-    public Queue<Integer> getPossibleMoves(Board board, boolean checkCheck) {
+    public Queue<Location> getPossibleMoves(Board board, boolean checkCheck) {
         int row1, col1;
-        Queue<Integer> moves = new Queue<>();
+        Queue<Location> moves = new Queue<>();
         Board newBoard;
+        Location from = new Location(this.row, this.col);
         int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
         for (int i = 0; i < 8; i++) {
             row1 = row + directions[i][0];
@@ -22,11 +23,13 @@ public class King extends Piece {
                         newBoard = board.clone();
                         move(newBoard, row1, col1);
                         if (newBoard.canMove(this)){
-                            moves.insert(row1, col1);
+                            Location to = new Location(row1, col1);
+                            moves.insert(from, to);
                         }
                     }
                     else {
-                        moves.insert(row1, col1);
+                        Location to = new Location(row1, col1);
+                        moves.insert(from, to);
                     }
                 }
                 else if (piece.color != color){
@@ -34,21 +37,25 @@ public class King extends Piece {
                         newBoard = board.clone();
                         move(newBoard, row1, col1);
                         if (newBoard.canMove(this)){
-                            moves.insert(row1, col1);
+                            Location to = new Location(row1, col1);
+                            moves.insert(from, to);
                         }
                     }
                     else {
-                        moves.insert(row1, col1);
+                        Location to = new Location(row1, col1);
+                        moves.insert(from, to);
                     }
                 }
             }
         }
         if (checkCheck) {
             if (canCastleLeft(board)){
-            moves.insert(row, col-2);
+                Location to = new Location(this.row, col - 2);
+                moves.insert(from, to);
             }
             if (canCastleRight(board)) {
-                moves.insert(row, col + 2);
+                Location to = new Location(row, col + 2);
+                moves.insert(from, to);
             }
         }
         return moves;
@@ -57,8 +64,8 @@ public class King extends Piece {
 
     public boolean canCastleRight (Board board)
     {
-        Queue<Integer> allMoves = board.getColorMoves(this.color, true);
-        int[] individualMove;
+        Queue<Location> allMoves = board.getColorMoves(this.color, true);
+        Node<Location> individualMove;
         if (board.getBoard()[row][7] != null)
         {
             if (board.getBoard()[row][7] instanceof Rook)
@@ -70,7 +77,7 @@ public class King extends Piece {
                         individualMove = allMoves.remove();
                         for (int col = 5; col < 7; col++)
                         {
-                            if (board.getBoard()[row][col] != null || (individualMove[0] == row && individualMove[1] == col))
+                            if (board.getBoard()[row][col] != null || (individualMove.getTo().row == row && individualMove.getTo().col == col))
                             {
                                 return false;
                             }
@@ -84,8 +91,8 @@ public class King extends Piece {
     }
 
     public boolean canCastleLeft (Board board){
-        Queue<Integer> allMoves = board.getColorMoves(this.color, true);
-        int[] individualMove;
+        Queue<Location> allMoves = board.getColorMoves(this.color, true);
+        Node<Location> individualMove;
         if (board.getBoard()[row][0] != null)
         {
             if (board.getBoard()[row][0] instanceof Rook)
@@ -97,7 +104,7 @@ public class King extends Piece {
                         individualMove = allMoves.remove();
                         for (int col = 3; col > 0; col--)
                         {
-                            if (board.getBoard()[row][col] != null || (individualMove[0] == row && individualMove[1] == col))
+                            if (board.getBoard()[row][col] != null || (individualMove.getTo().row == row && individualMove.getTo().col == col))
                             {
                                 return false;
                             }

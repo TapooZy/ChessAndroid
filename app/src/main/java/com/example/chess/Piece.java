@@ -12,7 +12,7 @@ abstract public class Piece {
         this.col = col;
         didMove = false;
     }
-    public abstract Queue<Integer> getPossibleMoves(Board board, boolean checkCheck);
+    public abstract Queue<Location> getPossibleMoves(Board board, boolean checkCheck);
 
     public abstract void move(Board board, int row, int col);
 }

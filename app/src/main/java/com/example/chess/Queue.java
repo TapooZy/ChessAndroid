@@ -1,9 +1,8 @@
 package com.example.chess;
+public class Queue<Location>{
 
-public class Queue<Integer> {
-
-    private Node<Integer> first;
-    private Node <Integer> last;
+    private Node<Location> first;
+    private Node <Location> last;
     private int size;
 
     public Queue()
@@ -13,9 +12,9 @@ public class Queue<Integer> {
         this.size = 0;
     }
 
-    public void insert (int row, int col)
+    public void insert (Location from, Location to)
     {
-        Node<Integer> temp = new  Node <Integer> (row, col);
+        Node<Location> temp = new  Node<>(from, to);
         if (this.first == null){
             this.first = temp;
             this.last = temp;
@@ -31,28 +30,25 @@ public class Queue<Integer> {
         size++;
     }
 
-    public int[] remove()
-    {
-        int row = this.first.getRow();
-        int col = this.first.getCol();
+    public Node<Location> remove(){
+        Node<Location> thisFirst = first;
         this.first = this.first.getNext();
         if(this.first == this.last)
             this.last = null;
-        int[] arr = {row, col};
         size--;
-        return arr;
+        return thisFirst;
     }
 
-    public boolean isInsideQueue(int[] arr){
-        int queueSize = size;
-        for (int i = 0; i < queueSize; i++) {
-            int[] move = remove();
-            if (arr[0] == move[0] && arr[1] == move[1]){
-                return true;
-            }
-        }
-        return false;
-    }
+//    public boolean isInsideQueue(Location location){
+//        int queueSize = size;
+//        for (int i = 0; i < queueSize; i++) {
+//            Location[] move = remove();
+//            if (location == move[1]){
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     public int getSize() {
         return size;
@@ -60,12 +56,12 @@ public class Queue<Integer> {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        Node<Integer> current = first;
+        Node<Location> current = first;
 
         result.append("Queue: [");
 
         while (current != null) {
-            result.append("(").append(current.getRow()).append(", ").append(current.getCol()).append(")");
+            result.append("(").append(current.getFrom()).append(", ").append(current.getTo()).append(")");
 
             if (current.getNext() != null) {
                 result.append(", ");

@@ -1,36 +1,36 @@
 package com.example.chess;
 
-public class Node<Integer> {
-    private int row;
-    private int col;
-    private Node <Integer> next;
+public class Node<Location> {
+    public Location from;
+    public Location to;
+    private Node <Location> next;
 
-    public Node(int row, int col)
+    public Node(Location from, Location to)
     {
-        this.row=row;
-        this.col=col;
+        this.from = from;
+        this.to = to;
         this.next=null;
     }
 
-    public Node(int row, int col, Node<Integer> next)
+    public Node(Location from, Location to, Node<Location> next)
     {
-        this.row=row;
-        this.col=col;
+        this.from = from;
+        this.to = to;
         this.next=next;
     }
 
-    public Node<Integer> getNext()
+    public Node<Location> getNext()
     {
         return next;
     }
 
-    public int getRow()
+    public Location getFrom()
     {
-        return row;
+        return from;
     }
 
-    public int getCol() {
-        return col;
+    public Location getTo() {
+        return to;
     }
 
     public boolean hasNext()
@@ -38,7 +38,7 @@ public class Node<Integer> {
         return this.next != null;
     }
 
-    public void setNext(Node<Integer> next)
+    public void setNext(Node<Location> next)
     {
         this.next = next;
     }

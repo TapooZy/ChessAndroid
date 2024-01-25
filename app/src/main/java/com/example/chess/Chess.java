@@ -5,6 +5,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,16 +17,15 @@ public class Chess extends AppCompatActivity {
     Dialog promotionDialog;
     ImageView queen, knight, rook, bishop;
     GridLayout chessBoard;
+    CheckBox checkBox;
     Engine engine = new Engine();
     Board board = engine.getBoard();
     Piece piece;
     int screenWidth, whiteId, greenId, promotionCol, timesRemoved = 0;
     char nextMoveColor;
-    Piece whiteKing = board.findKing('w'), blackKing = board.findKing('b');
-    boolean wasClickedOnAPiece;
+//    Piece whiteKing = board.findKing('w'), blackKing = board.findKing('b');
+    boolean wasClickedOnAPiece, isLoadGame, wasChecked = false;
     String moves;
-    boolean isLoadGame;
-
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +37,7 @@ public class Chess extends AppCompatActivity {
         from_green.setBackgroundColor(getResources().getColor(R.color.can_move_to_from_green));
         from_white.setBackgroundColor(getResources().getColor(R.color.can_move_to_from_white));
         ColorDrawable whiteColor = (ColorDrawable) from_white.getBackground();
+        checkBox = findViewById(R.id.cbWhite);
         whiteId = whiteColor.getColor();
         ColorDrawable greenColor = (ColorDrawable) from_green.getBackground();
         greenId = greenColor.getColor();
@@ -47,13 +48,20 @@ public class Chess extends AppCompatActivity {
             info.setText("Next move: white");
         }
         chessBoard = findViewById(R.id.chessBoard);
-        moves = "1.e4e52.Nf3Nc63.Bb5Nf64.d3d65.c3g66.Nbd2Bg77.Nf1O-O8.Ba4Nd79.Ne3Nc510.Bc2Ne611.h4Ne712.h5d513.hxg6fxg614.exd5Nxd515.Nxd5Qxd516.Bb3Qc617.Qe2Bd718.Be3Kh819.O-O-ORae820.Qf1a521.d4exd422.Nxd4Bxd423.Rxd4Nxd424.Rxh7+Kxh725.Qh1+Kg726.Bh6+Kf627.Qh4+Ke528.Qxd4+";
+//        moves = "1.e4e52.Nf3Nc63.Bb5Nf64.d3d65.c3g66.Nbd2Bg77.Nf1O-O8.Ba4Nd79.Ne3Nc510.Bc2Ne611.h4Ne712.h5d513.hxg6fxg614.exd5Nxd515.Nxd5Qxd516.Bb3Qc617.Qe2Bd718.Be3Kh819.O-O-ORae820.Qf1a521.d4exd422.Nxd4Bxd423.Rxd4Nxd424.Rxh7+Kxh725.Qh1+Kg726.Bh6+Kf627.Qh4+Ke528.Qxd4+";
         if (moves != null) {
             isLoadGame = true;
         } else {
             isLoadGame = false;
         }
         showBoard(isLoadGame);
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chessBoard.removeAllViews();
+                showBoard(isLoadGame);
+            }
+        });
         wasClickedOnAPiece = false;
     }
 
@@ -80,9 +88,14 @@ public class Chess extends AppCompatActivity {
                 // Determine the background color for each square
                 int backgroundColor = (i + j) % 2 == 0 ? getResources().getColor(R.color.light_square) : getResources().getColor(R.color.dark_square);
                 imageView.setBackgroundColor(backgroundColor);
-
                 // Get the piece at the current board position
-                Piece p = board.getBoard()[i][j];
+                Piece p;
+                if (checkBox.isChecked()){
+                    p = board.getBoard()[7-i][j];
+                }
+                else {
+                    p = board.getBoard()[i][j];
+                }
 
                 // Set the appropriate image resource based on the type and color of the piece
                 if (p instanceof Bishop) {
@@ -134,9 +147,10 @@ public class Chess extends AppCompatActivity {
                     public void onClick(View v) {
                         if (!isLoadGame) {
                             onSquareClicked(row, col, wasClickedOnAPiece);
-                        } else {
-                            moves = loadGame(moves);
                         }
+//                        else {
+//                            moves = loadGame(moves);
+//                        }
                     }
                 });
 
@@ -145,15 +159,16 @@ public class Chess extends AppCompatActivity {
             }
         }
     }
-
-    @SuppressLint("SetTextI18n")
     private void onSquareClicked(int row, int col, boolean wasClickedOnAPiece) {
         if (wasClickedOnAPiece) {
             View square = chessBoard.getChildAt(row * 8 + col);
             ColorDrawable squareColor = (ColorDrawable) square.getBackground();
             int squareId = squareColor.getColor();
             if (squareId == whiteId || squareId == greenId) {
-                if (piece instanceof Pawn) {
+                if (checkBox.isChecked()){
+                    row = 7 - row;
+                }
+                if (piece.letter == 'p') {
                     int[] cords = {row, col};
                     int pieceRow = piece.row;
                     ((Pawn) piece).pawnMove(board, row, col, engine.getEnPassantLocation());
@@ -174,11 +189,11 @@ public class Chess extends AppCompatActivity {
                     piece.move(board, row, col);
                     engine.setEnPassantLocation(null);
                 }
-                if (nextMoveColor == 'w') {
-                    whiteKing = board.findKing('w');
-                } else {
-                    blackKing = board.findKing('b');
-                }
+//                if (nextMoveColor == 'w') {
+//                    whiteKing = board.findKing('w');
+//                } else {
+//                    blackKing = board.findKing('b');
+//                }
                 this.wasClickedOnAPiece = false;
                 setNextMoveColor();
                 if (nextMoveColor == 'b') {
@@ -188,7 +203,7 @@ public class Chess extends AppCompatActivity {
                 }
                 chessBoard.removeAllViews();
                 showBoard(false);
-                Queue<Integer> allMoves = board.getEndMoves(nextMoveColor);
+                Queue<Location> allMoves = board.getEndMoves(nextMoveColor);
                 if (allMoves.getSize() == 0 && board.isInCheck(nextMoveColor)) {
                     if (nextMoveColor == 'b') {
                         info.setText("Checkmate, white won");
@@ -223,8 +238,13 @@ public class Chess extends AppCompatActivity {
                 this.wasClickedOnAPiece = false;
             }
         } else {
-            Queue<Integer> moves;
-            piece = board.getBoard()[row][col];
+            Queue<Location> moves;
+            if (checkBox.isChecked()) {
+                piece = board.getBoard()[7 - row][col];
+            }
+            else {
+                piece = board.getBoard()[row][col];
+            }
             if (piece == null) {
                 Toast.makeText(this, "This square is empty", Toast.LENGTH_SHORT).show();
                 chessBoard.removeAllViews();
@@ -244,14 +264,20 @@ public class Chess extends AppCompatActivity {
             chessBoard.removeAllViews();
             showBoard(false);
             int size = moves.getSize();
-            int[] individual_move;
+            Node<Location> individual_move;
             if (size == 0) {
                 Toast.makeText(this, "this piece has no moves", Toast.LENGTH_SHORT).show();
             }
             for (int i = 0; i < size; i++) {
                 individual_move = moves.remove();
-                View square_to_color = chessBoard.getChildAt(individual_move[0] * 8 + individual_move[1]);
-                if ((individual_move[0] + individual_move[1]) % 2 == 0) {
+                View square_to_color;
+                if (checkBox.isChecked()){
+                    square_to_color = chessBoard.getChildAt((7-individual_move.getTo().row) * 8 + individual_move.getTo().col);
+                }
+                else {
+                    square_to_color = chessBoard.getChildAt(individual_move.getTo().row * 8 + individual_move.getTo().col);
+                }
+                if ((individual_move.getTo().row + individual_move.getTo().col) % 2 == 0) {
                     square_to_color.setBackgroundColor(getResources().getColor(R.color.can_move_to_from_white));
                 } else {
                     square_to_color.setBackgroundColor(getResources().getColor(R.color.can_move_to_from_green));
@@ -321,11 +347,11 @@ public class Chess extends AppCompatActivity {
         });
         d.show();
     }
-
+/*
     @SuppressLint("SetTextI18n")
     public String loadGame(String moves) {
         int row, col;
-        Queue<Integer> pieceMoves;
+        Queue<Location> pieceMoves;
         if (moves.length() != 0) {
             if (nextMoveColor == 'w') {
                 timesRemoved++;
@@ -337,7 +363,7 @@ public class Chess extends AppCompatActivity {
                     Bishop bishop = (Bishop) board.findPiece('b', nextMoveColor, -1, -1);
                     col = (int) moves.charAt(2) - 97;
                     row = (int) moves.charAt(3) - 49;
-                    int[] move = {row, col};
+                    Location move = new Location(row, col);
                     pieceMoves = bishop.getPossibleMoves(board, true);
                     Board newBoard = board.clone();
                     while (!pieceMoves.isInsideQueue(move)) {
@@ -364,7 +390,7 @@ public class Chess extends AppCompatActivity {
                     if (moves.charAt(2) == 'x') {
                         col = moves.charAt(3) - 97;
                         row = moves.charAt(4) - 49;
-                        int[] move = {row, col};
+                        Integer[] move = {row, col};
                         pieceMoves = bishop.getPossibleMoves(board, true);
                         if (pieceMoves.isInsideQueue(move)) {
                             bishop.move(board, row, col);
@@ -385,7 +411,7 @@ public class Chess extends AppCompatActivity {
                     } else {
                         col = moves.charAt(2) - 97;
                         row = moves.charAt(3) - 49;
-                        int[] move = {row, col};
+                        Integer[] move = {row, col};
                         pieceMoves = bishop.getPossibleMoves(board, true);
                         if (pieceMoves.isInsideQueue(move)) {
                             bishop.move(board, row, col);
@@ -409,7 +435,7 @@ public class Chess extends AppCompatActivity {
                     if (moves.charAt(2) == 'x') {
                         col = moves.charAt(3) - 97;
                         row = moves.charAt(4) - 49;
-                        int[] move = {row, col};
+                        Integer[] move = {row, col};
                         pieceMoves = bishop.getPossibleMoves(board, true);
                         if (pieceMoves.isInsideQueue(move)) {
                             bishop.move(board, row, col);
@@ -430,7 +456,7 @@ public class Chess extends AppCompatActivity {
                     } else {
                         col = moves.charAt(2) - 97;
                         row = moves.charAt(3) - 49;
-                        int[] move = {row, col};
+                        Location move = new Location(row, col);
                         pieceMoves = bishop.getPossibleMoves(board, true);
                         if (pieceMoves.isInsideQueue(move)) {
                             bishop.move(board, row, col);
@@ -453,7 +479,7 @@ public class Chess extends AppCompatActivity {
                     Bishop bishop = (Bishop) board.findPiece('b', nextMoveColor, -1, -1);
                     col = moves.charAt(1) - 97;
                     row = moves.charAt(2) - 49;
-                    int[] move = {row, col};
+                    Integer[] move = {row, col};
                     pieceMoves = bishop.getPossibleMoves(board, true);
                     Board newBoard = board.clone();
                     while (!pieceMoves.isInsideQueue(move)) {
@@ -483,7 +509,7 @@ public class Chess extends AppCompatActivity {
                     Knight knight = (Knight) board.findPiece('k', nextMoveColor, -1, -1);
                     col = (int) moves.charAt(2) - 97;
                     row = (int) moves.charAt(3) - 49;
-                    int[] move = {row, col};
+                    Integer[] move = {row, col};
                     pieceMoves = knight.getPossibleMoves(board, true);
                     Board newBoard = board.clone();
                     while (!pieceMoves.isInsideQueue(move)) {
@@ -510,7 +536,7 @@ public class Chess extends AppCompatActivity {
                     if (moves.charAt(2) == 'x') {
                         col = moves.charAt(3) - 97;
                         row = moves.charAt(4) - 49;
-                        int[] move = {row, col};
+                        Integer[] move = {row, col};
                         pieceMoves = knight.getPossibleMoves(board, true);
                         if (pieceMoves.isInsideQueue(move)) {
                             knight.move(board, row, col);
@@ -531,7 +557,7 @@ public class Chess extends AppCompatActivity {
                     } else {
                         col = moves.charAt(2) - 97;
                         row = moves.charAt(3) - 49;
-                        int[] move = {row, col};
+                        Integer[] move = {row, col};
                         pieceMoves = knight.getPossibleMoves(board, true);
                         if (pieceMoves.isInsideQueue(move)) {
                             knight.move(board, row, col);
@@ -555,7 +581,7 @@ public class Chess extends AppCompatActivity {
                     if (moves.charAt(2) == 'x') {
                         col = moves.charAt(3) - 97;
                         row = moves.charAt(4) - 49;
-                        int[] move = {row, col};
+                        Integer[] move = {row, col};
                         pieceMoves = knight.getPossibleMoves(board, true);
                         if (pieceMoves.isInsideQueue(move)) {
                             knight.move(board, row, col);
@@ -576,7 +602,7 @@ public class Chess extends AppCompatActivity {
                     } else {
                         col = moves.charAt(2) - 97;
                         row = moves.charAt(3) - 49;
-                        int[] move = {row, col};
+                        Integer[] move = {row, col};
                         pieceMoves = knight.getPossibleMoves(board, true);
                         if (pieceMoves.isInsideQueue(move)) {
                             knight.move(board, row, col);
@@ -599,7 +625,7 @@ public class Chess extends AppCompatActivity {
                     Knight knight = (Knight) board.findPiece('k', nextMoveColor, -1, -1);
                     col = moves.charAt(1) - 97;
                     row = moves.charAt(2) - 49;
-                    int[] move = {row, col};
+                    Integer[] move = {row, col};
                     pieceMoves = knight.getPossibleMoves(board, true);
                     Board newBoard = board.clone();
                     while (!pieceMoves.isInsideQueue(move)) {
@@ -630,7 +656,7 @@ public class Chess extends AppCompatActivity {
                 Queen queen = (Queen) board.findPiece('q', nextMoveColor, -1, -1);
                 col = (int) moves.charAt(2) - 97;
                 row = (int) moves.charAt(3) - 49;
-                int[] move = {row, col};
+                Integer[] move = {row, col};
                 pieceMoves = queen.getPossibleMoves(board, true);
                 Board newBoard = board.clone();
                 while (!pieceMoves.isInsideQueue(move)) {
@@ -657,7 +683,7 @@ public class Chess extends AppCompatActivity {
                 if (moves.charAt(2) == 'x') {
                     col = moves.charAt(3) - 97;
                     row = moves.charAt(4) - 49;
-                    int[] move = {row, col};
+                    Integer[] move = {row, col};
                     pieceMoves = queen.getPossibleMoves(board, true);
                     if (pieceMoves.isInsideQueue(move)) {
                         queen.move(board, row, col);
@@ -678,7 +704,7 @@ public class Chess extends AppCompatActivity {
                 } else {
                     col = moves.charAt(2) - 97;
                     row = moves.charAt(3) - 49;
-                    int[] move = {row, col};
+                    Integer[] move = {row, col};
                     pieceMoves = queen.getPossibleMoves(board, true);
                     if (pieceMoves.isInsideQueue(move)) {
                         queen.move(board, row, col);
@@ -702,7 +728,7 @@ public class Chess extends AppCompatActivity {
                 if (moves.charAt(2) == 'x') {
                     col = moves.charAt(3) - 97;
                     row = moves.charAt(4) - 49;
-                    int[] move = {row, col};
+                    Integer[] move = {row, col};
                     pieceMoves = queen.getPossibleMoves(board, true);
                     if (pieceMoves.isInsideQueue(move)) {
                         queen.move(board, row, col);
@@ -723,7 +749,7 @@ public class Chess extends AppCompatActivity {
                 } else {
                     col = moves.charAt(2) - 97;
                     row = moves.charAt(3) - 49;
-                    int[] move = {row, col};
+                    Integer[] move = {row, col};
                     pieceMoves = queen.getPossibleMoves(board, true);
                     if (pieceMoves.isInsideQueue(move)) {
                         queen.move(board, row, col);
@@ -747,7 +773,7 @@ public class Chess extends AppCompatActivity {
                 Queen queen = (Queen) board.findPiece('q', nextMoveColor, -1, -1);
                 col = moves.charAt(1) - 97;
                 row = moves.charAt(2) - 49;
-                int[] move = {row, col};
+                Integer[] move = {row, col};
                 pieceMoves = queen.getPossibleMoves(board, true);
                 if (pieceMoves.isInsideQueue(move)) {
                     queen.move(board, row, col);
@@ -774,7 +800,7 @@ public class Chess extends AppCompatActivity {
                     Rook rook = (Rook) board.findPiece('r', nextMoveColor, -1, -1);
                     col = (int) moves.charAt(2) - 97;
                     row = (int) moves.charAt(3) - 49;
-                    int[] move = {row, col};
+                    Integer[] move = {row, col};
                     pieceMoves = rook.getPossibleMoves(board, true);
                     Board newBoard = board.clone();
                     while (!pieceMoves.isInsideQueue(move)) {
@@ -801,7 +827,7 @@ public class Chess extends AppCompatActivity {
                     if (moves.charAt(2) == 'x') {
                         col = moves.charAt(3) - 97;
                         row = moves.charAt(4) - 49;
-                        int[] move = {row, col};
+                        Integer[] move = {row, col};
                         pieceMoves = rook.getPossibleMoves(board, true);
                         if (pieceMoves.isInsideQueue(move)) {
                             rook.move(board, row, col);
@@ -822,7 +848,7 @@ public class Chess extends AppCompatActivity {
                     } else {
                         col = moves.charAt(2) - 97;
                         row = moves.charAt(3) - 49;
-                        int[] move = {row, col};
+                        Integer[] move = {row, col};
                         pieceMoves = rook.getPossibleMoves(board, true);
                         if (pieceMoves.isInsideQueue(move)) {
                             rook.move(board, row, col);
@@ -846,7 +872,7 @@ public class Chess extends AppCompatActivity {
                     if (moves.charAt(2) == 'x') {
                         col = moves.charAt(3) - 97;
                         row = moves.charAt(4) - 49;
-                        int[] move = {row, col};
+                        Integer[] move = {row, col};
                         pieceMoves = rook.getPossibleMoves(board, true);
                         if (pieceMoves.isInsideQueue(move)) {
                             rook.move(board, row, col);
@@ -867,7 +893,7 @@ public class Chess extends AppCompatActivity {
                     } else {
                         col = moves.charAt(2) - 97;
                         row = moves.charAt(3) - 49;
-                        int[] move = {row, col};
+                        Integer[] move = {row, col};
                         pieceMoves = rook.getPossibleMoves(board, true);
                         if (pieceMoves.isInsideQueue(move)) {
                             rook.move(board, row, col);
@@ -890,7 +916,7 @@ public class Chess extends AppCompatActivity {
                     Rook rook = (Rook) board.findPiece('r', nextMoveColor, -1, -1);
                     col = moves.charAt(1) - 97;
                     row = moves.charAt(2) - 49;
-                    int[] move = {row, col};
+                    Integer[] move = {row, col};
                     pieceMoves = rook.getPossibleMoves(board, true);
                     Board newBoard = board.clone();
                     while (!pieceMoves.isInsideQueue(move)) {
@@ -921,7 +947,7 @@ public class Chess extends AppCompatActivity {
                     if (moves.charAt(1) == 'x') {
                         col = (int) moves.charAt(2) - 97;
                         row = (int) moves.charAt(3) - 49;
-                        int[] move = {row, col};
+                        Integer[] move = {row, col};
                         pieceMoves = king.getPossibleMoves(board, true);
                         if (pieceMoves.isInsideQueue(move)) {
                             king.move(board, row, col);
@@ -938,7 +964,7 @@ public class Chess extends AppCompatActivity {
                     } else {
                         col = moves.charAt(1) - 97;
                         row = moves.charAt(2) - 49;
-                        int[] move = {row, col};
+                        Integer[] move = {row, col};
                         pieceMoves = king.getPossibleMoves(board, true);
                         if (pieceMoves.isInsideQueue(move)) {
                             king.move(board, row, col);
@@ -958,7 +984,7 @@ public class Chess extends AppCompatActivity {
                         if (moves.charAt(2) == 'O' && moves.charAt(4) == 'O') {
                             col = king.col - 2;
                             row = king.row;
-                            int[] move = {row, col};
+                            Integer[] move = {row, col};
                             pieceMoves = king.getPossibleMoves(board, true);
                             if (pieceMoves.isInsideQueue(move)) {
                                 king.move(board, row, col);
@@ -975,7 +1001,7 @@ public class Chess extends AppCompatActivity {
                         } else {
                             col = king.col + 2;
                             row = king.row;
-                            int[] move = {row, col};
+                            Integer[] move = {row, col};
                             pieceMoves = king.getPossibleMoves(board, true);
                             if (pieceMoves.isInsideQueue(move)) {
                                 king.move(board, row, col);
@@ -993,7 +1019,7 @@ public class Chess extends AppCompatActivity {
                     } else {
                         col = king.col + 2;
                         row = king.row;
-                        int[] move = {row, col};
+                        Integer[] move = {row, col};
                         pieceMoves = king.getPossibleMoves(board, true);
                         if (pieceMoves.isInsideQueue(move)) {
                             king.move(board, row, col);
@@ -1016,7 +1042,7 @@ public class Chess extends AppCompatActivity {
                 if (moves.charAt(1) == 'x') {
                     col = (int) moves.charAt(2) - 97;
                     row = (int) moves.charAt(3) - 49;
-                    int[] move = {row, col};
+                    Integer[] move = {row, col};
                     pieceMoves = pawn.getPawnPossibleMoves(board, engine.getEnPassantLocation(), true);
                     Board newBoard = board.clone();
                     while (!pieceMoves.isInsideQueue(move)) {
@@ -1051,7 +1077,7 @@ public class Chess extends AppCompatActivity {
                 } else {
                     col = (int) moves.charAt(0) - 97;
                     row = (int) moves.charAt(1) - 49;
-                    int[] move = {row, col};
+                    Integer[] move = {row, col};
                     pieceMoves = pawn.getPawnPossibleMoves(board, engine.getEnPassantLocation(), true);
                     Board newBoard = board.clone();
                     while (!pieceMoves.isInsideQueue(move)) {
@@ -1080,4 +1106,58 @@ public class Chess extends AppCompatActivity {
         }
         return moves;
     }
+ */
+//    public BoardTree makeTree(BoardTree boardTree, int depth, BoardTree root, char color){
+//        Queue<Integer> moves;
+//        int[] individualMove;
+//        int movesSize, allMovesSize;
+//        char nextColor;
+//        if (depth > 0){
+//            return boardTree;
+//        }
+//        Board board = root.board;
+//        for (int j = 0; j < 8; j++) {
+//            for (int k = 0; k < 8; k++) {
+//                Piece piece1 = board.getBoard()[j][k];
+//                if (piece1 != null){
+//                    if (piece1.color == color){
+//                        if (piece1.letter == 'p'){
+//                            moves = ((Pawn) piece1).getPawnPossibleMoves(root.board, engine.getEnPassantLocation(), true);
+//                        }
+//                        else {
+//                            moves = piece1.getPossibleMoves(root.board, true);
+//                        }
+//                        movesSize = moves.getSize();
+//                        for (int l = 0; l < movesSize; l++) {
+//                            Board newBoard = root.board.clone();
+//                            individualMove = moves.remove();
+//                            piece1.move(newBoard, individualMove[0], individualMove[1]);
+//                            BoardTree boardTree1 = new BoardTree(newBoard, new BoardTree[newBoard.getColorMoves(color, false).getSize()]);
+//                            if (color == 'w'){
+//                                nextColor = 'b';
+//                            }
+//                            else {
+//                                nextColor = 'w';
+//                            }
+//                            return makeTree(boardTree, depth--, boardTree1, nextColor);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        return boardTree;
+//    }
+
+//    public EngineTree makeTree(EngineTree root, int depth, char color){
+//        if (depth == 0){
+//            return root;
+//        }
+//        Queue<Integer> allMoves = root.engine.getBoard().getColorMoves(color, false);
+//        int allMovesSize = allMoves.getSize();
+//        EngineTree[] leaves = new EngineTree[allMovesSize];
+//        for (int i = 0; i < allMovesSize; i++) {
+//            Engine newEngine = engine.clone();
+//
+//        }
+//    }
 }

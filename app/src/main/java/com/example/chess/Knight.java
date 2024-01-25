@@ -7,10 +7,11 @@ public class Knight extends Piece{
     }
 
     @Override
-    public Queue<Integer> getPossibleMoves(Board board, boolean checkCheck) {
+    public Queue<Location> getPossibleMoves(Board board, boolean checkCheck) {
         int row1, col1;
         Board newBoard;
-        Queue<Integer> moves = new Queue<>();
+        Location from = new Location(row, col);
+        Queue<Location> moves = new Queue<>();
         int[][] directions = {{2, 1},{2,-1},{-2,1},{-2,-1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
         for (int i = 0; i < 8; i++) {
             row1 = row + directions[i][0];
@@ -22,11 +23,13 @@ public class Knight extends Piece{
                         newBoard = board.clone();
                         move(newBoard, row1, col1);
                         if (newBoard.canMove(this)){
-                            moves.insert(row1, col1);
+                            Location to = new Location(row1, col1);
+                            moves.insert(from, to);
                         }
                     }
                     else {
-                        moves.insert(row1, col1);
+                        Location to = new Location(row1, col1);
+                        moves.insert(from, to);
                     }
                 }
                 else if (piece.color != color){
@@ -34,11 +37,13 @@ public class Knight extends Piece{
                         newBoard = board.clone();
                         move(newBoard, row1, col1);
                         if (newBoard.canMove(this)){
-                            moves.insert(row1, col1);
+                            Location to = new Location(row1, col1);
+                            moves.insert(from, to);
                         }
                     }
                     else {
-                        moves.insert(row1, col1);
+                        Location to = new Location(row1, col1);
+                        moves.insert(from, to);
                     }
                 }
             }

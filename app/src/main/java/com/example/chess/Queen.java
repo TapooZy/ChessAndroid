@@ -10,23 +10,23 @@ public class Queen extends Piece{
         super(color, 'q', row, col);
     }
 
-    public Queue<Integer> getPossibleMoves(Board board, boolean checkChecked) {
-        Queue<Integer> moves = new Queue<>();
+    public Queue<Location> getPossibleMoves(Board board, boolean checkChecked) {
+        Queue<Location> moves = new Queue<>();
         Board newBoard = board.clone();
         newBoard.getBoard()[row][col] = new Rook(color, row, col);
-        Queue<Integer> RookMoves = newBoard.getBoard()[row][col].getPossibleMoves(newBoard, true);
+        Queue<Location> RookMoves = newBoard.getBoard()[row][col].getPossibleMoves(newBoard, true);
         newBoard.getBoard()[row][col] = new Bishop(color, row, col);
-        Queue<Integer> BishopMoves = newBoard.getBoard()[row][col].getPossibleMoves(newBoard, true);
+        Queue<Location> BishopMoves = newBoard.getBoard()[row][col].getPossibleMoves(newBoard, true);
         int RookMovesSize = RookMoves.getSize();
-        int[] individualMove;
+        Node<Location> individualMove;
         for (int i = 0; i < RookMovesSize; i++) {
             individualMove = RookMoves.remove();
-            moves.insert(individualMove[0], individualMove[1]);
+            moves.insert(individualMove.getFrom(), individualMove.getTo());
         }
         int BishopMovesSize = BishopMoves.getSize();
         for (int i = 0; i < BishopMovesSize; i++) {
             individualMove = BishopMoves.remove();
-            moves.insert(individualMove[0], individualMove[1]);
+            moves.insert(individualMove.getFrom(), individualMove.getTo());
         }
         return moves;
     }

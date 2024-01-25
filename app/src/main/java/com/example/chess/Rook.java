@@ -6,10 +6,11 @@ public class Rook extends Piece{
         super(color, 'r', row, col);
     }
 
-    public Queue<Integer> getPossibleMoves(Board board, boolean checkCheck) {
+    public Queue<Location> getPossibleMoves(Board board, boolean checkCheck) {
         int row1, col1;
         Board newBoard;
-        Queue<Integer> moves = new Queue<>();
+        Queue<Location> moves = new Queue<>();
+        Location from = new Location(row, col);
         int[][] directions = {{1, 0},{-1,0},{0,1},{0,-1}};
         for (int i = 0; i < 4; i++) {
             row1 = row + directions[i][0];
@@ -21,11 +22,13 @@ public class Rook extends Piece{
                         newBoard = board.clone();
                         move(newBoard, row1, col1);
                         if (newBoard.canMove(this)){
-                            moves.insert(row1, col1);
+                            Location to = new Location(row1, col1);
+                            moves.insert(from, to);
                         }
                     }
                     else {
-                        moves.insert(row1, col1);
+                        Location to = new Location(row1, col1);
+                        moves.insert(from, to);
                     }
                 }
                 else if (piece.color != color){
@@ -33,11 +36,13 @@ public class Rook extends Piece{
                         newBoard = board.clone();
                         move(newBoard, row1, col1);
                         if (newBoard.canMove(this)){
-                            moves.insert(row1, col1);
+                            Location to = new Location(row1, col1);
+                            moves.insert(from, to);
                         }
                     }
                     else {
-                        moves.insert(row1, col1);
+                        Location to = new Location(row1, col1);
+                        moves.insert(from, to);
                     }
                     break;
                 }

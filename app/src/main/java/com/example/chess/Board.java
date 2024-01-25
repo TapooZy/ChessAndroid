@@ -1,4 +1,7 @@
 package com.example.chess;
+
+import android.util.Log;
+
 public class Board {
     private final Piece[][] board;
 
@@ -49,10 +52,10 @@ public class Board {
         }
     }
 
-    public Queue<Integer> getColorMoves(char color, boolean different){
-        int[] individualMove;
-        Queue<Integer> allMoves = new Queue<>();
-        Queue<Integer> pieceMoves;
+    public Queue<Location> getColorMoves(char color, boolean different){
+        Node<Location> individualMove;
+        Queue<Location> allMoves = new Queue<>();
+        Queue<Location> pieceMoves;
         char wantedColor;
         if (different) {
             if (color == 'b') {
@@ -76,7 +79,7 @@ public class Board {
                             int size = pieceMoves.getSize();
                             for (int k = 0; k < size; k++) {
                                 individualMove = pieceMoves.remove();
-                                allMoves.insert(individualMove[0], individualMove[1]);
+                                allMoves.insert(individualMove.getFrom(), individualMove.getTo());
                             }
                         }
                     }
@@ -86,10 +89,10 @@ public class Board {
         return allMoves;
     }
 
-    public Queue<Integer> getEndMoves(char color){
-        int[] individualMove;
-        Queue<Integer> allMoves = new Queue<>();
-        Queue<Integer> pieceMoves;
+    public Queue<Location> getEndMoves(char color){
+        Node<Location> individualMove;
+        Queue<Location> allMoves = new Queue<>();
+        Queue<Location> pieceMoves;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (board[i][j] != null) {
@@ -104,7 +107,7 @@ public class Board {
                             int size = pieceMoves.getSize();
                             for (int k = 0; k < size; k++) {
                                 individualMove = pieceMoves.remove();
-                                allMoves.insert(individualMove[0], individualMove[1]);
+                                allMoves.insert(individualMove.getFrom(), individualMove.getTo());
                             }
                         }
                     }
@@ -158,12 +161,12 @@ public class Board {
         if (king == null){
             return false;
         }
-        Queue<Integer> allMoves = getColorMoves(piece.color, true);
+        Queue<Location> allMoves = getColorMoves(piece.color, true);
         int size = allMoves.getSize();
-        int[] individualMove;
+        Node<Location> individualMove;
         for (int i = 0; i < size; i++) {
             individualMove = allMoves.remove();
-            if (individualMove[0] == king.row && individualMove[1] == king.col) {
+            if (individualMove.getTo().row == king.row && individualMove.getTo().col == king.col) {
                 return false;
             }
         }
@@ -183,16 +186,16 @@ public class Board {
         return null;
     }
     public boolean isInCheck (char color) {
-        Queue<Integer> allMoves = getColorMoves(color, true);
+        Queue<Location> allMoves = getColorMoves(color, true);
         Piece king = findKing(color);
         if (king == null){
             return false;
         }
-        int[] individualMove;
+        Node<Location> individualMove;
         int size = allMoves.getSize();
         for (int i = 0; i < size; i++) {
             individualMove = allMoves.remove();
-            if (individualMove[0] == king.row && individualMove[1] == king.col) {
+            if (individualMove.getTo().row == king.row && individualMove.getTo().col == king.col) {
                 return true;
             }
         }
@@ -201,6 +204,8 @@ public class Board {
 
     public Board clone(){
         Board newBoard = new Board();
+//        Piece[][] subBoard = newBoard.getBoard();
+//        subBoard = board.clone();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 newBoard.getBoard()[i][j] = board[i][j];

@@ -1,28 +1,35 @@
 package com.example.chess;
+
+import android.util.Log;
+
 public class Pawn extends Piece{
     public Pawn(char color, int row, int col){
        super(color, 'p', row, col);
     }
 
-    public Queue<Integer> getPossibleMoves(Board board, boolean checkCheck) {
+    public Queue<Location> getPossibleMoves(Board board, boolean checkCheck) {
         return null;
     }
 
-    public Queue<Integer> getPawnPossibleMoves(Board board, int[] enPassantLocation, boolean checkCheck) {
+    public Queue<Location> getPawnPossibleMoves(Board board, int[] enPassantLocation, boolean checkCheck) {
         int row1, col1;
-        Queue<Integer> moves = new Queue<>();
+        Queue<Location> moves = new Queue<>();
         Board newBoard;
+        Location from = new Location(row, col);
         if (color == 'b') {
+            Log.d("row", ""+row);
             row1 = row - 1;
             if (board.getBoard()[row1][col] == null) { // 1 step
                 if (checkCheck) {
                     newBoard = board.clone();
                     pawnMove(newBoard, row1, col, enPassantLocation);
                     if (newBoard.canMove(this)) {
-                        moves.insert(row1, col);
+                        Location to = new Location(row1, col);
+                        moves.insert(from, to);
                     }
                 } else {
-                    moves.insert(row1, col);
+                    Location to = new Location(row1, col);
+                    moves.insert(from, to);
                 }
             }
             if (!didMove) {
@@ -32,10 +39,12 @@ public class Pawn extends Piece{
                         newBoard = board.clone();
                         pawnMove(newBoard, row1, col, enPassantLocation);
                         if (newBoard.canMove(this)) {
-                            moves.insert(row1, col);
+                            Location to = new Location(row1, col);
+                            moves.insert(from, to);
                         }
                     } else {
-                        moves.insert(row1, col);
+                        Location to = new Location(row1, col);
+                        moves.insert(from, to);
                     }
                 }
             }
@@ -48,10 +57,12 @@ public class Pawn extends Piece{
                             newBoard = board.clone();
                             pawnMove(newBoard, row1, col1, enPassantLocation);
                             if (newBoard.canMove(this)) {
-                                moves.insert(row1, col1);
+                                Location to = new Location(row1, col1);
+                                moves.insert(from, to);
                             }
                         } else {
-                            moves.insert(row1, col1);
+                            Location to = new Location(row1, col1);
+                            moves.insert(from, to);
                         }
                     }
                 }
@@ -65,20 +76,24 @@ public class Pawn extends Piece{
                             newBoard = board.clone();
                             pawnMove(newBoard, row1, col1, enPassantLocation);
                             if (newBoard.canMove(this)) {
-                                moves.insert(row1, col1);
+                                Location to = new Location(row1, col1);
+                                moves.insert(from, to);
                             }
                         } else {
-                            moves.insert(row1, col1);
+                            Location to = new Location(row1, col1);
+                            moves.insert(from, to);
                         }
                     }
                 }
             }
             if (row == 3) {
                 if (canEnPassantLeft(board, enPassantLocation, checkCheck)) {
-                    moves.insert(row - 1, col - 1);
+                    Location to = new Location(row - 1, col - 1);
+                    moves.insert(from, to);
                 }
                 if (canEnPassantRight(board, enPassantLocation, checkCheck)) {
-                    moves.insert(row - 1, col + 1);
+                    Location to = new Location(row - 1, col + 1);
+                    moves.insert(from, to);
                 }
             }
         } else {
@@ -88,10 +103,12 @@ public class Pawn extends Piece{
                     newBoard = board.clone();
                     pawnMove(newBoard, row1, col, enPassantLocation);
                     if (newBoard.canMove(this)) {
-                        moves.insert(row1, col);
+                        Location to = new Location(row1, col);
+                        moves.insert(from, to);
                     }
                 } else {
-                    moves.insert(row1, col);
+                    Location to = new Location(row1, col);
+                    moves.insert(from, to);
                 }
                 if (!didMove) {
                     row1 = row + 2;
@@ -100,10 +117,12 @@ public class Pawn extends Piece{
                             newBoard = board.clone();
                             pawnMove(newBoard, row1, col, enPassantLocation);
                             if (newBoard.canMove(this)) {
-                                moves.insert(row1, col);
+                                Location to = new Location(row1, col);
+                                moves.insert(from, to);
                             }
                         } else {
-                            moves.insert(row1, col);
+                            Location to = new Location(row1, col);
+                            moves.insert(from, to);
                         }
                     }
                 }
@@ -117,10 +136,12 @@ public class Pawn extends Piece{
                             newBoard = board.clone();
                             pawnMove(newBoard, row1, col1, enPassantLocation);
                             if (newBoard.canMove(this)) {
-                                moves.insert(row1, col1);
+                                Location to = new Location(row1, col1);
+                                moves.insert(from, to);
                             }
                         } else {
-                            moves.insert(row1, col1);
+                            Location to = new Location(row1, col1);
+                            moves.insert(from, to);
                         }
                     }
                 }
@@ -134,20 +155,24 @@ public class Pawn extends Piece{
                             newBoard = board.clone();
                             pawnMove(newBoard, row1, col1, enPassantLocation);
                             if (newBoard.canMove(this)) {
-                                moves.insert(row1, col1);
+                                Location to = new Location(row1, col1);
+                                moves.insert(from, to);
                             }
                         } else {
-                            moves.insert(row1, col1);
+                            Location to = new Location(row1, col1);
+                            moves.insert(from, to);
                         }
                     }
                 }
             }
             if (row == 4) {
                 if (canEnPassantLeft(board, enPassantLocation, checkCheck)) {
-                    moves.insert(row + 1, col - 1);
+                    Location to = new Location(row + 1, col - 1);
+                    moves.insert(from, to);
                 }
                 if (canEnPassantRight(board, enPassantLocation, checkCheck)) {
-                    moves.insert(row + 1, col + 1);
+                    Location to = new Location(row + 1, col + 1);
+                    moves.insert(from, to);
                 }
             }
         }

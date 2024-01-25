@@ -7,8 +7,9 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public Queue<Integer> getPossibleMoves(Board board, boolean checkCheck) {
-        Queue<Integer> moves = new Queue<>();
+    public Queue<Location> getPossibleMoves(Board board, boolean checkCheck) {
+        Queue<Location> moves = new Queue<>();
+        Location from = new Location(row, col);
         int row1, col1;
         Board newBoard;
         int[][] directions = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
@@ -22,11 +23,13 @@ public class Bishop extends Piece {
                         newBoard = board.clone();
                         move(newBoard, row1, col1);
                         if (newBoard.canMove(this)){
-                            moves.insert(row1, col1);
+                            Location to = new Location(row1, col1);
+                            moves.insert(from, to);
                         }
                     }
                     else {
-                        moves.insert(row1, col1);
+                        Location to = new Location(row1, col1);
+                        moves.insert(from, to);
                     }
                 }
                 else if (piece.color != color){
@@ -34,11 +37,13 @@ public class Bishop extends Piece {
                         newBoard = board.clone();
                         move(newBoard, row1, col1);
                         if (newBoard.canMove(this)){
-                            moves.insert(row1, col1);
+                            Location to = new Location(row1, col1);
+                            moves.insert(from, to);
                         }
                     }
                     else {
-                        moves.insert(row1, col1);
+                        Location to = new Location(row1, col1);
+                        moves.insert(from, to);
                     }
                     break;
                 }
