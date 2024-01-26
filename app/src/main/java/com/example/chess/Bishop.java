@@ -60,4 +60,9 @@ public class Bishop extends Piece {
         board.getBoard()[row][col] = new Bishop(color, row, col);
         board.getBoard()[this.row][this.col] = null;
     }
+
+    @Override
+    public Piece clone(){
+        return new Bishop(color, row, col);
+    }
 }

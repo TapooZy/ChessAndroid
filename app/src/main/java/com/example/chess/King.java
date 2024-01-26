@@ -145,4 +145,11 @@ public class King extends Piece {
             board.getBoard()[this.row][this.col] = null;
         }
     }
+
+    @Override
+    public Piece clone(){
+        King newKing = new King(color, row, col);
+        newKing.didMove = didMove;
+        return newKing;
+    }
 }

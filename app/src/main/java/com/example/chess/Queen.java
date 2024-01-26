@@ -36,4 +36,9 @@ public class Queen extends Piece{
         board.getBoard()[this.row][this.col] = null;
 
     }
+
+    @Override
+    public Piece clone(){
+        return new Queen(color, row, col);
+    }
 }

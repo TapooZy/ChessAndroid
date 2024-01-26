@@ -47,6 +47,10 @@ public class Chess extends AppCompatActivity {
         } else {
             info.setText("Next move: white");
         }
+        EngineTree engineTree = new EngineTree(engine);
+        makeTree(engineTree, 3, nextMoveColor);
+        int[] levels = engineTree.levels();
+        Log.d("tree levels", engineTree.toString(levels));
         chessBoard = findViewById(R.id.chessBoard);
 //        moves = "1.e4e52.Nf3Nc63.Bb5Nf64.d3d65.c3g66.Nbd2Bg77.Nf1O-O8.Ba4Nd79.Ne3Nc510.Bc2Ne611.h4Ne712.h5d513.hxg6fxg614.exd5Nxd515.Nxd5Qxd516.Bb3Qc617.Qe2Bd718.Be3Kh819.O-O-ORae820.Qf1a521.d4exd422.Nxd4Bxd423.Rxd4Nxd424.Rxh7+Kxh725.Qh1+Kg726.Bh6+Kf627.Qh4+Ke528.Qxd4+";
         if (moves != null) {
@@ -405,6 +409,43 @@ public class Chess extends AppCompatActivity {
             }
         });
         d.show();
+    }
+
+
+    public void makeTree(EngineTree root, int depth, char color){
+        if (depth == 0){
+            return;
+        }
+        Piece piece;
+        char nextColor;
+        if (color == 'w'){
+            nextColor = 'b';
+        }
+        else {
+            nextColor = 'w';
+        }
+        Node<Location> move;
+        if (color == 'b'){
+            Log.d("color" , "b");
+        }
+        Queue<Location> allMoves = root.engine.getBoard().getColorMoves(color, false);
+        int allMovesSize = allMoves.getSize();
+        EngineTree[] leaves = new EngineTree[allMovesSize];
+        for (int i = 0; i < allMovesSize; i++) {
+            Engine newEngine = engine.clone();
+            move = allMoves.remove();
+            piece = newEngine.getBoard().getBoard()[move.getFrom().row][move.getFrom().col];
+            if (piece.letter == 'p'){
+                ((Pawn) piece).pawnMove(newEngine.getBoard(), move.getTo().row, move.getTo().col, newEngine.getEnPassantLocation());
+            }
+            else {
+                piece.move(newEngine.getBoard(), move.getTo().row, move.getTo().col);
+            }
+            EngineTree leaf_i = new EngineTree(newEngine);
+            leaves[i] = leaf_i;
+            makeTree(leaf_i, depth - 1, nextColor);
+        }
+        root.setLeaves(leaves);
     }
 /*
     @SuppressLint("SetTextI18n")
@@ -1207,16 +1248,4 @@ public class Chess extends AppCompatActivity {
 //        return boardTree;
 //    }
 
-//    public EngineTree makeTree(EngineTree root, int depth, char color){
-//        if (depth == 0){
-//            return root;
-//        }
-//        Queue<Integer> allMoves = root.engine.getBoard().getColorMoves(color, false);
-//        int allMovesSize = allMoves.getSize();
-//        EngineTree[] leaves = new EngineTree[allMovesSize];
-//        for (int i = 0; i < allMovesSize; i++) {
-//            Engine newEngine = engine.clone();
-//
-//        }
-//    }
 }

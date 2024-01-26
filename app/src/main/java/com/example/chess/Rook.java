@@ -64,4 +64,11 @@ public class Rook extends Piece{
         board.getBoard()[this.row][this.col] = null;
 
     }
+
+    @Override
+    public Piece clone(){
+        Rook newRook = new Rook(color, row, col);
+        newRook.didMove = didMove;
+        return newRook;
+    }
 }

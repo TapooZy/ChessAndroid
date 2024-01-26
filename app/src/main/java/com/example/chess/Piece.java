@@ -15,4 +15,6 @@ abstract public class Piece {
     public abstract Queue<Location> getPossibleMoves(Board board, boolean checkCheck);
 
     public abstract void move(Board board, int row, int col);
+
+    public abstract Piece clone();
 }

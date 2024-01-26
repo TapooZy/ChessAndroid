@@ -55,4 +55,9 @@ public class Knight extends Piece{
         board.getBoard()[row][col] = new Knight(color, row, col);
         board.getBoard()[this.row][this.col] = null;
     }
+
+    @Override
+    public Piece clone(){
+        return new Knight(color, row, col);
+    }
 }

@@ -246,7 +246,6 @@ public class Pawn extends Piece{
         return false;
     }
     public void move(Board board, int row, int col){
-        Log.d("pawn move", "pawn move");
     }
 
     public void pawnMove(Board board, int row, int col, int[] enPassantLocation){
@@ -266,5 +265,12 @@ public class Pawn extends Piece{
                 }
             }
         }
+    }
+
+    @Override
+    public Piece clone(){
+        Pawn newPawn = new Pawn(color, row, col);
+        newPawn.didMove = didMove;
+        return newPawn;
     }
 }

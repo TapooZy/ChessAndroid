@@ -208,7 +208,12 @@ public class Board {
 //        subBoard = board.clone();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                newBoard.getBoard()[i][j] = board[i][j];
+                if (board[i][j] == null) {
+                    newBoard.getBoard()[i][j] = board[i][j];
+                }
+                else {
+                    newBoard.getBoard()[i][j] = board[i][j].clone();
+                }
             }
         }
         return newBoard;

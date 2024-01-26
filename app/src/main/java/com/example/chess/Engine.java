@@ -31,6 +31,6 @@ public class Engine {
     }
 
     public Engine clone(){
-        return new Engine(board.clone(), enPassantLocation.clone());
+        return new Engine(board.clone(), enPassantLocation);
     }
 }
