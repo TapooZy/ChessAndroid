@@ -1,5 +1,7 @@
 package com.example.chess;
 
+import android.util.Log;
+
 public class Rook extends Piece{
 
     public Rook (char color, int row, int col){

@@ -17,24 +17,9 @@ public class Pawn extends Piece{
         Board newBoard;
         Location from = new Location(row, col);
         if (color == 'b') {
-            Log.d("row", ""+row);
             row1 = row - 1;
-            if (board.getBoard()[row1][col] == null) { // 1 step
-                if (checkCheck) {
-                    newBoard = board.clone();
-                    pawnMove(newBoard, row1, col, enPassantLocation);
-                    if (newBoard.canMove(this)) {
-                        Location to = new Location(row1, col);
-                        moves.insert(from, to);
-                    }
-                } else {
-                    Location to = new Location(row1, col);
-                    moves.insert(from, to);
-                }
-            }
-            if (!didMove) {
-                row1 = row - 2;
-                if (board.getBoard()[row1][col] == null) { // 2 steps
+            if (row1 > -1) {
+                if (board.getBoard()[row1][col] == null) { // 1 step
                     if (checkCheck) {
                         newBoard = board.clone();
                         pawnMove(newBoard, row1, col, enPassantLocation);
@@ -47,10 +32,26 @@ public class Pawn extends Piece{
                         moves.insert(from, to);
                     }
                 }
+                if (!didMove) {
+                    row1 = row - 2;
+                    if (board.getBoard()[row1][col] == null) { // 2 steps
+                        if (checkCheck) {
+                            newBoard = board.clone();
+                            pawnMove(newBoard, row1, col, enPassantLocation);
+                            if (newBoard.canMove(this)) {
+                                Location to = new Location(row1, col);
+                                moves.insert(from, to);
+                            }
+                        } else {
+                            Location to = new Location(row1, col);
+                            moves.insert(from, to);
+                        }
+                    }
+                }
             }
             row1 = row - 1;
             col1 = col + 1;
-            if (row1 < 8 && col1 < 8) {
+            if (row1 > -1 && col1 < 8) {
                 if (board.getBoard()[row1][col1] != null) { // eat right
                     if (board.getBoard()[row1][col1].color != this.color) {
                         if (checkCheck) {
@@ -69,7 +70,7 @@ public class Pawn extends Piece{
             }
             row1 = row - 1;
             col1 = col - 1;
-            if (row1 < 8 && col1 > -1) {
+            if (row1 > -1 && col1 > -1) {
                 if (board.getBoard()[row1][col1] != null) { // eat left
                     if (board.getBoard()[row1][col1].color != this.color) {
                         if (checkCheck) {
@@ -98,38 +99,40 @@ public class Pawn extends Piece{
             }
         } else {
             row1 = row + 1;
-            if (board.getBoard()[row1][col] == null) { // 1 step
-                if (checkCheck) {
-                    newBoard = board.clone();
-                    pawnMove(newBoard, row1, col, enPassantLocation);
-                    if (newBoard.canMove(this)) {
+            if (row1 < 8) {
+                if (board.getBoard()[row1][col] == null) { // 1 step
+                    if (checkCheck) {
+                        newBoard = board.clone();
+                        pawnMove(newBoard, row1, col, enPassantLocation);
+                        if (newBoard.canMove(this)) {
+                            Location to = new Location(row1, col);
+                            moves.insert(from, to);
+                        }
+                    } else {
                         Location to = new Location(row1, col);
                         moves.insert(from, to);
                     }
-                } else {
-                    Location to = new Location(row1, col);
-                    moves.insert(from, to);
-                }
-                if (!didMove) {
-                    row1 = row + 2;
-                    if (board.getBoard()[row1][col] == null) { // 2 steps
-                        if (checkCheck) {
-                            newBoard = board.clone();
-                            pawnMove(newBoard, row1, col, enPassantLocation);
-                            if (newBoard.canMove(this)) {
+                    if (!didMove) {
+                        row1 = row + 2;
+                        if (board.getBoard()[row1][col] == null) { // 2 steps
+                            if (checkCheck) {
+                                newBoard = board.clone();
+                                pawnMove(newBoard, row1, col, enPassantLocation);
+                                if (newBoard.canMove(this)) {
+                                    Location to = new Location(row1, col);
+                                    moves.insert(from, to);
+                                }
+                            } else {
                                 Location to = new Location(row1, col);
                                 moves.insert(from, to);
                             }
-                        } else {
-                            Location to = new Location(row1, col);
-                            moves.insert(from, to);
                         }
                     }
                 }
             }
             row1 = row + 1;
             col1 = col + 1;
-            if (row1 > -1 && col1 < 8) {
+            if (row1 < 8 && col1 < 8) {
                 if (board.getBoard()[row1][col1] != null) { // eat right
                     if (board.getBoard()[row1][col1].color != this.color) {
                         if (checkCheck) {
@@ -148,7 +151,7 @@ public class Pawn extends Piece{
             }
             row1 = row + 1;
             col1 = col - 1;
-            if (row1 > -1 && col1 > -1) {
+            if (row1 < 8 && col1 > -1) {
                 if (board.getBoard()[row1][col1] != null) { // eat left
                     if (board.getBoard()[row1][col1].color != this.color) {
                         if (checkCheck) {
@@ -243,6 +246,7 @@ public class Pawn extends Piece{
         return false;
     }
     public void move(Board board, int row, int col){
+        Log.d("pawn move", "pawn move");
     }
 
     public void pawnMove(Board board, int row, int col, int[] enPassantLocation){
