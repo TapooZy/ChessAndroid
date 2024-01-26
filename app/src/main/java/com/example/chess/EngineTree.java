@@ -46,6 +46,7 @@ public class EngineTree {
         for (int i = 0; i < levels.length; i++) {
             s += "(" + i + ": " + levels[i] + ")";
         }
+        s += "]";
         return s;
     }
 }

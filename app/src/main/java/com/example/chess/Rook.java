@@ -5,7 +5,7 @@ import android.util.Log;
 public class Rook extends Piece{
 
     public Rook (char color, int row, int col){
-        super(color, 'r', row, col);
+        super(color, 'r', row, col, 5);
     }
 
     public Queue<Location> getPossibleMoves(Board board, boolean checkCheck) {

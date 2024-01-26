@@ -3,7 +3,7 @@ package com.example.chess;
 public class Bishop extends Piece {
 
     public Bishop(char color, int row, int col) {
-        super(color, 'b', row, col);
+        super(color, 'b', row, col, 3);
     }
 
     @Override

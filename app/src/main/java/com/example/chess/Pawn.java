@@ -4,7 +4,7 @@ import android.util.Log;
 
 public class Pawn extends Piece{
     public Pawn(char color, int row, int col){
-       super(color, 'p', row, col);
+       super(color, 'p', row, col, 1);
     }
 
     public Queue<Location> getPossibleMoves(Board board, boolean checkCheck) {

@@ -50,7 +50,6 @@ public class Chess extends AppCompatActivity {
         EngineTree engineTree = new EngineTree(engine);
         makeTree(engineTree, 3, nextMoveColor);
         int[] levels = engineTree.levels();
-        Log.d("tree levels", engineTree.toString(levels));
         chessBoard = findViewById(R.id.chessBoard);
 //        moves = "1.e4e52.Nf3Nc63.Bb5Nf64.d3d65.c3g66.Nbd2Bg77.Nf1O-O8.Ba4Nd79.Ne3Nc510.Bc2Ne611.h4Ne712.h5d513.hxg6fxg614.exd5Nxd515.Nxd5Qxd516.Bb3Qc617.Qe2Bd718.Be3Kh819.O-O-ORae820.Qf1a521.d4exd422.Nxd4Bxd423.Rxd4Nxd424.Rxh7+Kxh725.Qh1+Kg726.Bh6+Kf627.Qh4+Ke528.Qxd4+";
         if (moves != null) {
@@ -164,29 +163,27 @@ public class Chess extends AppCompatActivity {
         }
     }
     private void onSquareClicked(int row, int col, boolean wasClickedOnAPiece, boolean isRec) {
+        int newRow = row;
+        Log.d("row and col", row + " " + col);
         if (wasClickedOnAPiece) {
+            if (checkBox.isChecked()) {
+                newRow = 7 - row;
+            }
             View square = chessBoard.getChildAt(row * 8 + col);
             ColorDrawable squareColor = (ColorDrawable) square.getBackground();
             int squareId = squareColor.getColor();
             if (squareId == whiteId || squareId == greenId) {
-                if (checkBox.isChecked()){
-                    row = 7 - row;
-                }
                 if (piece.letter == 'p') {
-                    int[] cords = {row, col};
+                    int[] cords = {newRow, col};
                     int pieceRow = piece.row;
-                    ((Pawn) piece).pawnMove(board, row, col, engine.getEnPassantLocation());
-                    Log.d("pawn row and col", "row: " + row + ", col: " + col);
-//                    if (board.getBoard()[7][7] != null){
-//                        Log.d("7 7 piece", "" + board.getBoard()[7][7].letter);
-//                    }
-                    if (row == 0 && piece.color == 'b') {
+                    ((Pawn) piece).pawnMove(board, newRow, col, engine.getEnPassantLocation());
+                    if (newRow == 0 && piece.color == 'b') {
                         blackPawnPromotion(col);
                     }
-                    else if (row == 7 && piece.color == 'w'){
+                    else if (newRow == 7 && piece.color == 'w'){
                         whitePawnPromotion(col);
                     }
-                    int dist = pieceRow - row;
+                    int dist = pieceRow - newRow;
                     dist *= dist;
                     if (dist == 4) {
                         engine.setEnPassantLocation(cords);
@@ -194,7 +191,7 @@ public class Chess extends AppCompatActivity {
                         engine.setEnPassantLocation(null);
                     }
                 } else {
-                    piece.move(board, row, col);
+                    piece.move(board, newRow, col);
                     engine.setEnPassantLocation(null);
                 }
 //                if (nextMoveColor == 'w') {
@@ -229,9 +226,10 @@ public class Chess extends AppCompatActivity {
                     showBoard(false);
                     nextMoveColor = 'w';
                 }
+                Log.d("evaluate", evaluate(board) + "");
                 return;
             }
-            piece = board.getBoard()[row][col];
+            piece = board.getBoard()[newRow][col];
             if (piece != null) {
                 if (piece.color == nextMoveColor) {
                     onSquareClicked(row, col, false, true);
@@ -443,6 +441,25 @@ public class Chess extends AppCompatActivity {
             makeTree(leaf_i, depth - 1, nextColor);
         }
         root.setLeaves(leaves);
+    }
+
+    public int evaluate(Board board){
+        int whiteSum = 0, blackSum = 0;
+        Piece piece;
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                piece = board.getBoard()[i][j];
+                if (piece != null){
+                    if (piece.color == 'w'){
+                        whiteSum += piece.value;
+                    }
+                    else {
+                        blackSum += piece.value;
+                    }
+                }
+            }
+        }
+        return whiteSum - blackSum;
     }
 /*
     @SuppressLint("SetTextI18n")

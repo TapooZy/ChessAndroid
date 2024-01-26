@@ -5,7 +5,7 @@ import android.util.Log;
 public class King extends Piece {
 
     public King(char color, int row, int col) {
-        super(color, 'K', row, col);
+        super(color, 'K', row, col, 1000000000);
     }
     public Queue<Location> getPossibleMoves(Board board, boolean checkCheck) {
         int row1, col1;
