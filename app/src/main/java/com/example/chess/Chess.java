@@ -425,14 +425,11 @@ public class Chess extends AppCompatActivity {
             nextColor = 'w';
         }
         Node<Location> move;
-        if (color == 'b'){
-            Log.d("color" , "b");
-        }
         Queue<Location> allMoves = root.engine.getBoard().getColorMoves(color, false);
         int allMovesSize = allMoves.getSize();
         EngineTree[] leaves = new EngineTree[allMovesSize];
         for (int i = 0; i < allMovesSize; i++) {
-            Engine newEngine = engine.clone();
+            Engine newEngine = root.engine.clone();
             move = allMoves.remove();
             piece = newEngine.getBoard().getBoard()[move.getFrom().row][move.getFrom().col];
             if (piece.letter == 'p'){
