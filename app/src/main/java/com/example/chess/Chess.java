@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.util.*;
 public class Chess extends AppCompatActivity {
     TextView info;
     Dialog promotionDialog;
@@ -461,6 +462,28 @@ public class Chess extends AppCompatActivity {
         }
         return whiteSum - blackSum;
     }
+
+    public int minimax(EngineTree engineTree, int depth, char color){
+        int maxEval = -2000000000, minEval = 2000000000, eval;
+        if (engineTree.engine.getBoard().getEndMoves(color).getSize() == 0 || depth == 0) {
+            return evaluate(engineTree.engine.getBoard());
+        }
+        if (color == 'w'){
+            for (int i = 0; i < engineTree.leaves.length; i++) {
+                eval = minimax(engineTree.leaves[i], depth - 1, 'b');
+                maxEval = Math.max(maxEval, eval);
+            }
+            return maxEval;
+        }
+        else {
+            for (int i = 0; i < engineTree.leaves.length; i++) {
+                eval = minimax(engineTree.leaves[i], depth - 1, 'w');
+                minEval = Math.min(minEval, eval);
+            }
+            return minEval;
+        }
+    }
+
 /*
     @SuppressLint("SetTextI18n")
     public String loadGame(String moves) {
