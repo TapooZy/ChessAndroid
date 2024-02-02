@@ -1,9 +1,5 @@
 package com.example.chess;
 
-import java.util.Scanner;
-
-import java.util.Scanner;
-
 public class Queen extends Piece{
 
     public Queen(char color, int row, int col){
@@ -18,7 +14,7 @@ public class Queen extends Piece{
         newBoard.getBoard()[row][col] = new Bishop(color, row, col);
         Queue<Location> BishopMoves = newBoard.getBoard()[row][col].getPossibleMoves(newBoard, true);
         int RookMovesSize = RookMoves.getSize();
-        Node<Location> individualMove;
+        LocationMove<Location> individualMove;
         for (int i = 0; i < RookMovesSize; i++) {
             individualMove = RookMoves.remove();
             moves.insert(individualMove.getFrom(), individualMove.getTo());
@@ -31,10 +27,11 @@ public class Queen extends Piece{
         return moves;
     }
     @Override
-    public void move(Board board, int row, int col){
+    public Move move(Board board, int row, int col){
         board.getBoard()[row][col] = new Queen(color, row, col);
         board.getBoard()[this.row][this.col] = null;
-
+        Move move = new Move(new Location(this.row, this.col), new Location(row, col), false, board);
+        return move;
     }
 
     @Override

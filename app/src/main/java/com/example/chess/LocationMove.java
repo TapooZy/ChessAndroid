@@ -1,25 +1,25 @@
 package com.example.chess;
 
-public class Node<Location> {
+public class LocationMove<Location> {
     public Location from;
     public Location to;
-    private Node <Location> next;
+    private LocationMove<Location> next;
 
-    public Node(Location from, Location to)
+    public LocationMove(Location from, Location to)
     {
         this.from = from;
         this.to = to;
         this.next=null;
     }
 
-    public Node(Location from, Location to, Node<Location> next)
+    public LocationMove(Location from, Location to, LocationMove<Location> next)
     {
         this.from = from;
         this.to = to;
         this.next=next;
     }
 
-    public Node<Location> getNext()
+    public LocationMove<Location> getNext()
     {
         return next;
     }
@@ -38,7 +38,7 @@ public class Node<Location> {
         return this.next != null;
     }
 
-    public void setNext(Node<Location> next)
+    public void setNext(LocationMove<Location> next)
     {
         this.next = next;
     }

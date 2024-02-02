@@ -1,7 +1,5 @@
 package com.example.chess;
 
-import android.util.Log;
-
 public class King extends Piece {
 
     public King(char color, int row, int col) {
@@ -65,7 +63,7 @@ public class King extends Piece {
     public boolean canCastleRight (Board board)
     {
         Queue<Location> allMoves = board.getColorMoves(this.color, true);
-        Node<Location> individualMove;
+        LocationMove<Location> individualMove;
         if (board.getBoard()[row][7] != null)
         {
             if (board.getBoard()[row][7] instanceof Rook)
@@ -92,7 +90,7 @@ public class King extends Piece {
 
     public boolean canCastleLeft (Board board){
         Queue<Location> allMoves = board.getColorMoves(this.color, true);
-        Node<Location> individualMove;
+        LocationMove<Location> individualMove;
         if (board.getBoard()[row][0] != null)
         {
             if (board.getBoard()[row][0] instanceof Rook)
@@ -117,7 +115,7 @@ public class King extends Piece {
         return false;
     }
     @Override
-    public void move(Board board, int row, int col){
+    public Move move(Board board, int row, int col){
         if (col == this.col + 2){
             King king = new King(color, row, col);
             king.didMove = true;
@@ -144,6 +142,8 @@ public class King extends Piece {
             board.getBoard()[row][col] = king;
             board.getBoard()[this.row][this.col] = null;
         }
+        Move move = new Move(new Location(this.row, this.col), new Location(row, col), false, board);
+        return move;
     }
 
     @Override

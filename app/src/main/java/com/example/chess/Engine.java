@@ -1,10 +1,9 @@
 package com.example.chess;
 
-import java.util.*;
-
 public class Engine {
     private Board board;
     private int[] enPassantLocation;
+    private MoveNode<Move> history = new MoveNode<>(null);
     public Engine(){
         this.board = new Board();
         board.startGame();
@@ -28,6 +27,10 @@ public class Engine {
 
     public Board getBoard() {
         return board;
+    }
+
+    public MoveNode<Move> getHistory() {
+        return history;
     }
 
     public Engine clone(){

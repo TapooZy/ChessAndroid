@@ -1,8 +1,8 @@
 package com.example.chess;
 public class Queue<Location>{
 
-    private Node<Location> first;
-    private Node <Location> last;
+    private LocationMove<Location> first;
+    private LocationMove<Location> last;
     private int size;
 
     public Queue()
@@ -14,7 +14,7 @@ public class Queue<Location>{
 
     public void insert (Location from, Location to)
     {
-        Node<Location> temp = new  Node<>(from, to);
+        LocationMove<Location> temp = new LocationMove<>(from, to);
         if (this.first == null){
             this.first = temp;
             this.last = temp;
@@ -30,8 +30,8 @@ public class Queue<Location>{
         size++;
     }
 
-    public Node<Location> remove(){
-        Node<Location> thisFirst = first;
+    public LocationMove<Location> remove(){
+        LocationMove<Location> thisFirst = first;
         this.first = this.first.getNext();
         if(this.first == this.last)
             this.last = null;
@@ -56,7 +56,7 @@ public class Queue<Location>{
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        Node<Location> current = first;
+        LocationMove<Location> current = first;
 
         result.append("Queue: [");
 
