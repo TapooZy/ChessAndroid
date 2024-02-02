@@ -250,7 +250,7 @@ public class Pawn extends Piece{
     }
 
     public Move pawnMove(Board board, int row, int col, int[] enPassantLocation){
-        boolean is_enPassant_move = false;
+        Piece eatenPiece = board.getBoard()[row][col];
         Pawn pawn = new Pawn(color, row, col);
         board.getBoard()[row][col] = pawn;
         pawn.didMove = true;
@@ -259,17 +259,15 @@ public class Pawn extends Piece{
             if (color == 'b'){
                 if (enPassantLocation[0] == row+1 && enPassantLocation[1] == col){
                     board.getBoard()[row+1][col] = null;
-                    is_enPassant_move = true;
                 }
             }
             else {
                 if (enPassantLocation[0] == row-1 && enPassantLocation[1] == col) {
                     board.getBoard()[row - 1][col] = null;
-                    is_enPassant_move = true;
                 }
             }
         }
-        Move move = new Move(new Location(this.row, this.col), new Location(row, col), is_enPassant_move, board);
+        Move move = new Move(new Location(this.row, this.col), new Location(row, col), enPassantLocation, board, eatenPiece);
         return move;
     }
 

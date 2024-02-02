@@ -57,9 +57,9 @@ public class Bishop extends Piece {
 
     @Override
     public Move move(Board board, int row, int col){
+        Move move = new Move(new Location(this.row, this.col), new Location(row, col), null, board);
         board.getBoard()[row][col] = new Bishop(color, row, col);
         board.getBoard()[this.row][this.col] = null;
-        Move move = new Move(new Location(this.row, this.col), new Location(row, col), false, board);
         return move;
     }
 

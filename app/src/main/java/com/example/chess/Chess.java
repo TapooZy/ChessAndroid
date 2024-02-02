@@ -5,6 +5,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.GridLayout;
 import android.widget.ImageView;
@@ -13,6 +14,7 @@ import android.util.DisplayMetrics;
 import android.widget.TextView;
 import android.widget.Toast;
 public class Chess extends AppCompatActivity {
+    Button btnDeMove;
     Move move;
     TextView info;
     Dialog promotionDialog;
@@ -39,6 +41,7 @@ public class Chess extends AppCompatActivity {
         from_green.setBackgroundColor(getResources().getColor(R.color.can_move_to_from_green));
         from_white.setBackgroundColor(getResources().getColor(R.color.can_move_to_from_white));
         ColorDrawable whiteColor = (ColorDrawable) from_white.getBackground();
+        btnDeMove = findViewById(R.id.btnDeMove);
         checkBox = findViewById(R.id.cbWhite);
         whiteId = whiteColor.getColor();
         ColorDrawable greenColor = (ColorDrawable) from_green.getBackground();
@@ -68,6 +71,20 @@ public class Chess extends AppCompatActivity {
             }
         });
         wasClickedOnAPiece = false;
+        btnDeMove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                engine.deMove();
+                setNextMoveColor();
+                chessBoard.removeAllViews();
+                showBoard(false);
+                if (nextMoveColor == 'b') {
+                    info.setText("Next move: black");
+                } else {
+                    info.setText("Next move: white");
+                }
+            }
+        });
     }
 
     private void showBoard(boolean isLoadGame) {

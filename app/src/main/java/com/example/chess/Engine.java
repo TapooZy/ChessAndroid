@@ -36,4 +36,25 @@ public class Engine {
     public Engine clone(){
         return new Engine(board.clone(), enPassantLocation);
     }
+
+    public void deMove(){
+        MoveNode<Move> curr;
+        curr = history;
+        Piece piece;
+        board.startGame();
+        if (history != null){
+            if (history.getNext() != null){
+                while (curr.getNext().getNext() != null){
+                    piece = board.getBoard()[curr.move.from.row][curr.move.from.col];
+                    if (piece.letter == 'p'){
+                        ((Pawn) piece).pawnMove(board, curr.move.to.row, curr.move.to.col, curr.move.enPassant_location);
+                    }
+                    else {
+                        piece.move(board, curr.move.to.row, curr.move.to.col);
+                    }
+                    curr = curr.getNext();
+                }
+            }
+        }
+    }
 }
