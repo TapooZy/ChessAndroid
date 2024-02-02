@@ -29,10 +29,17 @@ public class MoveNode<Move> {
     }
 
     public String toString(){
-        String s = "";
+        String s = "", enPassant = "";
         MoveNode<Move> curr = this;
+        curr = curr.getNext();
         while (curr != null) {
-            s += "(from: " + curr.move.from.toString() + ", to: " + curr.move.to.toString() + ")";
+            if (curr.move.enPassant_location == null){
+                enPassant = "null";
+            }
+            else {
+                enPassant = "(" + move.enPassant_location[0] + ", " + move.enPassant_location[1] + ")";
+            }
+            s += "(from: " + curr.move.from.toString() + ", to: " + curr.move.to.toString() + ", enPassant: " + enPassant + ")";
             curr = curr.getNext();
         }
         return s;

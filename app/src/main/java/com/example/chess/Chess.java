@@ -75,13 +75,17 @@ public class Chess extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 engine.deMove();
-                setNextMoveColor();
                 chessBoard.removeAllViews();
                 showBoard(false);
-                if (nextMoveColor == 'b') {
-                    info.setText("Next move: black");
-                } else {
-                    info.setText("Next move: white");
+                if (engine.getHistory().getNext() != null) {
+                    if (engine.getHistory().getNext().getNext() != null) {
+                        setNextMoveColor();
+                        if (nextMoveColor == 'b') {
+                            info.setText("Next move: black");
+                        } else {
+                            info.setText("Next move: white");
+                        }
+                    }
                 }
             }
         });
@@ -178,11 +182,6 @@ public class Chess extends AppCompatActivity {
 
                 // Add the ImageView to the chessboard GridLayout
                 chessBoard.addView(imageView);
-            }
-        }
-        if (engine.getHistory() != null){
-            if (engine.getHistory().getNext() != null){
-                Log.d("history", engine.getHistory().getNext().toString());
             }
         }
         if (playAgainstBot){
