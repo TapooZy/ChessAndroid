@@ -6,4 +6,5 @@
     <color name="light_square">#ecebeb</color>
     <color name="can_move_to_from_green">#bbca2b</color>
     <color name="can_move_to_from_white">#f6f66a</color>
+    <color name="clicked_square">#eb3434</color>
 </resources>

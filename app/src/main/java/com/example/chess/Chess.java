@@ -12,8 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.util.*;
 public class Chess extends AppCompatActivity {
+    Move move;
     TextView info;
     Dialog promotionDialog;
     ImageView queen, knight, rook, bishop;
@@ -22,10 +22,11 @@ public class Chess extends AppCompatActivity {
     Engine engine = new Engine();
     Board board = engine.getBoard();
     Piece piece;
-    int screenWidth, whiteId, greenId, promotionCol, timesRemoved = 0;
+    boolean playAgainstBot = false;
+    int screenWidth, whiteId, greenId, promotionCol, depth = 1;
     char nextMoveColor;
 //    Piece whiteKing = board.findKing('w'), blackKing = board.findKing('b');
-    boolean wasClickedOnAPiece, isLoadGame, wasChecked = false;
+    boolean wasClickedOnAPiece, isLoadGame;
     String moves;
     @SuppressLint("SetTextI18n")
     @Override
@@ -48,9 +49,9 @@ public class Chess extends AppCompatActivity {
         } else {
             info.setText("Next move: white");
         }
+        playAgainstBot = false;
         EngineTree engineTree = new EngineTree(engine);
-        makeTree(engineTree, 3, nextMoveColor);
-        int[] levels = engineTree.levels();
+//        makeTree(engineTree, 1, nextMoveColor);
         chessBoard = findViewById(R.id.chessBoard);
 //        moves = "1.e4e52.Nf3Nc63.Bb5Nf64.d3d65.c3g66.Nbd2Bg77.Nf1O-O8.Ba4Nd79.Ne3Nc510.Bc2Ne611.h4Ne712.h5d513.hxg6fxg614.exd5Nxd515.Nxd5Qxd516.Bb3Qc617.Qe2Bd718.Be3Kh819.O-O-ORae820.Qf1a521.d4exd422.Nxd4Bxd423.Rxd4Nxd424.Rxh7+Kxh725.Qh1+Kg726.Bh6+Kf627.Qh4+Ke528.Qxd4+";
         if (moves != null) {
@@ -162,22 +163,34 @@ public class Chess extends AppCompatActivity {
                 chessBoard.addView(imageView);
             }
         }
+        if (engine.getHistory() != null){
+            if (engine.getHistory().getNext() != null){
+                Log.d("history", engine.getHistory().getNext().toString());
+            }
+        }
+        if (playAgainstBot){
+            if (nextMoveColor == 'b'){
+                Log.d("bot", "bot");
+//                makeMove(nextMoveColor);
+            }
+        }
     }
     private void onSquareClicked(int row, int col, boolean wasClickedOnAPiece, boolean isRec) {
+        MoveNode<Move> curr;
         int newRow = row;
-        Log.d("row and col", row + " " + col);
+        View square;
         if (wasClickedOnAPiece) {
             if (checkBox.isChecked()) {
                 newRow = 7 - row;
             }
-            View square = chessBoard.getChildAt(row * 8 + col);
+            square = chessBoard.getChildAt(row * 8 + col);
             ColorDrawable squareColor = (ColorDrawable) square.getBackground();
             int squareId = squareColor.getColor();
             if (squareId == whiteId || squareId == greenId) {
                 if (piece.letter == 'p') {
                     int[] cords = {newRow, col};
                     int pieceRow = piece.row;
-                    ((Pawn) piece).pawnMove(board, newRow, col, engine.getEnPassantLocation());
+                    move = ((Pawn) piece).pawnMove(board, newRow, col, engine.getEnPassantLocation());
                     if (newRow == 0 && piece.color == 'b') {
                         blackPawnPromotion(col);
                     }
@@ -192,9 +205,14 @@ public class Chess extends AppCompatActivity {
                         engine.setEnPassantLocation(null);
                     }
                 } else {
-                    piece.move(board, newRow, col);
+                    move = piece.move(board, newRow, col);
                     engine.setEnPassantLocation(null);
                 }
+                curr = engine.getHistory();
+                while(curr.getNext() != null){
+                    curr = curr.getNext();
+                }
+                curr.setNext(new MoveNode<>(move));
 //                if (nextMoveColor == 'w') {
 //                    whiteKing = board.findKing('w');
 //                } else {
@@ -227,7 +245,6 @@ public class Chess extends AppCompatActivity {
                     showBoard(false);
                     nextMoveColor = 'w';
                 }
-                Log.d("evaluate", evaluate(board) + "");
                 return;
             }
             piece = board.getBoard()[newRow][col];
@@ -272,10 +289,17 @@ public class Chess extends AppCompatActivity {
             chessBoard.removeAllViews();
             showBoard(false);
             int size = moves.getSize();
-            Node<Location> individual_move;
+            LocationMove<Location> individual_move;
             if (size == 0) {
                 Toast.makeText(this, "this piece has no moves", Toast.LENGTH_SHORT).show();
             }
+            if (checkBox.isChecked()) {
+                square = chessBoard.getChildAt(row * 8 + col);
+            }
+            else {
+                square = chessBoard.getChildAt((7-row) * 8 + col);
+            }
+            square.setBackgroundColor(getResources().getColor(R.color.clicked_square));
             for (int i = 0; i < size; i++) {
                 individual_move = moves.remove();
                 View square_to_color;
@@ -411,39 +435,6 @@ public class Chess extends AppCompatActivity {
     }
 
 
-    public void makeTree(EngineTree root, int depth, char color){
-        if (depth == 0){
-            return;
-        }
-        Piece piece;
-        char nextColor;
-        if (color == 'w'){
-            nextColor = 'b';
-        }
-        else {
-            nextColor = 'w';
-        }
-        Node<Location> move;
-        Queue<Location> allMoves = root.engine.getBoard().getColorMoves(color, false);
-        int allMovesSize = allMoves.getSize();
-        EngineTree[] leaves = new EngineTree[allMovesSize];
-        for (int i = 0; i < allMovesSize; i++) {
-            Engine newEngine = root.engine.clone();
-            move = allMoves.remove();
-            piece = newEngine.getBoard().getBoard()[move.getFrom().row][move.getFrom().col];
-            if (piece.letter == 'p'){
-                ((Pawn) piece).pawnMove(newEngine.getBoard(), move.getTo().row, move.getTo().col, newEngine.getEnPassantLocation());
-            }
-            else {
-                piece.move(newEngine.getBoard(), move.getTo().row, move.getTo().col);
-            }
-            EngineTree leaf_i = new EngineTree(newEngine);
-            leaves[i] = leaf_i;
-            makeTree(leaf_i, depth - 1, nextColor);
-        }
-        root.setLeaves(leaves);
-    }
-
     public int evaluate(Board board){
         int whiteSum = 0, blackSum = 0;
         Piece piece;
@@ -463,26 +454,74 @@ public class Chess extends AppCompatActivity {
         return whiteSum - blackSum;
     }
 
-    public int minimax(EngineTree engineTree, int depth, char color){
-        int maxEval = -2000000000, minEval = 2000000000, eval;
-        if (engineTree.engine.getBoard().getEndMoves(color).getSize() == 0 || depth == 0) {
-            return evaluate(engineTree.engine.getBoard());
-        }
-        if (color == 'w'){
-            for (int i = 0; i < engineTree.leaves.length; i++) {
-                eval = minimax(engineTree.leaves[i], depth - 1, 'b');
-                maxEval = Math.max(maxEval, eval);
-            }
-            return maxEval;
-        }
-        else {
-            for (int i = 0; i < engineTree.leaves.length; i++) {
-                eval = minimax(engineTree.leaves[i], depth - 1, 'w');
-                minEval = Math.min(minEval, eval);
-            }
-            return minEval;
-        }
-    }
+//    public int minimax(EngineTree engineTree, int depth, char color, int alpha, int beta){
+//        int maxEval = -2000000000, minEval = 2000000000, eval;
+//        if (engineTree.engine.getBoard().getEndMoves(color).getSize() == 0 || depth == 0) {
+//            return evaluate(engineTree.engine.getBoard());
+//        }
+//        if (color == 'w'){
+//            for (int i = 0; i < engineTree.leaves.length; i++) {
+//                eval = minimax(engineTree.leaves[i], depth - 1, 'b', alpha, beta);
+//                engineTree.evaluation = eval;
+//                if (eval > maxEval){
+//                    maxEval = eval;
+//                }
+//                if (alpha > eval){
+//                    alpha = eval;
+//                }
+//                if (beta <= alpha){
+//                    break;
+//                }
+//            }
+//            return maxEval;
+//        }
+//        else {
+//            for (int i = 0; i < engineTree.leaves.length+1; i++) {
+//                eval = minimax(engineTree.leaves[i], depth - 1, 'w', alpha, beta);
+//                engineTree.evaluation = eval;
+//                if (eval < minEval) {
+//                    minEval = eval;
+//                }
+//                if (eval < beta){
+//                    beta = eval;
+//                }
+//                if (beta <= alpha){
+//                    break;
+//                }
+//            }
+//            return minEval;
+//        }
+//    }
+//
+//    public void makeMove(char color){
+//        EngineTree root = new EngineTree(engine);
+//        makeTree(root, depth, color);
+//        LocationMove<Location> bestMove;
+//        Piece piece;
+//        int bestEval = minimax(root, depth, color, -2000000, 20000000);
+//        Queue<Location> allMoves = engine.getBoard().getColorMoves(color, false);
+//        Log.d("leaves count", root.leaves.length + "");
+//        for (int i = 0; i < root.leaves.length; i++) {
+//            int leaveEval = root.leaves[i].evaluation;
+//            if (leaveEval == bestEval){
+//                for (int j = 0; j < i; j++) {
+//                    allMoves.remove();
+//                }
+//                bestMove = allMoves.remove();
+//                piece = engine.getBoard().getBoard()[bestMove.getFrom().row][bestMove.getFrom().col];
+//                if (piece.letter == 'p'){
+//                    ((Pawn) piece).pawnMove(engine.getBoard(), bestMove.getTo().row, bestMove.getTo().col, engine.getEnPassantLocation());
+//                }
+//                else {
+//                    piece.move(engine.getBoard(), bestMove.getTo().row, bestMove.getTo().col);
+//                }
+//                setNextMoveColor();
+//                chessBoard.removeAllViews();
+//                showBoard(false);
+//                break;
+//            }
+//        }
+//    }
 
 /*
     @SuppressLint("SetTextI18n")
