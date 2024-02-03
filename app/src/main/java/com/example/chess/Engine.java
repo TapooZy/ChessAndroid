@@ -57,6 +57,7 @@ public class Engine {
                         }
                         curr = curr.getNext();
                     }
+                    enPassantLocation = curr.getNext().move.enPassant_location;
                     curr.setNext(null);
                 }
                 piece = board.getBoard()[curr.move.from.row][curr.move.from.col];
@@ -71,6 +72,5 @@ public class Engine {
                 history = new MoveNode<>(null);
             }
         }
-        Log.d("deMove", history.toString());
     }
 }

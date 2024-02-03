@@ -229,6 +229,7 @@ public class Chess extends AppCompatActivity {
                     curr = curr.getNext();
                 }
                 curr.setNext(new MoveNode<>(move));
+                Log.d("deMove", engine.getHistory().toString());
 //                if (nextMoveColor == 'w') {
 //                    whiteKing = board.findKing('w');
 //                } else {
@@ -309,12 +310,7 @@ public class Chess extends AppCompatActivity {
             if (size == 0) {
                 Toast.makeText(this, "this piece has no moves", Toast.LENGTH_SHORT).show();
             }
-            if (checkBox.isChecked()) {
-                square = chessBoard.getChildAt(row * 8 + col);
-            }
-            else {
-                square = chessBoard.getChildAt((7-row) * 8 + col);
-            }
+            square = chessBoard.getChildAt(row * 8 + col);
             square.setBackgroundColor(getResources().getColor(R.color.clicked_square));
             for (int i = 0; i < size; i++) {
                 individual_move = moves.remove();

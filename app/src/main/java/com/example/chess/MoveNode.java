@@ -37,7 +37,7 @@ public class MoveNode<Move> {
                 enPassant = "null";
             }
             else {
-                enPassant = "(" + move.enPassant_location[0] + ", " + move.enPassant_location[1] + ")";
+                enPassant = "(" + curr.move.enPassant_location[0] + ", " + curr.move.enPassant_location[1] + ")";
             }
             s += "(from: " + curr.move.from.toString() + ", to: " + curr.move.to.toString() + ", enPassant: " + enPassant + ")";
             curr = curr.getNext();
