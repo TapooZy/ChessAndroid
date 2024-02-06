@@ -25,9 +25,8 @@ public class Chess extends AppCompatActivity {
     Board board = engine.getBoard();
     Piece piece;
     boolean playAgainstBot = false;
-    int screenWidth, whiteId, greenId, promotionCol, depth = 1;
+    int screenWidth, whiteId, greenId, promotionCol, depth = 3;
     char nextMoveColor;
-//    Piece whiteKing = board.findKing('w'), blackKing = board.findKing('b');
     boolean wasClickedOnAPiece, isLoadGame;
     String moves;
     @SuppressLint("SetTextI18n")
@@ -53,8 +52,9 @@ public class Chess extends AppCompatActivity {
             info.setText("Next move: white");
         }
         playAgainstBot = false;
-        EngineTree engineTree = new EngineTree(engine);
-//        makeTree(engineTree, 1, nextMoveColor);
+        MoveTree moveTree = new MoveTree(null);
+        moveTree.makeTree(moveTree, depth, nextMoveColor);
+        Log.d("levels", moveTree.toString(moveTree.levels()));
         chessBoard = findViewById(R.id.chessBoard);
 //        moves = "1.e4e52.Nf3Nc63.Bb5Nf64.d3d65.c3g66.Nbd2Bg77.Nf1O-O8.Ba4Nd79.Ne3Nc510.Bc2Ne611.h4Ne712.h5d513.hxg6fxg614.exd5Nxd515.Nxd5Qxd516.Bb3Qc617.Qe2Bd718.Be3Kh819.O-O-ORae820.Qf1a521.d4exd422.Nxd4Bxd423.Rxd4Nxd424.Rxh7+Kxh725.Qh1+Kg726.Bh6+Kf627.Qh4+Ke528.Qxd4+";
         if (moves != null) {
@@ -306,7 +306,7 @@ public class Chess extends AppCompatActivity {
             chessBoard.removeAllViews();
             showBoard(false);
             int size = moves.getSize();
-            LocationMove<Location> individual_move;
+            LocationNode<Location> individual_move;
             if (size == 0) {
                 Toast.makeText(this, "this piece has no moves", Toast.LENGTH_SHORT).show();
             }

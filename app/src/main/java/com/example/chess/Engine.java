@@ -1,7 +1,5 @@
 package com.example.chess;
 
-import android.util.Log;
-
 public class Engine {
     private Board board;
     private int[] enPassantLocation;

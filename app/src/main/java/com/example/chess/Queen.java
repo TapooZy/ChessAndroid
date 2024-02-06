@@ -14,7 +14,7 @@ public class Queen extends Piece{
         newBoard.getBoard()[row][col] = new Bishop(color, row, col);
         Queue<Location> BishopMoves = newBoard.getBoard()[row][col].getPossibleMoves(newBoard, true);
         int RookMovesSize = RookMoves.getSize();
-        LocationMove<Location> individualMove;
+        LocationNode<Location> individualMove;
         for (int i = 0; i < RookMovesSize; i++) {
             individualMove = RookMoves.remove();
             moves.insert(individualMove.getFrom(), individualMove.getTo());

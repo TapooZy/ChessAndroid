@@ -33,12 +33,6 @@ public class MoveNode<Move> {
         MoveNode<Move> curr = this;
         curr = curr.getNext();
         while (curr != null) {
-            if (curr.move.enPassant_location == null){
-                enPassant = "null";
-            }
-            else {
-                enPassant = "(" + curr.move.enPassant_location[0] + ", " + curr.move.enPassant_location[1] + ")";
-            }
             s += "(from: " + curr.move.from.toString() + ", to: " + curr.move.to.toString() + ", enPassant: " + enPassant + ")";
             curr = curr.getNext();
         }

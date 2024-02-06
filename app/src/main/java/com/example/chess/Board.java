@@ -51,7 +51,7 @@ public class Board {
     }
 
     public Queue<Location> getColorMoves(char color, boolean different){
-        LocationMove<Location> individualMove;
+        LocationNode<Location> individualMove;
         Queue<Location> allMoves = new Queue<>();
         Queue<Location> pieceMoves;
         char wantedColor;
@@ -88,7 +88,7 @@ public class Board {
     }
 
     public Queue<Location> getEndMoves(char color){
-        LocationMove<Location> individualMove;
+        LocationNode<Location> individualMove;
         Queue<Location> allMoves = new Queue<>();
         Queue<Location> pieceMoves;
         for (int i = 0; i < 8; i++) {
@@ -161,7 +161,7 @@ public class Board {
         }
         Queue<Location> allMoves = getColorMoves(piece.color, true);
         int size = allMoves.getSize();
-        LocationMove<Location> individualMove;
+        LocationNode<Location> individualMove;
         for (int i = 0; i < size; i++) {
             individualMove = allMoves.remove();
             if (individualMove.getTo().row == king.row && individualMove.getTo().col == king.col) {
@@ -189,7 +189,7 @@ public class Board {
         if (king == null){
             return false;
         }
-        LocationMove<Location> individualMove;
+        LocationNode<Location> individualMove;
         int size = allMoves.getSize();
         for (int i = 0; i < size; i++) {
             individualMove = allMoves.remove();

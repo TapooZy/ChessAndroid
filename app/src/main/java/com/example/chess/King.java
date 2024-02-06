@@ -63,7 +63,7 @@ public class King extends Piece {
     public boolean canCastleRight (Board board)
     {
         Queue<Location> allMoves = board.getColorMoves(this.color, true);
-        LocationMove<Location> individualMove;
+        LocationNode<Location> individualMove;
         if (board.getBoard()[row][7] != null)
         {
             if (board.getBoard()[row][7] instanceof Rook)
@@ -90,7 +90,7 @@ public class King extends Piece {
 
     public boolean canCastleLeft (Board board){
         Queue<Location> allMoves = board.getColorMoves(this.color, true);
-        LocationMove<Location> individualMove;
+        LocationNode<Location> individualMove;
         if (board.getBoard()[row][0] != null)
         {
             if (board.getBoard()[row][0] instanceof Rook)
