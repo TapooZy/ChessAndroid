@@ -13,9 +13,9 @@ public class Move {
         this.from = from;
         this.to = to;
         this.enPassant_location = enPassant_location;
-        if (board.getBoard()[from.row][from.col].letter == 'p' && to.row == 7 && board.getBoard()[from.row][from.col].color == 'w'){
+        if (board.getBoard()[to.row][to.col].letter == 'p' && to.row == 7 && board.getBoard()[to.row][to.col].color == 'w'){
             this.is_promotion_move = true;
-        } else if (board.getBoard()[from.row][from.col].letter == 'p' && to.row == 0 && board.getBoard()[from.row][from.col].letter == 'b'){
+        } else if (board.getBoard()[to.row][to.col].letter == 'p' && to.row == 0 && board.getBoard()[to.row][to.col].letter == 'b'){
             this.is_promotion_move = true;
         }
         else this.is_promotion_move = false;

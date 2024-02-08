@@ -116,7 +116,7 @@ public class King extends Piece {
     }
     @Override
     public Move move(Board board, int row, int col){
-        Move move = new Move(new Location(this.row, this.col), new Location(row, col), null, board);
+        int initial_row = this.row, initial_col = this.col;
         if (col == this.col + 2){
             King king = new King(color, row, col);
             king.didMove = true;
@@ -143,6 +143,7 @@ public class King extends Piece {
             board.getBoard()[row][col] = king;
             board.getBoard()[this.row][this.col] = null;
         }
+        Move move = new Move(new Location(initial_row, initial_col), new Location(row, col), null, board);
         return move;
     }
 

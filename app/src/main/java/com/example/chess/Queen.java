@@ -3,7 +3,7 @@ package com.example.chess;
 public class Queen extends Piece{
 
     public Queen(char color, int row, int col){
-        super(color, 'q', row, col, 5);
+        super(color, 'q', row, col, 9);
     }
 
     public Queue<Location> getPossibleMoves(Board board, boolean checkChecked) {
@@ -28,9 +28,10 @@ public class Queen extends Piece{
     }
     @Override
     public Move move(Board board, int row, int col){
-        Move move = new Move(new Location(this.row, this.col), new Location(row, col), null, board);
+        int initial_row = this.row, initial_col = this.col;
         board.getBoard()[row][col] = new Queen(color, row, col);
         board.getBoard()[this.row][this.col] = null;
+        Move move = new Move(new Location(initial_row, initial_col), new Location(row, col), null, board);
         return move;
     }
 

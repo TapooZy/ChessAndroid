@@ -1,5 +1,7 @@
 package com.example.chess;
 
+import android.util.Log;
+
 public class MoveTree {
     public Move move;
     public MoveTree[] leaves;
@@ -68,20 +70,16 @@ public class MoveTree {
         Queue<Location> allMoves = board.getColorMoves(color, false);
         int allMovesSize = allMoves.getSize(), dist;
         LocationNode<Location> move;
-        MoveNode<Move> historyCurr = engine.getHistory(), newNode = null;
+        MoveNode<Move> historyCurr = engine.getHistory();
         MoveTree[] leaves = new MoveTree[allMovesSize];
         for (int i = 0; i < allMovesSize; i++) {
-//            if (moveTree.move == null){
-//                curr = null;
-//            }
-//            else {
-//                newNode = moveTree.move.clone();
-//                curr = newNode;
-//            }
             int[] enPassantLocation = new int[2];
             move = allMoves.remove();
             while (historyCurr.getNext() != null){
                 historyCurr = historyCurr.getNext();
+            }
+            if (board.getBoard()[move.from.row][move.from.col] == null){
+                Log.d("hi", "hi");
             }
             if (board.getBoard()[move.from.row][move.from.col].letter == 'p'){
                 ((Pawn) board.getBoard()[move.from.row][move.from.col]).pawnMove(engine.getBoard(), move.to.row, move.to.col, historyCurr.move.enPassant_location);

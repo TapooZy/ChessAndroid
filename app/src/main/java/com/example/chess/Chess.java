@@ -228,10 +228,15 @@ public class Chess extends AppCompatActivity {
                     engine.setEnPassantLocation(null);
                 }
                 curr = engine.getHistory();
-                while(curr.getNext() != null){
-                    curr = curr.getNext();
+                if (curr.move == null){
+                    curr.move = move;
                 }
-                curr.setNext(new MoveNode<>(move));
+                else {
+                    while (curr.getNext() != null) {
+                        curr = curr.getNext();
+                    }
+                    curr.setNext(new MoveNode<>(move));
+                }
 //                if (nextMoveColor == 'w') {
 //                    whiteKing = board.findKing('w');
 //                } else {
@@ -448,24 +453,40 @@ public class Chess extends AppCompatActivity {
         d.show();
     }
 
-    public int minimax(MoveTree moveTree, int depth, char color, int alpha, int beta){
-        int maxEval = -2000000000, minEval = 2000000000, eval;
-        if (moveTree.leaves.length == 0) {
-            if (depth != 0) {
-                if (color == 'w'){
-                    return -King.value;
-                }
-                else {
-                    return King.value;
-                }
-            }
+    public int minimax(MoveTree moveTree, int depth, char color, int alpha, int beta, Engine engine){
+        MoveNode<Move> historyCurr = engine.getHistory();
+        while (historyCurr.getNext() != null){
+            historyCurr = historyCurr.getNext();
         }
-        if (depth == 0){
-            return moveTree.evaluation;
+        Board board = engine.getBoard();
+        int maxEval = -2000000000, minEval = 2000000000, eval, dist;
+        Piece piece;
+        if (depth == 0 || engine.getBoard().getEndMoves(color).getSize() == 0){
+            engine.deMove();
+            return engine.evaluate();
         }
         if (color == 'w'){
             for (int i = 0; i < moveTree.leaves.length; i++) {
-                eval = minimax(moveTree.leaves[i], depth - 1, 'b', alpha, beta);
+                int[] enPassantLocation = new int[2];
+                piece = engine.getBoard().getBoard()[moveTree.move.from.row][moveTree.move.from.col];
+                if (piece.letter == 'p'){
+                    ((Pawn) piece).pawnMove(engine.getBoard(), moveTree.move.to.row, moveTree.move.to.col, historyCurr.move.enPassant_location);
+                    dist = move.from.row - move.to.row;
+                    dist *= dist;
+                    if (dist == 4){
+                        enPassantLocation[0] = move.to.row;
+                        enPassantLocation[1] = move.to.col;
+                    }
+                    else {
+                        enPassantLocation = null;
+                    }
+                }
+                else {
+                    piece.move(engine.getBoard(), moveTree.move.to.row, moveTree.move.to.col);
+                    enPassantLocation = null;
+                }
+                historyCurr.setNext(new MoveNode<Move>(new Move(move.from, move.to, enPassantLocation, board)));
+                eval = minimax(moveTree.leaves[i], depth - 1, 'b', alpha, beta, engine);
                 moveTree.evaluation = eval;
                 if (eval > maxEval){
                     maxEval = eval;
@@ -477,11 +498,31 @@ public class Chess extends AppCompatActivity {
                     break;
                 }
             }
+            engine.deMove();
             return maxEval;
         }
         else {
             for (int i = 0; i < moveTree.leaves.length; i++) {
-                eval = minimax(moveTree.leaves[i], depth - 1, 'w', alpha, beta);
+                int[] enPassantLocation = new int[2];
+                piece = engine.getBoard().getBoard()[moveTree.move.from.row][moveTree.move.from.col];
+                if (piece.letter == 'p'){
+                    ((Pawn) piece).pawnMove(engine.getBoard(), moveTree.move.to.row, moveTree.move.to.col, historyCurr.move.enPassant_location);
+                    dist = move.from.row - move.to.row;
+                    dist *= dist;
+                    if (dist == 4){
+                        enPassantLocation[0] = move.to.row;
+                        enPassantLocation[1] = move.to.col;
+                    }
+                    else {
+                        enPassantLocation = null;
+                    }
+                }
+                else {
+                    piece.move(engine.getBoard(), moveTree.move.to.row, moveTree.move.to.col);
+                    enPassantLocation = null;
+                }
+                historyCurr.setNext(new MoveNode<Move>(new Move(move.from, move.to, enPassantLocation, board)));
+                eval = minimax(moveTree.leaves[i], depth - 1, 'w', alpha, beta, engine);
                 moveTree.evaluation = eval;
                 if (eval < minEval) {
                     minEval = eval;
@@ -493,6 +534,7 @@ public class Chess extends AppCompatActivity {
                     break;
                 }
             }
+            engine.deMove();
             return minEval;
         }
     }
@@ -503,7 +545,7 @@ public class Chess extends AppCompatActivity {
         LocationNode<Location> bestMove;
         Piece piece;
         for (int i = 0; i < root.sons.length; i++) {
-            root.sons[i].evaluation = minimax(root.sons[i], depth-1, color, -2000000, 20000000);
+            root.sons[i].evaluation = minimax(root.sons[i], depth-1, color, -2000000, 20000000, engine);
         }
         int bestEval = findMax(root.sons);
         Queue<Location> allMoves = engine.getBoard().getColorMoves(color, false);

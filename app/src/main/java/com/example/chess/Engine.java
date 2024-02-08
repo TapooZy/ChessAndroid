@@ -3,7 +3,7 @@ package com.example.chess;
 public class Engine {
     private Board board;
     private int[] enPassantLocation;
-    private MoveNode<Move> history = new MoveNode<>(null);
+    private MoveNode<Move> history = new MoveNode<Move>(null);
     public Engine(){
         this.board = new Board();
         board.startGame();

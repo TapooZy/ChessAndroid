@@ -58,11 +58,12 @@ public class Rook extends Piece{
 
     @Override
     public Move move(Board board, int row, int col){
-        Move move = new Move(new Location(this.row, this.col), new Location(row, col), null, board);
+        int initial_row = this.row, initial_col = this.col;
         Rook rook = new Rook(color, row, col);
         rook.didMove = true;
         board.getBoard()[row][col] = rook;
         board.getBoard()[this.row][this.col] = null;
+        Move move = new Move(new Location(initial_row, initial_col), new Location(row, col), null, board);
         return move;
     }
 
