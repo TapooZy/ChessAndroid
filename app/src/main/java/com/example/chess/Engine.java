@@ -71,4 +71,23 @@ public class Engine {
             }
         }
     }
+
+    public int evaluate(){
+        int whiteSum = 0, blackSum = 0;
+        Piece piece;
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                piece = board.getBoard()[i][j];
+                if (piece != null){
+                    if (piece.color == 'w'){
+                        whiteSum += piece.value;
+                    }
+                    else {
+                        blackSum += piece.value;
+                    }
+                }
+            }
+        }
+        return whiteSum - blackSum;
+    }
 }

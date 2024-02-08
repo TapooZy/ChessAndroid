@@ -13,6 +13,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.checkerframework.checker.units.qual.K;
+
 public class Chess extends AppCompatActivity {
     Button btnDeMove;
     Move move;
@@ -24,8 +27,8 @@ public class Chess extends AppCompatActivity {
     Engine engine = new Engine();
     Board board = engine.getBoard();
     Piece piece;
-    boolean playAgainstBot = false;
-    int screenWidth, whiteId, greenId, promotionCol, depth = 3;
+    boolean playAgainstBot = true;
+    int screenWidth, whiteId, greenId, promotionCol, depth = 2;
     char nextMoveColor;
     boolean wasClickedOnAPiece, isLoadGame;
     String moves;
@@ -51,10 +54,9 @@ public class Chess extends AppCompatActivity {
         } else {
             info.setText("Next move: white");
         }
-        playAgainstBot = false;
-        MoveTree moveTree = new MoveTree(null);
-        moveTree.makeTree(moveTree, depth, nextMoveColor);
-        Log.d("levels", moveTree.toString(moveTree.levels()));
+//        MoveTree moveTree = new MoveTree(null);
+//        moveTree.makeTree(moveTree, depth, nextMoveColor);
+//        Log.d("levels", moveTree.toString(moveTree.levels()));
         chessBoard = findViewById(R.id.chessBoard);
 //        moves = "1.e4e52.Nf3Nc63.Bb5Nf64.d3d65.c3g66.Nbd2Bg77.Nf1O-O8.Ba4Nd79.Ne3Nc510.Bc2Ne611.h4Ne712.h5d513.hxg6fxg614.exd5Nxd515.Nxd5Qxd516.Bb3Qc617.Qe2Bd718.Be3Kh819.O-O-ORae820.Qf1a521.d4exd422.Nxd4Bxd423.Rxd4Nxd424.Rxh7+Kxh725.Qh1+Kg726.Bh6+Kf627.Qh4+Ke528.Qxd4+";
         if (moves != null) {
@@ -185,9 +187,10 @@ public class Chess extends AppCompatActivity {
             }
         }
         if (playAgainstBot){
+            Log.d("nextMoveColor", nextMoveColor + "");
             if (nextMoveColor == 'b'){
                 Log.d("bot", "bot");
-//                makeMove(nextMoveColor);
+                makeMove(nextMoveColor);
             }
         }
     }
@@ -229,7 +232,6 @@ public class Chess extends AppCompatActivity {
                     curr = curr.getNext();
                 }
                 curr.setNext(new MoveNode<>(move));
-                Log.d("deMove", engine.getHistory().toString());
 //                if (nextMoveColor == 'w') {
 //                    whiteKing = board.findKing('w');
 //                } else {
@@ -446,94 +448,96 @@ public class Chess extends AppCompatActivity {
         d.show();
     }
 
-
-    public int evaluate(Board board){
-        int whiteSum = 0, blackSum = 0;
-        Piece piece;
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                piece = board.getBoard()[i][j];
-                if (piece != null){
-                    if (piece.color == 'w'){
-                        whiteSum += piece.value;
-                    }
-                    else {
-                        blackSum += piece.value;
-                    }
+    public int minimax(MoveTree moveTree, int depth, char color, int alpha, int beta){
+        int maxEval = -2000000000, minEval = 2000000000, eval;
+        if (moveTree.leaves.length == 0) {
+            if (depth != 0) {
+                if (color == 'w'){
+                    return -King.value;
+                }
+                else {
+                    return King.value;
                 }
             }
         }
-        return whiteSum - blackSum;
+        if (depth == 0){
+            return moveTree.evaluation;
+        }
+        if (color == 'w'){
+            for (int i = 0; i < moveTree.leaves.length; i++) {
+                eval = minimax(moveTree.leaves[i], depth - 1, 'b', alpha, beta);
+                moveTree.evaluation = eval;
+                if (eval > maxEval){
+                    maxEval = eval;
+                }
+                if (alpha > eval){
+                    alpha = eval;
+                }
+                if (beta <= alpha){
+                    break;
+                }
+            }
+            return maxEval;
+        }
+        else {
+            for (int i = 0; i < moveTree.leaves.length; i++) {
+                eval = minimax(moveTree.leaves[i], depth - 1, 'w', alpha, beta);
+                moveTree.evaluation = eval;
+                if (eval < minEval) {
+                    minEval = eval;
+                }
+                if (eval < beta){
+                    beta = eval;
+                }
+                if (beta <= alpha){
+                    break;
+                }
+            }
+            return minEval;
+        }
     }
 
-//    public int minimax(EngineTree engineTree, int depth, char color, int alpha, int beta){
-//        int maxEval = -2000000000, minEval = 2000000000, eval;
-//        if (engineTree.engine.getBoard().getEndMoves(color).getSize() == 0 || depth == 0) {
-//            return evaluate(engineTree.engine.getBoard());
-//        }
-//        if (color == 'w'){
-//            for (int i = 0; i < engineTree.leaves.length; i++) {
-//                eval = minimax(engineTree.leaves[i], depth - 1, 'b', alpha, beta);
-//                engineTree.evaluation = eval;
-//                if (eval > maxEval){
-//                    maxEval = eval;
-//                }
-//                if (alpha > eval){
-//                    alpha = eval;
-//                }
-//                if (beta <= alpha){
-//                    break;
-//                }
-//            }
-//            return maxEval;
-//        }
-//        else {
-//            for (int i = 0; i < engineTree.leaves.length+1; i++) {
-//                eval = minimax(engineTree.leaves[i], depth - 1, 'w', alpha, beta);
-//                engineTree.evaluation = eval;
-//                if (eval < minEval) {
-//                    minEval = eval;
-//                }
-//                if (eval < beta){
-//                    beta = eval;
-//                }
-//                if (beta <= alpha){
-//                    break;
-//                }
-//            }
-//            return minEval;
-//        }
-//    }
-//
-//    public void makeMove(char color){
-//        EngineTree root = new EngineTree(engine);
-//        makeTree(root, depth, color);
-//        LocationMove<Location> bestMove;
-//        Piece piece;
-//        int bestEval = minimax(root, depth, color, -2000000, 20000000);
-//        Queue<Location> allMoves = engine.getBoard().getColorMoves(color, false);
-//        Log.d("leaves count", root.leaves.length + "");
-//        for (int i = 0; i < root.leaves.length; i++) {
-//            int leaveEval = root.leaves[i].evaluation;
-//            if (leaveEval == bestEval){
-//                for (int j = 0; j < i; j++) {
-//                    allMoves.remove();
-//                }
-//                bestMove = allMoves.remove();
-//                piece = engine.getBoard().getBoard()[bestMove.getFrom().row][bestMove.getFrom().col];
-//                if (piece.letter == 'p'){
-//                    ((Pawn) piece).pawnMove(engine.getBoard(), bestMove.getTo().row, bestMove.getTo().col, engine.getEnPassantLocation());
-//                }
-//                else {
-//                    piece.move(engine.getBoard(), bestMove.getTo().row, bestMove.getTo().col);
-//                }
-//                setNextMoveColor();
-//                chessBoard.removeAllViews();
-//                showBoard(false);
-//                break;
-//            }
-//        }
-//    }
+    public void makeMove(char color){
+        EngineTree root = new EngineTree(engine);
+        root.makeTree(depth);
+        LocationNode<Location> bestMove;
+        Piece piece;
+        for (int i = 0; i < root.sons.length; i++) {
+            root.sons[i].evaluation = minimax(root.sons[i], depth-1, color, -2000000, 20000000);
+        }
+        int bestEval = findMax(root.sons);
+        Queue<Location> allMoves = engine.getBoard().getColorMoves(color, false);
+        for (int i = 0; i < root.sons.length; i++) {
+            int leaveEval = root.sons[i].evaluation;
+            if (leaveEval == bestEval){
+                for (int j = 0; j < i; j++) {
+                    allMoves.remove();
+                }
+                bestMove = allMoves.remove();
+                piece = engine.getBoard().getBoard()[bestMove.getFrom().row][bestMove.getFrom().col];
+                if (piece.letter == 'p'){
+                    ((Pawn) piece).pawnMove(engine.getBoard(), bestMove.getTo().row, bestMove.getTo().col, engine.getEnPassantLocation());
+                }
+                else {
+                    piece.move(engine.getBoard(), bestMove.getTo().row, bestMove.getTo().col);
+                }
+                setNextMoveColor();
+                chessBoard.removeAllViews();
+                showBoard(false);
+                break;
+            }
+        }
+    }
+
+    public int findMax(MoveTree[] moveTrees){
+        int max = moveTrees[0].evaluation;
+        for (int i = 1; i < moveTrees.length; i++) {
+            if (moveTrees[i].evaluation > max){
+                max = moveTrees[i].evaluation;
+            }
+        }
+        return max;
+    }
 
 /*
     @SuppressLint("SetTextI18n")

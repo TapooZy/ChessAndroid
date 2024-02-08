@@ -18,11 +18,6 @@ public class MoveNode<Move> {
     {
         return next;
     }
-    public boolean hasNext()
-    {
-        return this.next != null;
-    }
-
     public void setNext(MoveNode<Move> next)
     {
         this.next = next;
@@ -37,5 +32,17 @@ public class MoveNode<Move> {
             curr = curr.getNext();
         }
         return s;
+    }
+
+    public MoveNode<Move> clone(){
+        MoveNode<Move> curr = this, newNode = new MoveNode<Move>(curr.move), next, newCurr = newNode;
+        curr = curr.getNext();
+        while (curr != null){
+            next = new MoveNode<Move>(curr.move);
+            newCurr.setNext(next);
+            newCurr = newCurr.getNext();
+            curr = curr.getNext();
+        }
+        return newNode;
     }
 }

@@ -1,16 +1,16 @@
 package com.example.chess;
 
 public class MoveTree {
-    public MoveNode<Move> move;
+    public Move move;
     public MoveTree[] leaves;
-    public int evaluation;
+    public Integer evaluation;
 
-    public MoveTree(MoveNode<Move> move, MoveTree[] roots){
+    public MoveTree(Move move, MoveTree[] roots){
         this.move = move;
         this.leaves = roots;
     }
 
-    public MoveTree(MoveNode<Move> move){
+    public MoveTree(Move move){
         this.move = move;
         this.leaves = null;
     }
@@ -24,7 +24,7 @@ public class MoveTree {
         MoveTree moveTree = this;
         while (moveTree.leaves != null){
             levelsCount ++;
-            moveTree = leaves[0];
+            moveTree = moveTree.leaves[0];
         }
         int[] levels = new int[levelsCount+1];
         levels = recCount(levels, 0);
@@ -51,8 +51,10 @@ public class MoveTree {
         return s;
     }
 
-    public void makeTree(MoveTree moveTree, int depth, char color){
+    public void makeTree(MoveTree moveTree, int depth, char color, Engine engine){
         if (depth == 0){
+            evaluation = engine.evaluate();
+            engine.deMove();
             return;
         }
         char nextColor;
@@ -62,16 +64,27 @@ public class MoveTree {
         else {
             nextColor = 'w';
         }
-        Board board = createBoard(moveTree.move);
+        Board board = engine.getBoard();
         Queue<Location> allMoves = board.getColorMoves(color, false);
         int allMovesSize = allMoves.getSize(), dist;
         LocationNode<Location> move;
-        MoveNode<Move> curr = moveTree.move;
+        MoveNode<Move> historyCurr = engine.getHistory(), newNode = null;
         MoveTree[] leaves = new MoveTree[allMovesSize];
         for (int i = 0; i < allMovesSize; i++) {
+//            if (moveTree.move == null){
+//                curr = null;
+//            }
+//            else {
+//                newNode = moveTree.move.clone();
+//                curr = newNode;
+//            }
             int[] enPassantLocation = new int[2];
             move = allMoves.remove();
+            while (historyCurr.getNext() != null){
+                historyCurr = historyCurr.getNext();
+            }
             if (board.getBoard()[move.from.row][move.from.col].letter == 'p'){
+                ((Pawn) board.getBoard()[move.from.row][move.from.col]).pawnMove(engine.getBoard(), move.to.row, move.to.col, historyCurr.move.enPassant_location);
                 dist = move.from.row - move.to.row;
                 dist *= dist;
                 if (dist == 4){
@@ -83,21 +96,15 @@ public class MoveTree {
                 }
             }
             else {
+                board.getBoard()[move.from.row][move.from.col].move(engine.getBoard(), move.to.row, move.to.col);
                 enPassantLocation = null;
             }
-            if (curr == null){
-                leaves[i] = new MoveTree(new MoveNode<Move>(new Move(move.from, move.to, enPassantLocation, board)));
-            }
-            else {
-                while (curr.getNext() != null){
-                    curr = curr.getNext();
-                }
-                curr.setNext(new MoveNode<Move>(new Move(move.from, move.to, enPassantLocation, board)));
-                leaves[i] = new MoveTree(moveTree.move);
-            }
-            makeTree(leaves[i], depth - 1, nextColor);
+            historyCurr.setNext(new MoveNode<Move>(new Move(move.from, move.to, enPassantLocation, board)));
+            leaves[i] = new MoveTree(new Move(move.from, move.to, enPassantLocation, board));
+            makeTree(leaves[i], depth - 1, nextColor, engine);
         }
         moveTree.setLeaves(leaves);
+        engine.deMove();
     }
 
     public Board createBoard(MoveNode<Move> moves){
