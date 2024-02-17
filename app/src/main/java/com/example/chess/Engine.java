@@ -1,5 +1,7 @@
 package com.example.chess;
 
+import android.util.Log;
+
 public class Engine {
     private Board board;
     private int[] enPassantLocation;
@@ -40,7 +42,6 @@ public class Engine {
     public void deMove(){
         MoveNode<Move> curr;
         curr = history;
-        curr = curr.getNext();
         Piece piece;
         board.startGame();
         if (curr != null){
@@ -57,6 +58,9 @@ public class Engine {
                     }
                     enPassantLocation = curr.getNext().move.enPassant_location;
                     curr.setNext(null);
+                }
+                if (curr.move == null){
+                    Log.d("hi", "hi");
                 }
                 piece = board.getBoard()[curr.move.from.row][curr.move.from.col];
                 if (piece.letter == 'p') {

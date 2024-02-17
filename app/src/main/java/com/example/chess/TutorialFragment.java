@@ -48,7 +48,6 @@ public class TutorialFragment extends Fragment {
     }
 
     public void onClick(View view){
-        Log.d("dror", "onClick: ");
         String piece = "null";
         if (view == pawn){
             piece = "pawn";
@@ -71,9 +70,7 @@ public class TutorialFragment extends Fragment {
         db.collection("Tutorial").document(piece).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                Log.d("dror", "OnComplete:");
                 if (task.isSuccessful()) {
-                    Log.d("dror", "setText ");
                     Product product = new Product(task.getResult().getString("text"));
                     tutorial.setText(product.getText());
                 }

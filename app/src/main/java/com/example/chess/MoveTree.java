@@ -1,6 +1,5 @@
 package com.example.chess;
 
-import android.util.Log;
 
 public class MoveTree {
     public Move move;
@@ -77,9 +76,6 @@ public class MoveTree {
             move = allMoves.remove();
             while (historyCurr.getNext() != null){
                 historyCurr = historyCurr.getNext();
-            }
-            if (board.getBoard()[move.from.row][move.from.col] == null){
-                Log.d("hi", "hi");
             }
             if (board.getBoard()[move.from.row][move.from.col].letter == 'p'){
                 ((Pawn) board.getBoard()[move.from.row][move.from.col]).pawnMove(engine.getBoard(), move.to.row, move.to.col, historyCurr.move.enPassant_location);

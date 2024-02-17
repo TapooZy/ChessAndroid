@@ -1,6 +1,7 @@
 package com.example.chess;
 
 import android.nfc.NdefMessage;
+import android.util.Log;
 
 public class EngineTree {
     Engine engine;
@@ -39,9 +40,13 @@ public class EngineTree {
                 enPassant_location = null;
             }
             historyCurr.setNext(new MoveNode<Move>(new Move(move.from, move.to, enPassant_location, engine.getBoard())));
+            if (engine.getHistory() != null && engine.getHistory().getNext() != null){
+                if (engine.getHistory().move.to == engine.getHistory().getNext().move.to){
+                    Log.d("hi", "hi");
+                }
+            }
             sons[i] = new MoveTree(new Move(move.from, move.to, enPassant_location, engine.getBoard()));
             sons[i].makeTree(sons[i], depth - 1, 'w', engine);
-            engine.deMove();
         }
     }
 }

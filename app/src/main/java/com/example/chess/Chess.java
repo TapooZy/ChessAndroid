@@ -14,11 +14,9 @@ import android.util.DisplayMetrics;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.checkerframework.checker.units.qual.K;
-
 public class Chess extends AppCompatActivity {
     Button btnDeMove;
-    Move move;
+    Move pieceMove;
     TextView info;
     Dialog promotionDialog;
     ImageView queen, knight, rook, bishop;
@@ -187,9 +185,7 @@ public class Chess extends AppCompatActivity {
             }
         }
         if (playAgainstBot){
-            Log.d("nextMoveColor", nextMoveColor + "");
             if (nextMoveColor == 'b'){
-                Log.d("bot", "bot");
                 makeMove(nextMoveColor);
             }
         }
@@ -209,7 +205,7 @@ public class Chess extends AppCompatActivity {
                 if (piece.letter == 'p') {
                     int[] cords = {newRow, col};
                     int pieceRow = piece.row;
-                    move = ((Pawn) piece).pawnMove(board, newRow, col, engine.getEnPassantLocation());
+                    pieceMove = ((Pawn) piece).pawnMove(board, newRow, col, engine.getEnPassantLocation());
                     if (newRow == 0 && piece.color == 'b') {
                         blackPawnPromotion(col);
                     }
@@ -224,18 +220,18 @@ public class Chess extends AppCompatActivity {
                         engine.setEnPassantLocation(null);
                     }
                 } else {
-                    move = piece.move(board, newRow, col);
+                    pieceMove = piece.move(board, newRow, col);
                     engine.setEnPassantLocation(null);
                 }
                 curr = engine.getHistory();
                 if (curr.move == null){
-                    curr.move = move;
+                    curr.move = pieceMove;
                 }
                 else {
                     while (curr.getNext() != null) {
                         curr = curr.getNext();
                     }
-                    curr.setNext(new MoveNode<>(move));
+                    curr.setNext(new MoveNode<>(pieceMove));
                 }
 //                if (nextMoveColor == 'w') {
 //                    whiteKing = board.findKing('w');
@@ -461,31 +457,31 @@ public class Chess extends AppCompatActivity {
         Board board = engine.getBoard();
         int maxEval = -2000000000, minEval = 2000000000, eval, dist;
         Piece piece;
+        int[] enPassantLocation = new int[2];
+        piece = engine.getBoard().getBoard()[moveTree.move.from.row][moveTree.move.from.col];
+        if (piece.letter == 'p'){
+            pieceMove = ((Pawn) piece).pawnMove(engine.getBoard(), moveTree.move.to.row, moveTree.move.to.col, historyCurr.move.enPassant_location);
+            dist = pieceMove.from.row - pieceMove.to.row;
+            dist *= dist;
+            if (dist == 4){
+                enPassantLocation[0] = pieceMove.to.row;
+                enPassantLocation[1] = pieceMove.to.col;
+            }
+            else {
+                enPassantLocation = null;
+            }
+        }
+        else {
+            pieceMove = piece.move(engine.getBoard(), moveTree.move.to.row, moveTree.move.to.col);
+            enPassantLocation = null;
+        }
+        historyCurr.setNext(new MoveNode<Move>(new Move(pieceMove.from, pieceMove.to, enPassantLocation, board)));
         if (depth == 0 || engine.getBoard().getEndMoves(color).getSize() == 0){
             engine.deMove();
             return engine.evaluate();
         }
         if (color == 'w'){
             for (int i = 0; i < moveTree.leaves.length; i++) {
-                int[] enPassantLocation = new int[2];
-                piece = engine.getBoard().getBoard()[moveTree.move.from.row][moveTree.move.from.col];
-                if (piece.letter == 'p'){
-                    ((Pawn) piece).pawnMove(engine.getBoard(), moveTree.move.to.row, moveTree.move.to.col, historyCurr.move.enPassant_location);
-                    dist = move.from.row - move.to.row;
-                    dist *= dist;
-                    if (dist == 4){
-                        enPassantLocation[0] = move.to.row;
-                        enPassantLocation[1] = move.to.col;
-                    }
-                    else {
-                        enPassantLocation = null;
-                    }
-                }
-                else {
-                    piece.move(engine.getBoard(), moveTree.move.to.row, moveTree.move.to.col);
-                    enPassantLocation = null;
-                }
-                historyCurr.setNext(new MoveNode<Move>(new Move(move.from, move.to, enPassantLocation, board)));
                 eval = minimax(moveTree.leaves[i], depth - 1, 'b', alpha, beta, engine);
                 moveTree.evaluation = eval;
                 if (eval > maxEval){
@@ -503,25 +499,6 @@ public class Chess extends AppCompatActivity {
         }
         else {
             for (int i = 0; i < moveTree.leaves.length; i++) {
-                int[] enPassantLocation = new int[2];
-                piece = engine.getBoard().getBoard()[moveTree.move.from.row][moveTree.move.from.col];
-                if (piece.letter == 'p'){
-                    ((Pawn) piece).pawnMove(engine.getBoard(), moveTree.move.to.row, moveTree.move.to.col, historyCurr.move.enPassant_location);
-                    dist = move.from.row - move.to.row;
-                    dist *= dist;
-                    if (dist == 4){
-                        enPassantLocation[0] = move.to.row;
-                        enPassantLocation[1] = move.to.col;
-                    }
-                    else {
-                        enPassantLocation = null;
-                    }
-                }
-                else {
-                    piece.move(engine.getBoard(), moveTree.move.to.row, moveTree.move.to.col);
-                    enPassantLocation = null;
-                }
-                historyCurr.setNext(new MoveNode<Move>(new Move(move.from, move.to, enPassantLocation, board)));
                 eval = minimax(moveTree.leaves[i], depth - 1, 'w', alpha, beta, engine);
                 moveTree.evaluation = eval;
                 if (eval < minEval) {
@@ -540,6 +517,12 @@ public class Chess extends AppCompatActivity {
     }
 
     public void makeMove(char color){
+        int dist;
+        int[] enPassantLocation = new int[2];
+        MoveNode<Move> historyCurr = engine.getHistory();
+        while (historyCurr.getNext() != null){
+            historyCurr = historyCurr.getNext();
+        }
         EngineTree root = new EngineTree(engine);
         root.makeTree(depth);
         LocationNode<Location> bestMove;
@@ -547,7 +530,7 @@ public class Chess extends AppCompatActivity {
         for (int i = 0; i < root.sons.length; i++) {
             root.sons[i].evaluation = minimax(root.sons[i], depth-1, color, -2000000, 20000000, engine);
         }
-        int bestEval = findMax(root.sons);
+        int bestEval = findBest(root.sons);
         Queue<Location> allMoves = engine.getBoard().getColorMoves(color, false);
         for (int i = 0; i < root.sons.length; i++) {
             int leaveEval = root.sons[i].evaluation;
@@ -558,11 +541,22 @@ public class Chess extends AppCompatActivity {
                 bestMove = allMoves.remove();
                 piece = engine.getBoard().getBoard()[bestMove.getFrom().row][bestMove.getFrom().col];
                 if (piece.letter == 'p'){
-                    ((Pawn) piece).pawnMove(engine.getBoard(), bestMove.getTo().row, bestMove.getTo().col, engine.getEnPassantLocation());
+                    pieceMove = ((Pawn) piece).pawnMove(engine.getBoard(), bestMove.getTo().row, bestMove.getTo().col, engine.getEnPassantLocation());
+                    dist = pieceMove.from.row - pieceMove.to.row;
+                    dist *= dist;
+                    if (dist == 4){
+                        enPassantLocation[0] = pieceMove.to.row;
+                        enPassantLocation[1] = pieceMove.to.col;
+                    }
+                    else {
+                        enPassantLocation = null;
+                    }
                 }
                 else {
-                    piece.move(engine.getBoard(), bestMove.getTo().row, bestMove.getTo().col);
+                    pieceMove = piece.move(engine.getBoard(), bestMove.getTo().row, bestMove.getTo().col);
+                    enPassantLocation = null;
                 }
+                historyCurr.setNext(new MoveNode<Move>(new Move(pieceMove.from, pieceMove.to, enPassantLocation, board)));
                 setNextMoveColor();
                 chessBoard.removeAllViews();
                 showBoard(false);
@@ -571,14 +565,14 @@ public class Chess extends AppCompatActivity {
         }
     }
 
-    public int findMax(MoveTree[] moveTrees){
-        int max = moveTrees[0].evaluation;
+    public int findBest(MoveTree[] moveTrees){
+        int best = moveTrees[0].evaluation;
         for (int i = 1; i < moveTrees.length; i++) {
-            if (moveTrees[i].evaluation > max){
-                max = moveTrees[i].evaluation;
+            if (moveTrees[i].evaluation < best){
+                best = moveTrees[i].evaluation;
             }
         }
-        return max;
+        return best;
     }
 
 /*
